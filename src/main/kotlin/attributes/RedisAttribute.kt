@@ -1,4 +1,3 @@
 package attributes
 
-interface Attribute {
-}
+interface RedisAttribute { val name: String }

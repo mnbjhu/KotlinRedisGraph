@@ -1,2 +1,3 @@
-class PathNote {
+interface PathNode {
+    val nodes: List<PathNode>
 }

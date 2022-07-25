@@ -1,4 +1,2 @@
-package attributes
-
 class RedisScope {
 }
