@@ -1,9 +1,8 @@
 package conditions
 
-abstract class Condition {
-    abstract override fun toString(): String
-    object None : Condition() {
-        override fun toString() = ""
-    }
+import conditions.logic.And
 
+interface Condition {
+    override fun toString(): String
+    infix fun and(other: Condition) = And(this, other)
 }
