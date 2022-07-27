@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.7.0"
+    kotlin("kapt") version "1.7.10"
 }
 
 group = "org.example"
@@ -13,6 +14,8 @@ repositories {
 
 dependencies {
     implementation("redis.clients:jedis:4.2.3")
+    implementation("com.squareup:kotlinpoet:1.12.0")
+
     implementation(kotlin("reflect"))
     testImplementation(kotlin("test"))
 }
@@ -23,5 +26,4 @@ tasks.test {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
-    //kotlinOptions.freeCompilerArgs = listOf("-Xcontext-recievers")
 }
