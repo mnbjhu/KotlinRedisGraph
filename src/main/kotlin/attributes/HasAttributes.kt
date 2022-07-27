@@ -11,7 +11,7 @@ interface HasAttributes {
     val attributes: MutableList<Attribute<*>>
     val values: MutableMap<Attribute<Any>, Any>
 
-    sealed interface Attribute<T> {
+    sealed interface Attribute<out T> {
         val name: String
         val parent: HasAttributes
         fun getString() = "${parent.instanceName}.$name"

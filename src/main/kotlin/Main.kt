@@ -1,6 +1,7 @@
 import api.RedisClass
 import api.RedisGraph
 import api.RedisRelation
+import api.create
 
 fun main() {
     val queryText = RedisGraph.query{
@@ -8,12 +9,23 @@ fun main() {
         val (familyMember) = photo.tagged("familyMember")
         val (me, friendRelation) = familyMember.friendsWith("me")
         where = (me.firstName eq "James") and (me.lastName eq "Gibson") and friendRelation.isFamily
+        create {
+
+            val f = familyMember.sharedPhotos("p"){
+
+            }
+        }
         result(familyMember.firstName, familyMember.lastName, photo.imageName)
     }
     println(queryText)
+
+    val createQuery = create<User> {
+        it[firstName] = "James"
+        it[lastName] = "Gibson"
+        it[age] = 23
+    }
+    println(createQuery)
 }
-
-
 class User(override val instanceName: String): RedisClass("User"){
     val firstName = string("firstName")
     val lastName = string("lastName")
