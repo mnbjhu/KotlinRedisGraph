@@ -5,28 +5,48 @@ import conditions.equality.DoubleEquality
 import conditions.equality.IntEquality
 import conditions.equality.StringEquality
 
-interface HasAttributes {
-    val instanceName: String
-    val typeName: String
-    val attributes: MutableList<Attribute<*>>
-    val values: MutableMap<Attribute<Any>, Any>
+abstract class HasAttributes {
+    abstract val instanceName: String
+    abstract val typeName: String
+    abstract val attributes: MutableList<Attribute<*>>
 
-    sealed interface Attribute<out T> {
-        val name: String
-        val parent: HasAttributes
+    abstract inner class Attribute<T> {
+        abstract val name: String
+        abstract val parent: HasAttributes
+        abstract var value: T?
+
         fun getString() = "${parent.instanceName}.$name"
+        operator fun get(newValue: T){
+            value = newValue
+        }
     }
-    class StringAttribute(override val name: String, override val parent: HasAttributes): Attribute<String>{
+    inner class StringAttribute(override val name: String, override val parent: HasAttributes): HasAttributes.Attribute<String>() {
+        init {
+            attributes.add(this)
+        }
+        override var value: String? = null
         infix fun eq(value: String) = StringEquality(this, value)
     }
-    class DoubleAttribute(override val name: String, override val parent: HasAttributes): Attribute<Double>{
+    inner class DoubleAttribute(override val name: String, override val parent: HasAttributes): HasAttributes.Attribute<Double>() {
+        init {
+            attributes.add(this)
+        }
+        override var value: Double? = null
         infix fun eq(value: Double) = DoubleEquality(this, value)
     }
-    class IntAttribute(override val name: String, override val parent: HasAttributes): Attribute<Int>{
+    inner class IntAttribute(override val name: String, override val parent: HasAttributes): HasAttributes.Attribute<Int>() {
+        init {
+            attributes.add(this)
+        }
+        override var value: Int? = null
         infix fun eq(value: Int) = IntEquality(this, value)
     }
-    class BooleanAttribute(override val name: String, override val parent: HasAttributes):
-        Attribute<Boolean>, Condition {
+    inner class BooleanAttribute(override val name: String, override val parent: HasAttributes):
+        HasAttributes.Attribute<Boolean>(), Condition {
+        init {
+            attributes.add(this)
+        }
+        override var value: Boolean? = null
         override fun toString() = "${parent.instanceName}.$name"
     }
     fun string(name: String) = StringAttribute(name, this)

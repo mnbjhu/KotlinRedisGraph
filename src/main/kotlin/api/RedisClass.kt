@@ -6,9 +6,9 @@ import kotlin.reflect.KClass
 
 abstract class RedisClass(
     override val typeName: String
-): HasAttributes {
+): HasAttributes() {
     override val attributes: MutableList<HasAttributes.Attribute<*>> = mutableListOf()
-    override val values = mutableMapOf<HasAttributes.Attribute<Any>, Any>()
+    //override val values = mutableMapOf<HasAttributes.Attribute<Any?>, Any? >()
     inline fun <reified T: RedisClass, reified U: RedisClass, reified V>T.relates(clazz: KClass<out V>) where V: RedisRelation<T, U> =
         RelationAttribute(clazz, this)
 }
