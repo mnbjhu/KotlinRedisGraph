@@ -19,6 +19,7 @@ abstract class HasAttributes {
         operator fun get(newValue: T){
             value = newValue
         }
+        operator fun invoke(): T = if(value != null) value!! else throw Exception("attribute has not been returned")
     }
     inner class StringAttribute(override val name: String, override val parent: HasAttributes): HasAttributes.Attribute<String>() {
         init {
@@ -34,12 +35,12 @@ abstract class HasAttributes {
         override var value: Double? = null
         infix fun eq(value: Double) = DoubleEquality(this, value)
     }
-    inner class IntAttribute(override val name: String, override val parent: HasAttributes): HasAttributes.Attribute<Int>() {
+    inner class IntAttribute(override val name: String, override val parent: HasAttributes): HasAttributes.Attribute<Long>() {
         init {
             attributes.add(this)
         }
-        override var value: Int? = null
-        infix fun eq(value: Int) = IntEquality(this, value)
+        override var value: Long? = null
+        infix fun eq(value: Long) = IntEquality(this, value)
     }
     inner class BooleanAttribute(override val name: String, override val parent: HasAttributes):
         HasAttributes.Attribute<Boolean>(), Condition {
