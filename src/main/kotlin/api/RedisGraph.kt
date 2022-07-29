@@ -26,7 +26,7 @@ class RedisGraph(val name: String, host: String, port: Int = 6379) {
                 "${it.name}:${if (it.value is String) "'${it.value}'" else it.value}"
             }
         }})"
-        client.graphQuery(name, queryString)
+        client.graphQuery(name, queryString.also { println(it) })
     }
     fun <T: RedisClass, U: KClass<out T>,V>create(clazz: U, values: List<V>, createScope: T.(V) -> Unit){
         val instance = clazz.constructors.first().call("")
@@ -39,7 +39,7 @@ class RedisGraph(val name: String, host: String, port: Int = 6379) {
                 }
             }})"
         }
-        client.graphQuery(name, "CREATE $queryString")
+        client.graphQuery(name, "CREATE $queryString".also { println(it) })
     }
 
 }
