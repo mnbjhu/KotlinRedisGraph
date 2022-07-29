@@ -108,8 +108,8 @@ moviesGraph.create(Actor::class, actors) {
     actorId[index++]
 }
 ```
-### Create Relationships
-Currently all other functionality is performed with the **query** function which has the generatl structure of:
+### Query Scope
+Currently all other functionality is performed with the **query** function which has the general structure of:
 ```kotlin
 moviesGraph.query {
 
@@ -129,11 +129,14 @@ moviesGraph.query {
     }
     
     // Required (Can be placed in the create block)
-    return( /* vararg of attribute */ ){
+    result( /* vararg of attribute */ ){
         // Transform from attribute to some generic class
     }
     
 }
+```
+### Create Relationships
+References to nodes can be created using the **variableOf** function. These refences can be used to filter the data in the where block and relationships between matching nodes can then be made using the create block.
 ```kotlin
 moviesGraph.query {
     val actor = variableOf<Actor>("actor")
@@ -148,6 +151,7 @@ moviesGraph.query {
 }
 ```
 ### Make Queries
+In this example we search for all movies and return the movie 'title'.
 ```kotlin
 val movies = moviesGraph.query {
     val movie = variableOf<Movie>("movie")
@@ -155,6 +159,7 @@ val movies = moviesGraph.query {
 }
 movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
 ```
+The same however we also return the 'releaseYear' and the 'movieId'
 ```kotlin
 val (title, releaseYear, id) = moviesGraph.query {
     val movie = variableOf<Movie>("movie")
@@ -167,6 +172,10 @@ title `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
 releaseYear `should be equal to` 1980
 id `should be equal to` 1
 ```
+Here we:
+* Search for an actor and a movie where the actor acted in the movie.
+* Filter by movieId = 1
+* And return the actor name and movie title
 ```kotlin
 val actedIn = moviesGraph.query {
     val actor = variableOf<Actor>("actor")
@@ -186,6 +195,16 @@ val (actorName, movieName) = actedIn.last()
 actorName `should be equal to` "Carrie Fisher"
 movieName `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
 ```
-
-## Documentation
-## Plannd Features
+### Delete Nodes And Relationships
+Any nodes or relationships referenced in the Query block can be deleted calling them in the (vararg) delete function:
+```kotlin
+val removedRoles = moviesGraph.query {
+    val actor = variableOf<Actor>("actor")
+    val (_, relationship) = actor.actedIn("movie")
+    where { actor.actorId eq 1 }
+    delete(relationship)
+    result(relationship.role){relationship.role()}
+}
+removedRoles.size `should be equal to` 1
+removedRoles.first() `should be equal to` "Luke Skywalker"
+```
