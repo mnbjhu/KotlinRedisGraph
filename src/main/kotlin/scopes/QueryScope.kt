@@ -7,14 +7,13 @@ import api.RedisRelation
 import attributes.*
 import conditions.Condition
 import conditions.None
-import kotlin.reflect.KClass
 
 class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
     private var where: Condition = None
     private val returnValues = mutableListOf<Attribute<*>>()
     private val createPathScope = CreatePathScope()
     private val toDelete = mutableListOf<WithAttributes>()
-    inline operator fun <reified T: RedisClass, reified U: RedisClass, reified V, W, >W.invoke(name: String):
+    inline operator fun <reified T: RedisClass, reified U: RedisClass, reified V, W>W.invoke(name: String):
             Pair<U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V>{
         val obj = U::class.constructors.first().call(name)
         val relation = V::class.constructors.first().call(parent, obj, "${name}Relation")
@@ -64,7 +63,6 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         val r = mutableListOf<R>()
         returnValues.addAll(attributes)
         val results = graph.client.graphQuery(graph.name, this.toString())
-
         results.forEach { record ->
             val recordValues = record.values()
             attributes.mapIndexed{ index, attribute ->
@@ -79,59 +77,47 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         }
         return r.toList()
     }
-
-    inner class CreatePathScope: PathBuilderScope() {
-        inline operator fun <reified T: RedisClass, reified U: RedisClass, reified V, W>
-                W.invoke(name: String, noinline attributeBuilder: V.() -> Unit = {}):
-                RedisClassRelationPair<T, U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V>{
-            val obj = U::class.constructors.first().call(name)
-            val relation = V::class.constructors.first().call(parent, obj, "${name}Relation")
-            with(relation){
-                attributeBuilder()
-                attributes.forEach{
-                    if(it.value == null) throw Exception("All attributes are require on creation")
+    fun <T>result(vararg attributes: Attribute<out T>): List<List<T>>{
+        val r = mutableListOf<List<T>>()
+        returnValues.addAll(attributes)
+        val results = graph.client.graphQuery(graph.name, this.toString())
+        results.forEach { record ->
+            val recordValues = record .values()
+            attributes.mapIndexed{ index, attribute ->
+                when(attribute){
+                    is StringAttribute -> attribute.value = recordValues[index] as String
+                    is DoubleAttribute -> attribute.value = recordValues[index] as Double
+                    is IntAttribute -> attribute.value = recordValues[index] as Long
+                    is BooleanAttribute -> attribute.value = recordValues[index] as Boolean
                 }
             }
-            return RedisClassRelationPair(parent, V::class, name, attributeBuilder)
+            r.add(attributes.map { it.value!! })
         }
-        inner class RedisClassRelationPair<out T: RedisClass, U: RedisClass, V: RedisRelation<T, U>>(
-            private val redisClass: T,
-            private val redisRelation: KClass<V>,
-            private val name: String,
-            private val action: V.() -> Unit = {},
-        ){
-            operator fun minus(other: U): V {
-                val relation = redisRelation.constructors.first().call(redisClass, other, name)
-                relation.apply {
-                    action()
-                }
-                this@CreatePathScope.paths.add(listOf(redisClass, relation, other))
-                return relation
-            }
-        }
-        fun getPathString(): String{
-            return paths.joinToString { path ->
-                path.joinToString("-") { node ->
-                    when (node) {
-                        is RedisClass -> ">(${node.instanceName})"
-                        is RedisRelation<*, *> -> "[${node.instanceName}:${node.typeName} {${
-                            node.attributes.joinToString {
-                                "${it.name}:${if (it.value is String) "'${it.value}'" else it.value}"
-                            }
-                        }}]"
-                        else -> throw Exception("Invalid Attr type")
-                    }
-                }.drop(1)
-            }
-        }
+        return r.toList()
     }
+    fun <T>result(attribute: Attribute<out T>): List<T>{
+        val r = mutableListOf<T>()
+        returnValues.add(attribute)
+        val results = graph.client.graphQuery(graph.name, this.toString())
+        results.forEach { record ->
+            val recordValues = record.values()
+            when(attribute){
+                is StringAttribute -> attribute.value = recordValues.first() as String
+                is DoubleAttribute -> attribute.value = recordValues.first() as Double
+                is IntAttribute -> attribute.value = recordValues.first() as Long
+                is BooleanAttribute -> attribute.value = recordValues.first() as Boolean
+            }
+            r.add(attribute.value!!)
+        }
+        return r.toList()
+    }
+
     companion object{
         @JvmStatic
         fun getPathQuery(path: List<WithAttributes>) = path.joinToString("-") {
             when (it) {
                 is RedisClass -> "(${it.instanceName}:${it.typeName})"
                 is RedisRelation<*, *> -> "[${it.instanceName}:${it.typeName}]"
-                else -> throw Exception("Invalid type for has attribute")
             }
         }
     }

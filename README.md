@@ -12,7 +12,7 @@ Inspired by Kotlin Exposed, this library aims to provide a type-safe DSL for int
 ```groovy
 allprojects {
     repositories {
-        ...
+        /* ... */
         maven { url "https://jitpack.io" }
     }
 }
@@ -150,12 +150,10 @@ References to nodes can be created using the **variableOf** function. These refe
 moviesGraph.query {
     val actor = variableOf<Actor>("actor")
     val movie = variableOf<Movie>("movie")
-    where {
-        (actor.actorId eq 1) and (movie.movieId eq 1)
-    }
+    where { (actor.actorId eq 1) and (movie.movieId eq 1) }
     create {
         val actedIn = actor.actedIn("r") { role["Luke Skywalker"] } - movie
-        result(actedIn.role) { actedIn.role() }
+        result(actedIn.role)
     }
 }
 ```
@@ -168,7 +166,7 @@ In this example we search for all movies and return the movie 'title'.
 ```kotlin
 val movies = moviesGraph.query {
     val movie = variableOf<Movie>("movie")
-    result(movie.title){movie.title()}
+    result(movie.title)
 }
 movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
 ```
@@ -176,12 +174,18 @@ movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
 ```cypher
 MATCH (movie:Movie) RETURN movie.title
 ```
-The same however we also return the 'releaseYear' and the 'movieId'
+The same however we also return the 'releaseYear' and the 'movieId'. We can also map our return type to a data class to preserve the types.
 ```kotlin
+data class MovieData(val title: String, val releaseYear: Long, val movieId: Long)
+
 val (title, releaseYear, id) = moviesGraph.query {
     val movie = variableOf<Movie>("movie")
     result(movie.title, movie.releaseYear, movie.movieId){
-        Triple(movie.title(), movie.releaseYear(), movie.movieId())
+        MovieData(
+          movie.title(),
+          movie.releaseYear(),
+          movie.movieId()
+        )
     }
 }.first()
 
@@ -201,12 +205,8 @@ Here we:
 val actedIn = moviesGraph.query {
     val actor = variableOf<Actor>("actor")
     val (movie) = actor.actedIn("relationship")
-    where {
-        movie.movieId eq 1
-    }
-    result(actor.name, movie.title){
-        actor.name() to movie.title()
-    }
+    where { movie.movieId eq 1 }
+    result(actor.name, movie.title)
 }
 
 actedIn.size `should be equal to` 3
@@ -228,7 +228,7 @@ val removedRoles = moviesGraph.query {
     val (_, relationship) = actor.actedIn("movie")
     where { actor.actorId eq 1 }
     delete(relationship)
-    result(relationship.role){relationship.role()}
+    result(relationship.role)
 }
 removedRoles.size `should be equal to` 1
 removedRoles.first() `should be equal to` "Luke Skywalker"
