@@ -54,15 +54,6 @@ Node types and their relationships are defined by a schema. To create a node typ
 * Overrides **instanceName** as a single constructor parameter
 * Sets the **typeName** in the **RedisClass** constructor
 
-Attributes can be defined on both **RedisClass** and **RedisRelation**. While in either scope, you'll have access to functions for creating instances of **Attribute<T>**.
-  
-**Current Supported Types Are:**
-  Type | Function
-  --- | ---
-  String | string()
-  Long | int()
-  Double | double()
-  Boolean | boolean()
 ```kotlin
 import api.RedisClass
 import api.RedisRelation
@@ -82,6 +73,14 @@ class ActedIn(from: Actor, to: Movie, override val instanceName: String):
     val role = string("role")
 }
 ```
+Attributes can be defined on both **RedisClass** and **RedisRelation**. While in either scope, you'll have access to functions for creating instances of **Attribute\<T\>**.
+**Current Supported Types Are:**
+  Type | Function
+  --- | ---
+  String | string()
+  Long | int()
+  Double | double()
+  Boolean | boolean()
 ### Create Nodes
 After a node type has been defined as a **RedisClass**, you can create a single instance like so:
 ```kotlin
@@ -110,6 +109,31 @@ moviesGraph.create(Actor::class, actors) {
 }
 ```
 ### Create Relationships
+Currently all other functionality is performed with the **query** function which has the generatl structure of:
+```kotlin
+moviesGraph.query {
+
+    // Create references to varaibles and paths
+    
+    //Optional
+    where {
+        // Filter queries
+    }
+    
+    // Optional
+    delete( /* vararg of nodes/relationships */ )
+    
+    // Optional
+    create {
+        // Create relationships between nodes
+    }
+    
+    // Required (Can be placed in the create block)
+    return( /* vararg of attribute */ ){
+        // Transform from attribute to some generic class
+    }
+    
+}
 ```kotlin
 moviesGraph.query {
     val actor = variableOf<Actor>("actor")
