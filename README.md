@@ -74,6 +74,7 @@ class ActedIn(from: Actor, to: Movie, override val instanceName: String):
 }
 ```
 Attributes can be defined on both **RedisClass** and **RedisRelation**. While in either scope, you'll have access to functions for creating instances of **Attribute\<T\>**.
+
 **Current Supported Types Are:**
   Type | Function
   --- | ---
