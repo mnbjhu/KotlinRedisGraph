@@ -35,8 +35,8 @@ class MoviesTest {
         }
 
         graph.query {
-            val actor = variableOf<Actor>("a")
-            val movie = variableOf<Movie>("m")
+            val actor = variableOf<Actor>("actor")
+            val movie = variableOf<Movie>("movie")
             where {
                 (actor.actorId eq 1) and (movie.movieId eq 1)
             }
@@ -50,36 +50,36 @@ class MoviesTest {
             }
         }
         graph.query {
-            val actor = variableOf<Actor>("a")
-            val movie = variableOf<Movie>("m")
+            val actor = variableOf<Actor>("actor")
+            val movie = variableOf<Movie>("movie")
             where {
                 (actor.actorId eq 2) and (movie.movieId eq 1)
             }
             create {
-                val actedIn = actor.actedIn("r") { role["Han Solo"] } - movie
+                val actedIn = actor.actedIn("relationship") { role["Han Solo"] } - movie
                 result(actedIn.role) { actedIn.role() }
             }
         }
         graph.query {
-            val actor = variableOf<Actor>("a")
-            val movie = variableOf<Movie>("m")
+            val actor = variableOf<Actor>("actor")
+            val movie = variableOf<Movie>("movie")
             where {
                 (actor.actorId eq 3) and (movie.movieId eq 1)
             }
             create {
-                val actedIn = actor.actedIn("r") { role["Princess Leila"] } - movie
+                val actedIn = actor.actedIn("relationship") { role["Princess Leila"] } - movie
                 result(actedIn.role) { actedIn.role() }
             }
         }
 
         val movies = graph.query {
-            val movie = variableOf<Movie>("m")
+            val movie = variableOf<Movie>("movie")
             result(movie.title){movie.title()}
         }
         movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
 
         val (title, releaseYear, id) = graph.query {
-            val movie = variableOf<Movie>("m")
+            val movie = variableOf<Movie>("movie")
             result(movie.title, movie.releaseYear, movie.movieId){
                 Triple(movie.title(), movie.releaseYear(), movie.movieId())
             }
@@ -89,7 +89,32 @@ class MoviesTest {
         releaseYear `should be equal to` 1980
         id `should be equal to` 1
 
+        val actedIn = graph.query {
+            val actor = variableOf<Actor>("actor")
+            val (movie) = actor.actedIn("relationship")
+            where {
+                movie.movieId eq 1
+            }
+            result(actor.name, movie.title){
+                actor.name() to movie.title()
+            }
+        }
 
+        actedIn.size `should be equal to` 3
 
+        val (actorName, movieName) = actedIn.last()
+
+        actorName `should be equal to` "Carrie Fisher"
+        movieName `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
+
+        val removedRoles = graph.query {
+            val actor = variableOf<Actor>("actor")
+            val (_, relationship) = actor.actedIn("movie")
+            where { actor.actorId eq 1 }
+            delete(relationship)
+            result(relationship.role){relationship.role()}
+        }
+        removedRoles.size `should be equal to` 1
+        removedRoles.first() `should be equal to` "Luke Skywalker"
     }
 }

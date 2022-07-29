@@ -2,11 +2,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.7.0"
-    //kotlin("kapt") version "1.7.10"
+    `java-library`
+    `maven-publish`
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
+group = "uk.gibby"
+version = "0.0.1"
+
 
 repositories {
     mavenCentral()
@@ -25,4 +27,17 @@ tasks.test {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                from(components["java"])
+
+                groupId = "com.github.mnbjhu"
+                artifactId = "redis-kotlin"
+                version = "0.0.1"
+            }
+        }
+    }
 }

@@ -13,6 +13,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
     private var where: Condition = None
     private val returnValues = mutableListOf<HasAttributes.Attribute<*>>()
     private val createPathScope = CreatePathScope()
+    private val toDelete = mutableListOf<HasAttributes>()
     inline operator fun <reified T: RedisClass, reified U: RedisClass, reified V, W, >W.invoke(name: String):
             Pair<U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V>{
         val obj = U::class.constructors.first().call(name)
@@ -39,16 +40,22 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         else paths.add(listOf(parent, relation, new))
     }
     override fun toString(): String{
-        val r = "MATCH ${getMatchString()} ${if(where !is None) "WHERE $where " else ""}${getCreateString()} ${if(returnValues.isNotEmpty())"RETURN " else ""}${returnValues.joinToString { it.getString() }}"
-        println(r)
-        return r
+        val commands = listOf(
+            "MATCH ${getMatchString()}",
+            if(where !is None) "WHERE $where " else "",
+            getCreateString(),
+            "RETURN ${returnValues.joinToString { it.getString() }}"
+        ).filter { it != "" }
+        return commands.joinToString(" ")
     }
     private fun getCreateString(): String{
         val pathString = createPathScope.getPathString()
         return if(pathString == "") "" else "CREATE $pathString"
     }
     fun create(scope: CreatePathScope.() -> List<R>): List<R> = createPathScope.scope()
-
+    fun delete(vararg items: HasAttributes){
+        toDelete.addAll(items)
+    }
     fun where(whereScope: () -> Condition){
         where = whereScope()
     }
