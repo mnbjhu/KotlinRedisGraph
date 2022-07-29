@@ -63,7 +63,6 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         val r = mutableListOf<R>()
         returnValues.addAll(attributes)
         val results = graph.client.graphQuery(graph.name, this.toString())
-
         results.forEach { record ->
             val recordValues = record.values()
             attributes.mapIndexed{ index, attribute ->
@@ -75,6 +74,40 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
                 }
             }
             r += transform()
+        }
+        return r.toList()
+    }
+    fun <T>result(vararg attributes: Attribute<out T>): List<List<T>>{
+        val r = mutableListOf<List<T>>()
+        returnValues.addAll(attributes)
+        val results = graph.client.graphQuery(graph.name, this.toString())
+        results.forEach { record ->
+            val recordValues = record .values()
+            attributes.mapIndexed{ index, attribute ->
+                when(attribute){
+                    is StringAttribute -> attribute.value = recordValues[index] as String
+                    is DoubleAttribute -> attribute.value = recordValues[index] as Double
+                    is IntAttribute -> attribute.value = recordValues[index] as Long
+                    is BooleanAttribute -> attribute.value = recordValues[index] as Boolean
+                }
+            }
+            r.add(attributes.map { it.value!! })
+        }
+        return r.toList()
+    }
+    fun <T>result(attribute: Attribute<out T>): List<T>{
+        val r = mutableListOf<T>()
+        returnValues.add(attribute)
+        val results = graph.client.graphQuery(graph.name, this.toString())
+        results.forEach { record ->
+            val recordValues = record.values()
+            when(attribute){
+                is StringAttribute -> attribute.value = recordValues.first() as String
+                is DoubleAttribute -> attribute.value = recordValues.first() as Double
+                is IntAttribute -> attribute.value = recordValues.first() as Long
+                is BooleanAttribute -> attribute.value = recordValues.first() as Boolean
+            }
+            r.add(attribute.value!!)
         }
         return r.toList()
     }
