@@ -1,19 +1,19 @@
 package scopes
 
-import attributes.HasAttributes
+import api.WithAttributes
 import api.RedisClass
 import api.RedisGraph
 import api.RedisRelation
-import attributes.RelationAttribute
+import attributes.*
 import conditions.Condition
 import conditions.None
 import kotlin.reflect.KClass
 
 class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
     private var where: Condition = None
-    private val returnValues = mutableListOf<HasAttributes.Attribute<*>>()
+    private val returnValues = mutableListOf<Attribute<*>>()
     private val createPathScope = CreatePathScope()
-    private val toDelete = mutableListOf<HasAttributes>()
+    private val toDelete = mutableListOf<WithAttributes>()
     inline operator fun <reified T: RedisClass, reified U: RedisClass, reified V, W, >W.invoke(name: String):
             Pair<U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V>{
         val obj = U::class.constructors.first().call(name)
@@ -46,20 +46,21 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
             getCreateString(),
             "RETURN ${returnValues.joinToString { it.getString() }}"
         ).filter { it != "" }
-        return commands.joinToString(" ")
+
+        return commands.joinToString(" ").also { println(it) }
     }
     private fun getCreateString(): String{
         val pathString = createPathScope.getPathString()
         return if(pathString == "") "" else "CREATE $pathString"
     }
     fun create(scope: CreatePathScope.() -> List<R>): List<R> = createPathScope.scope()
-    fun delete(vararg items: HasAttributes){
+    fun delete(vararg items: WithAttributes){
         toDelete.addAll(items)
     }
     fun where(whereScope: () -> Condition){
         where = whereScope()
     }
-    fun result(vararg attributes: HasAttributes.Attribute<*>, transform: (() -> R)): List<R>{
+    fun result(vararg attributes: Attribute<*>, transform: (() -> R)): List<R>{
         val r = mutableListOf<R>()
         returnValues.addAll(attributes)
         val results = graph.client.graphQuery(graph.name, this.toString())
@@ -68,10 +69,10 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
             val recordValues = record.values()
             attributes.mapIndexed{ index, attribute ->
                 when(attribute){
-                    is HasAttributes.StringAttribute -> attribute.value = recordValues[index] as String
-                    is HasAttributes.DoubleAttribute -> attribute.value = recordValues[index] as Double
-                    is HasAttributes.IntAttribute -> attribute.value = recordValues[index] as Long
-                    is HasAttributes.BooleanAttribute -> attribute.value = recordValues[index] as Boolean
+                    is StringAttribute -> attribute.value = recordValues[index] as String
+                    is DoubleAttribute -> attribute.value = recordValues[index] as Double
+                    is IntAttribute -> attribute.value = recordValues[index] as Long
+                    is BooleanAttribute -> attribute.value = recordValues[index] as Boolean
                 }
             }
             r += transform()
@@ -126,7 +127,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
     }
     companion object{
         @JvmStatic
-        fun getPathQuery(path: List<HasAttributes>) = path.joinToString("-") {
+        fun getPathQuery(path: List<WithAttributes>) = path.joinToString("-") {
             when (it) {
                 is RedisClass -> "(${it.instanceName}:${it.typeName})"
                 is RedisRelation<*, *> -> "[${it.instanceName}:${it.typeName}]"

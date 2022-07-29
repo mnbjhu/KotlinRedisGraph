@@ -1,10 +1,10 @@
 package scopes
 
-import attributes.HasAttributes
+import api.WithAttributes
 import api.RedisClass
 
 abstract class PathBuilderScope {
-    protected val paths: MutableSet<List<HasAttributes>> = mutableSetOf()
+    protected val paths: MutableSet<List<WithAttributes>> = mutableSetOf()
     inline fun<reified T: RedisClass>variableOf(name: String): T{
         val obj = T::class.constructors.first().call(name)
         `access$paths`.add(listOf(obj))
@@ -14,7 +14,7 @@ abstract class PathBuilderScope {
 
     @Suppress("UNUSED")
     @PublishedApi
-    internal val `access$paths`: MutableSet<List<HasAttributes>>
+    internal val `access$paths`: MutableSet<List<WithAttributes>>
         get() = paths
 
 }

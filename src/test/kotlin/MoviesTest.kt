@@ -12,8 +12,11 @@ class MoviesTest {
          * First, let's delete the movies graph (if exists).
          * Note that the entire graph data is accessible using a single key.
          */
-        val graph = RedisGraph("movies", "raspberrypi.local")
-        graph.client.graphDelete("movies")
+        val moviesGraph = RedisGraph(
+            name = "movies",
+            host = "raspberrypi.local",
+        )
+        moviesGraph.client.graphDelete("movies")
         /**
          * Let's add three nodes that represent actors and then add a node to represent a movie.
          * Note that the graph data structure 'movies' will be automatically created for us as and the nodes are added to it.
@@ -24,61 +27,57 @@ class MoviesTest {
             "Harrison Ford",
             "Carrie Fisher"
         )
-        graph.create(Actor::class, actors) {
+        moviesGraph.create(Actor::class, actors) {
             name[it]
             actorId[index++]
         }
-        graph.create(Movie::class) {
+        moviesGraph.create(Movie::class) {
             title["Star Wars: Episode V - The Empire Strikes Back"]
             releaseYear[1980]
             movieId[1]
         }
 
-        graph.query {
+        moviesGraph.query {
             val actor = variableOf<Actor>("actor")
             val movie = variableOf<Movie>("movie")
             where {
                 (actor.actorId eq 1) and (movie.movieId eq 1)
             }
             create {
-                /**
-                 * Now we can create 'ACTED_IN' relationships between actors and the movies.
-                 * Mark Hamill played Luke Skywalker in Star Wars: Episode V - The Empire Strikes Back'
-                 */
                 val actedIn = actor.actedIn("r") { role["Luke Skywalker"] } - movie
                 result(actedIn.role) { actedIn.role() }
             }
         }
-        graph.query {
+        moviesGraph.query {
             val actor = variableOf<Actor>("actor")
             val movie = variableOf<Movie>("movie")
             where {
                 (actor.actorId eq 2) and (movie.movieId eq 1)
             }
             create {
-                val actedIn = actor.actedIn("relationship") { role["Han Solo"] } - movie
+                val actedIn = actor.actedIn("r") { role["Han Solo"] } - movie
                 result(actedIn.role) { actedIn.role() }
             }
         }
-        graph.query {
+        moviesGraph.query {
             val actor = variableOf<Actor>("actor")
             val movie = variableOf<Movie>("movie")
             where {
                 (actor.actorId eq 3) and (movie.movieId eq 1)
             }
             create {
-                val actedIn = actor.actedIn("relationship") { role["Princess Leila"] } - movie
+                val actedIn = actor.actedIn("r") { role["Princess Leila"] } - movie
                 result(actedIn.role) { actedIn.role() }
             }
         }
 
-        val movies = graph.query {
+        val movies = moviesGraph.query {
             val movie = variableOf<Movie>("movie")
             result(movie.title){movie.title()}
         }
         movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
 
-        val (title, releaseYear, id) = graph.query {
+        val (title, releaseYear, id) = moviesGraph.query {
             val movie = variableOf<Movie>("movie")
             result(movie.title, movie.releaseYear, movie.movieId){
                 Triple(movie.title(), movie.releaseYear(), movie.movieId())
@@ -89,9 +88,9 @@ class MoviesTest {
         releaseYear `should be equal to` 1980
         id `should be equal to` 1
 
-        val actedIn = graph.query {
+        val actedIn = moviesGraph.query {
             val actor = variableOf<Actor>("actor")
-            val (movie) = actor.actedIn("relationship")
+            val (movie) = actor.actedIn("movie")
             where {
                 movie.movieId eq 1
             }
@@ -107,7 +106,7 @@ class MoviesTest {
         actorName `should be equal to` "Carrie Fisher"
         movieName `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
 
-        val removedRoles = graph.query {
+        val removedRoles = moviesGraph.query {
             val actor = variableOf<Actor>("actor")
             val (_, relationship) = actor.actedIn("movie")
             where { actor.actorId eq 1 }
