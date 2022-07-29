@@ -94,6 +94,10 @@ moviesGraph.create(Movie::class) {
     movieId[1]
 }
 ```
+##### Generated Cypher
+```cypher
+CREATE (:Movie{title:'Star Wars: Episode V - The Empire Strikes Back', release_year:1980, movie_id:1})
+```
 (If an attribute is defined in the type but not set on creation, and exception will be thrown)
   
 You can also create multiple instances by mapping elements from a list.
@@ -108,6 +112,10 @@ moviesGraph.create(Actor::class, actors) {
     name[it]
     actorId[index++]
 }
+```
+##### Generated Cypher
+```cypher
+CREATE (:Actor{name:'Mark Hamill', actor_id:1}), (:Actor{name:'Harrison Ford', actor_id:2}), (:Actor{name:'Carrie Fisher', actor_id:3})
 ```
 ### Query Scope
 Currently all other functionality is performed with the **query** function which has the general structure of:
@@ -151,6 +159,10 @@ moviesGraph.query {
     }
 }
 ```
+##### Generated Cypher
+```cypher
+MATCH (actor:Actor), (movie:Movie) WHERE (actor.actor_id = 1) AND (movie.movie_id = 1)  CREATE (actor)-[r:ACTED_IN {role:'Luke Skywalker'}]->(movie) RETURN r.role
+```
 ### Make Queries
 In this example we search for all movies and return the movie 'title'.
 ```kotlin
@@ -159,6 +171,10 @@ val movies = moviesGraph.query {
     result(movie.title){movie.title()}
 }
 movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
+```
+##### Generated Cypher
+```cypher
+MATCH (movie:Movie) RETURN movie.title
 ```
 The same however we also return the 'releaseYear' and the 'movieId'
 ```kotlin
@@ -172,6 +188,10 @@ val (title, releaseYear, id) = moviesGraph.query {
 title `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
 releaseYear `should be equal to` 1980
 id `should be equal to` 1
+```
+##### Generated Cypher
+```cypher
+MATCH (movie:Movie) RETURN movie.title, movie.release_year, movie.movie_id
 ```
 Here we:
 * Search for an actor and a movie where the actor acted in the movie.
@@ -196,6 +216,10 @@ val (actorName, movieName) = actedIn.last()
 actorName `should be equal to` "Carrie Fisher"
 movieName `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
 ```
+##### Generated Cypher
+```cypher
+MATCH (actor:Actor)-[movieRelation:ACTED_IN]-(movie:Movie) WHERE movie.movie_id = 1  RETURN actor.name, movie.title
+```
 ### Delete Nodes And Relationships
 Any nodes or relationships referenced in the Query block can be deleted calling them in the (vararg) delete function:
 ```kotlin
@@ -208,4 +232,8 @@ val removedRoles = moviesGraph.query {
 }
 removedRoles.size `should be equal to` 1
 removedRoles.first() `should be equal to` "Luke Skywalker"
+```
+##### Generated Cypher
+```cypher
+MATCH (actor:Actor)-[movieRelation:ACTED_IN]-(movie:Movie) WHERE actor.actor_id = 1  RETURN movieRelation.role
 ```
