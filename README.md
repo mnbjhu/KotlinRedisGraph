@@ -204,7 +204,7 @@ Here we:
 ```kotlin
 val actedIn = moviesGraph.query {
     val actor = variableOf<Actor>("actor")
-    val (movie) = actor.actedIn("relationship")
+    val (movie) = actor.actedIn("movie")
     where { movie.movieId eq 1 }
     result(actor.name, movie.title)
 }
