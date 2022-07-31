@@ -36,7 +36,7 @@ afterEvaluate {
 
                 groupId = "com.github.mnbjhu"
                 artifactId = "redis-kotlin"
-                version = "0.0.1"
+                version = "0.0.3"
             }
         }
     }

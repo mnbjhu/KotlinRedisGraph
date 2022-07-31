@@ -1,14 +1,9 @@
 package attributes
 
+import RedisResult
 import api.WithAttributes
 
-abstract class Attribute<T>(protected val parent: WithAttributes) {
+abstract class Attribute<T>(protected val parent: WithAttributes):RedisResult<T> {
     abstract val name: String
-    abstract var value: T?
-
-    fun getString() = "${parent.instanceName}.$name"
-    operator fun get(newValue: T){
-        value = newValue
-    }
-    operator fun invoke(): T = if(value != null) value!! else throw Exception("attribute has not been returned")
+    override fun toString()  = "${parent.instanceName}.$name"
 }

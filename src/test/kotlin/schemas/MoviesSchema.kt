@@ -1,14 +1,14 @@
 package schemas
 
-import api.RedisClass
+import api.RedisNode
 import api.RedisRelation
 
-class Actor(override val instanceName: String) : RedisClass("Actor"){
+class Actor(override val instanceName: String) : RedisNode("Actor"){
     val name = string("name")
     val actorId = int("actor_id")
     val actedIn = relates(ActedIn::class)
 }
-class Movie(override val instanceName: String) : RedisClass("Movie"){
+class Movie(override val instanceName: String) : RedisNode("Movie"){
     val title = string("title")
     val releaseYear = int("release_year")
     val movieId = int("movie_id")

@@ -17,7 +17,7 @@ class RedisGraph(val name: String, host: String, port: Int = 6379) {
         val scope = QueryScope<T>(this)
         return scope.action()
     }
-    fun <T: RedisClass, U: KClass<out T>>create(clazz: U, createScope: T.() -> Unit){
+    fun <T: RedisNode, U: KClass<out T>>create(clazz: U, createScope: T.() -> Unit){
         val instance = clazz.constructors.first().call("")
         instance.createScope()
         if(instance.attributes.any { it.value == null }) throw Exception("All values must be set on creation")
@@ -28,7 +28,7 @@ class RedisGraph(val name: String, host: String, port: Int = 6379) {
         }})"
         client.graphQuery(name, queryString.also { println(it) })
     }
-    fun <T: RedisClass, U: KClass<out T>,V>create(clazz: U, values: List<V>, createScope: T.(V) -> Unit){
+    fun <T: RedisNode, U: KClass<out T>,V>create(clazz: U, values: List<V>, createScope: T.(V) -> Unit){
         val instance = clazz.constructors.first().call("")
         val queryString = values.joinToString{ item ->
             instance.createScope(item)

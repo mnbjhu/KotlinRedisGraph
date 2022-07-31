@@ -4,5 +4,5 @@ import attributes.StringAttribute
 import conditions.Condition
 
 class StringEquality(val attribute: StringAttribute, val value: String): Condition{
-    override fun toString() = "${attribute.getString()} = '$value'" // <- BAD
+    override fun toString() = "$attribute = '$value'" // <- BAD
 }
