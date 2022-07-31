@@ -1,8 +1,8 @@
 package conditions.equality
 
-import attributes.IntAttribute
+import attributes.LongAttribute
 import conditions.Condition
 
-class IntEquality(val attribute: IntAttribute, val value: Long): Condition{
+class LongEquality(val attribute: LongAttribute, val value: Long): Condition{
     override fun toString() = "${attribute.getString()} = $value"
 }

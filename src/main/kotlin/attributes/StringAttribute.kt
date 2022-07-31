@@ -1,13 +1,13 @@
 package attributes
 
+import api.Attribute
+import api.ResultValue
 import api.WithAttributes
 import conditions.equality.StringEquality
 
-class StringAttribute(override val name: String, parent: WithAttributes): Attribute<String>(parent) {
-    init {
-        parent.attributes.add(this)
-    }
+class StringAttribute(override val name: String, parent: WithAttributes):
+    Attribute<String>(parent), ResultValue.StringResult
+{
     override var value: String? = null
-    infix fun eq(value: String) = StringEquality(this, value)
-
+    infix fun eq(literal: String) = StringEquality(this, literal)
 }

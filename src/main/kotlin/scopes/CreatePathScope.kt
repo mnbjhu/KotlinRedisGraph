@@ -1,14 +1,15 @@
 package scopes
 
-import api.RedisClass
+import api.RedisNode
 import api.RedisRelation
 import attributes.RelationAttribute
+import conditions.equality.escapedQuotes
 import kotlin.reflect.KClass
 
 class CreatePathScope: PathBuilderScope() {
-    inline operator fun <reified T: RedisClass, reified U: RedisClass, reified V, W>
+    inline operator fun <reified T: RedisNode, reified U: RedisNode, reified V, W>
             W.invoke(name: String, noinline attributeBuilder: V.() -> Unit = {}):
-            RedisClassRelationPair<T, U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V> {
+            RedisNodeRelationPair<T, U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V> {
         val obj = U::class.constructors.first().call(name)
         val relation = V::class.constructors.first().call(parent, obj, "${name}Relation")
         with(relation){
@@ -17,9 +18,9 @@ class CreatePathScope: PathBuilderScope() {
                 if(it.value == null) throw Exception("All attributes are require on creation")
             }
         }
-        return RedisClassRelationPair(parent, V::class, name, attributeBuilder)
+        return RedisNodeRelationPair(parent, V::class, name, attributeBuilder)
     }
-    inner class RedisClassRelationPair<out T: RedisClass, U: RedisClass, V: RedisRelation<T, U>>(
+    inner class RedisNodeRelationPair<out T: RedisNode, U: RedisNode, V: RedisRelation<T, U>>(
         private val redisClass: T,
         private val redisRelation: KClass<V>,
         private val name: String,
@@ -38,12 +39,13 @@ class CreatePathScope: PathBuilderScope() {
         return paths.joinToString { path ->
             path.joinToString("-") { node ->
                 when (node) {
-                    is RedisClass -> ">(${node.instanceName})"
+                    is RedisNode -> ">(${node.instanceName})"
                     is RedisRelation<*, *> -> "[${node.instanceName}:${node.typeName} {${
-                        node.attributes.joinToString {
-                            "${it.name}:${if (it.value is String) "'${it.value}'" else it.value}"
+                        node.attributes.joinToString {val v = it.value
+                            "${it.name}:${if (v is String) "'${v.escapedQuotes()}'" else it.value}"
                         }
                     }}]"
+                    else -> throw Exception("Compiler bug?")
                 }
             }.drop(1)
         }

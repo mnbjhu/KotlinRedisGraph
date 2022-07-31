@@ -1,5 +1,6 @@
 package api
 
+import conditions.equality.escapedQuotes
 import redis.clients.jedis.HostAndPort
 import redis.clients.jedis.UnifiedJedis
 import redis.clients.jedis.providers.PooledConnectionProvider
@@ -17,25 +18,26 @@ class RedisGraph(val name: String, host: String, port: Int = 6379) {
         val scope = QueryScope<T>(this)
         return scope.action()
     }
-    fun <T: RedisClass, U: KClass<out T>>create(clazz: U, createScope: T.() -> Unit){
+    fun <T: RedisNode, U: KClass<out T>>create(clazz: U, createScope: T.() -> Unit){
         val instance = clazz.constructors.first().call("")
         instance.createScope()
         if(instance.attributes.any { it.value == null }) throw Exception("All values must be set on creation")
         val queryString =  "CREATE (:${ instance.typeName }{${
             instance.attributes.joinToString {
-                "${it.name}:${if (it.value is String) "'${it.value}'" else it.value}"
+                val v = it.value
+                "${it.name}:${if (v is String) "'${v.escapedQuotes()}'" else it.value}"
             }
         }})"
         client.graphQuery(name, queryString.also { println(it) })
     }
-    fun <T: RedisClass, U: KClass<out T>,V>create(clazz: U, values: List<V>, createScope: T.(V) -> Unit){
+    fun <T: RedisNode, U: KClass<out T>,V>create(clazz: U, values: List<V>, createScope: T.(V) -> Unit){
         val instance = clazz.constructors.first().call("")
         val queryString = values.joinToString{ item ->
             instance.createScope(item)
             if(instance.attributes.any { it.value == null }) throw Exception("All values must be set on creation")
             "(:${ instance.typeName }{${
-                instance.attributes.joinToString {
-                    "${it.name}:${if (it.value is String) "'${it.value}'" else it.value}"
+                instance.attributes.joinToString {val v = it.value
+                    "${it.name}:${if (v is String) "'${v.escapedQuotes()}'" else it.value}"
                 }
             }})"
         }

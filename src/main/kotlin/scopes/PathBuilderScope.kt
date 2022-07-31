@@ -1,11 +1,11 @@
 package scopes
 
 import api.WithAttributes
-import api.RedisClass
+import api.RedisNode
 
 abstract class PathBuilderScope {
     protected val paths: MutableSet<List<WithAttributes>> = mutableSetOf()
-    inline fun<reified T: RedisClass>variableOf(name: String): T{
+    inline fun<reified T: RedisNode>variableOf(name: String): T{
         val obj = T::class.constructors.first().call(name)
         `access$paths`.add(listOf(obj))
         return obj
