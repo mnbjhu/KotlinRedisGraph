@@ -97,15 +97,15 @@ class MoviesTest {
         actorName `should be equal to` "Carrie Fisher"
         movieName `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
 
-        val removedRoles = moviesGraph.query {
+        val removedActor = moviesGraph.query {
             val actor = variableOf<Actor>("actor")
             val (_, relationship) = actor.actedIn("movie")
             where { actor.actorId eq 1 }
             delete(relationship)
-            result(relationship.role)
+            result(actor.name)
         }
-        removedRoles.size `should be equal to` 1
-        removedRoles.first() `should be equal to` "Luke Skywalker"
+        removedActor.size `should be equal to` 1
+        removedActor.first() `should be equal to` "Mark Hamill"
 
         val ids = moviesGraph.query {
             val actor = variableOf<Actor>("actor")
