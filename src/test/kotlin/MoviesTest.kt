@@ -1,4 +1,5 @@
 import api.RedisGraph
+import functions.Id
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain`
 import org.junit.jupiter.api.Test
@@ -105,5 +106,11 @@ class MoviesTest {
         }
         removedRoles.size `should be equal to` 1
         removedRoles.first() `should be equal to` "Luke Skywalker"
+
+        val ids = moviesGraph.query {
+            val actor = variableOf<Actor>("actor")
+            result(Id(actor))
+        }
+        println(ids)
     }
 }

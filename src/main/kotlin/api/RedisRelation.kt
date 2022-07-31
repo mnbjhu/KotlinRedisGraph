@@ -1,8 +1,6 @@
 package api
 
-import attributes.Attribute
-
-abstract class RedisRelation<out T: RedisClass, out U: RedisClass>(
+abstract class RedisRelation<out T: RedisNode, out U: RedisNode>(
     val from: T,
     val to: U,
     override val typeName: String

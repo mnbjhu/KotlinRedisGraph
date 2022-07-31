@@ -1,26 +1,23 @@
 package scopes
 
-import api.WithAttributes
-import api.RedisClass
-import api.RedisGraph
-import api.RedisRelation
+import api.*
 import attributes.*
 import conditions.Condition
 import conditions.None
 
 class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
     private var where: Condition = None
-    private val returnValues = mutableListOf<Attribute<*>>()
+    private val returnValues = mutableListOf<ResultValue<*>>()
     private val createPathScope = CreatePathScope()
     private val toDelete = mutableListOf<WithAttributes>()
-    inline operator fun <reified T: RedisClass, reified U: RedisClass, reified V, W>W.invoke(name: String):
+    inline operator fun <reified T: RedisNode, reified U: RedisNode, reified V, W>W.invoke(name: String):
             Pair<U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V>{
         val obj = U::class.constructors.first().call(name)
         val relation = V::class.constructors.first().call(parent, obj, "${name}Relation")
         addToPaths(parent, obj, relation)
         return obj to relation
     }
-    inline operator fun <reified T: RedisClass, reified U: RedisClass, reified V, W>
+    inline operator fun <reified T: RedisNode, reified U: RedisNode, reified V, W>
             W.invoke(name: String, attributeBuilder: V.() -> Unit):
             Pair<U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V>{
         val obj = U::class.constructors.first().call(name)
@@ -29,7 +26,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         addToPaths(parent, obj, relation)
         return obj to relation
     }
-    fun addToPaths(parent: RedisClass, new: RedisClass, relation: RedisRelation<*, *>){
+    fun addToPaths(parent: RedisNode, new: RedisNode, relation: RedisRelation<*, *>){
         val matching = paths.filter { it.last() == parent }
         if(matching.isNotEmpty()) {
             paths.removeAll(matching.toSet())
@@ -43,11 +40,15 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
             "MATCH ${getMatchString()}",
             if(where !is None) "WHERE $where " else "",
             getCreateString(),
-            "RETURN ${returnValues.joinToString { it.getString() }}"
+            getDeleteString(),
+            "RETURN ${returnValues.joinToString()}",
         ).filter { it != "" }
 
         return commands.joinToString(" ").also { println(it) }
     }
+
+    private fun getDeleteString() = if(toDelete.isEmpty()) "" else "DELETE ${toDelete.joinToString { it.instanceName }}"
+
     private fun getCreateString(): String{
         val pathString = createPathScope.getPathString()
         return if(pathString == "") "" else "CREATE $pathString"
@@ -59,17 +60,17 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
     fun where(whereScope: () -> Condition){
         where = whereScope()
     }
-    fun result(vararg attributes: Attribute<*>, transform: (() -> R)): List<R>{
+    fun result(vararg results: ResultValue<*>, transform: (() -> R)): List<R>{
         val r = mutableListOf<R>()
-        returnValues.addAll(attributes)
-        val results = graph.client.graphQuery(graph.name, this.toString())
-        results.forEach { record ->
+        returnValues.addAll(results)
+        val records = graph.client.graphQuery(graph.name, this.toString())
+        records.forEach { record ->
             val recordValues = record.values()
-            attributes.mapIndexed{ index, attribute ->
+            recordValues.mapIndexed{ index, attribute ->
                 when(attribute){
                     is StringAttribute -> attribute.value = recordValues[index] as String
                     is DoubleAttribute -> attribute.value = recordValues[index] as Double
-                    is IntAttribute -> attribute.value = recordValues[index] as Long
+                    is LongAttribute -> attribute.value = recordValues[index] as Long
                     is BooleanAttribute -> attribute.value = recordValues[index] as Boolean
                 }
             }
@@ -77,7 +78,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         }
         return r.toList()
     }
-    fun <T>result(vararg attributes: Attribute<out T>): List<List<T>>{
+    fun <T>result(vararg attributes: ResultValue<out T>): List<List<T>>{
         val r = mutableListOf<List<T>>()
         returnValues.addAll(attributes)
         val results = graph.client.graphQuery(graph.name, this.toString())
@@ -85,27 +86,29 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
             val recordValues = record .values()
             attributes.mapIndexed{ index, attribute ->
                 when(attribute){
-                    is StringAttribute -> attribute.value = recordValues[index] as String
-                    is DoubleAttribute -> attribute.value = recordValues[index] as Double
-                    is IntAttribute -> attribute.value = recordValues[index] as Long
-                    is BooleanAttribute -> attribute.value = recordValues[index] as Boolean
+                    is ResultValue.BooleanResult -> attribute.value = recordValues[index] as Boolean
+                    is ResultValue.DoubleResult -> attribute.value = recordValues[index] as Double
+                    is ResultValue.LongResult -> attribute.value = recordValues[index] as Long
+                    is ResultValue.StringResult -> attribute.value = recordValues[index] as String
+                    is Attribute<*> -> throw Exception("Invalid 'ResultValue'")
                 }
             }
             r.add(attributes.map { it.value!! })
         }
         return r.toList()
     }
-    fun <T>result(attribute: Attribute<out T>): List<T>{
+    fun <T>result(attribute: ResultValue<out T>): List<T>{
         val r = mutableListOf<T>()
         returnValues.add(attribute)
         val results = graph.client.graphQuery(graph.name, this.toString())
         results.forEach { record ->
             val recordValues = record.values()
             when(attribute){
-                is StringAttribute -> attribute.value = recordValues.first() as String
-                is DoubleAttribute -> attribute.value = recordValues.first() as Double
-                is IntAttribute -> attribute.value = recordValues.first() as Long
-                is BooleanAttribute -> attribute.value = recordValues.first() as Boolean
+                is ResultValue.StringResult -> attribute.value = recordValues.first() as String
+                is ResultValue.DoubleResult -> attribute.value = recordValues.first() as Double
+                is ResultValue.LongResult -> attribute.value = recordValues.first() as Long
+                is ResultValue.BooleanResult -> attribute.value = recordValues.first() as Boolean
+                is Attribute<*> -> throw Exception("Invalid 'ResultValue'")
             }
             r.add(attribute.value!!)
         }
@@ -116,7 +119,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         @JvmStatic
         fun getPathQuery(path: List<WithAttributes>) = path.joinToString("-") {
             when (it) {
-                is RedisClass -> "(${it.instanceName}:${it.typeName})"
+                is RedisNode -> "(${it.instanceName}:${it.typeName})"
                 is RedisRelation<*, *> -> "[${it.instanceName}:${it.typeName}]"
             }
         }

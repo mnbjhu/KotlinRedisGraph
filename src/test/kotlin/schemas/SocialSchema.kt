@@ -1,10 +1,10 @@
-import api.RedisClass
+import api.RedisNode
 import api.RedisRelation
 
-class User(override val instanceName: String): RedisClass("User"){
+class User(override val instanceName: String): RedisNode("User"){
     val firstName = string("firstName")
     val lastName = string("lastName")
-    val age = int("age")
+    val age = long("age")
     val friendsWith = relates(FriendsWith::class)
     val sharedPosts = relates(SharedPosts::class)
     val sharedPhotos = relates(SharedPhotos::class)
@@ -24,7 +24,7 @@ class SharedPhotos(
     override val instanceName: String
 ): RedisRelation<User, Photo>(from, to, "SHARED_PHOTOS")
 
-class Post(override val instanceName: String): RedisClass("Post"){
+class Post(override val instanceName: String): RedisNode("Post"){
     val title = string("title")
     val content = string("content")
     val likes = string("likes")
@@ -36,9 +36,9 @@ class LinkedPhoto(
     override val instanceName: String
 ): RedisRelation<Post, Photo>(from, to, "LINKED_PHOTO")
 
-class Photo(override val instanceName: String): RedisClass("Photo"){
+class Photo(override val instanceName: String): RedisNode("Photo"){
     val imageName = string("imageName")
-    val likes = int("likes")
+    val likes = long("likes")
     val tagged = relates(TaggedIn::class)
 }
 class TaggedIn(from: Photo, to: User, override val instanceName: String): RedisRelation<Photo, User>(from, to, "TAGGED_IN")
