@@ -112,5 +112,21 @@ class MoviesTest {
             result(Id(actor))
         }
         println(ids)
+
+        moviesGraph.query {
+            val actor = variableOf<Actor>("actor")
+            where {
+                actor.actorId eq 1L
+            }
+            actor.actorId eq 100L
+            result(actor.actorId)
+        }
+        moviesGraph.query {
+            val actor = variableOf<Actor>("actor")
+            where {
+                actor.actorId eq 100L
+            }
+            result(actor.actorId)
+        }.first() `should be equal to` 100L
     }
 }
