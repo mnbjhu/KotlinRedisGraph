@@ -9,5 +9,4 @@ class DoubleAttribute(override val name: String, parent: WithAttributes):
     Attribute<Double>(parent), ResultValue.DoubleResult
 {
     override var value: Double? = null
-    infix fun eq(literal: Double) = DoubleEquality(this, literal)
 }

@@ -10,6 +10,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
     private val returnValues = mutableListOf<ResultValue<*>>()
     private val createPathScope = CreatePathScope()
     private val toDelete = mutableListOf<WithAttributes>()
+    private val toSet = mutableMapOf<Attribute<*>, Any>()
     inline operator fun <reified T: RedisNode, reified U: RedisNode, reified V, W>W.invoke(name: String):
             Pair<U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V>{
         val obj = U::class.constructors.first().call(name)
@@ -40,6 +41,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
             "MATCH ${getMatchString()}",
             if(where !is None) "WHERE $where " else "",
             getCreateString(),
+            getSetString(),
             getDeleteString(),
             "RETURN ${returnValues.joinToString()}",
         ).filter { it != "" }
@@ -48,7 +50,8 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
     }
 
     private fun getDeleteString() = if(toDelete.isEmpty()) "" else "DELETE ${toDelete.joinToString { it.instanceName }}"
-
+    private fun getSetString() =
+        if(toSet.isEmpty()) "" else "SET ${toSet.map { "${it.key} = ${if(it.value is String) "'${it.value}'" else "${it.value}"}" }.joinToString() }"
     private fun getCreateString(): String{
         val pathString = createPathScope.getPathString()
         return if(pathString == "") "" else "CREATE $pathString"
@@ -57,8 +60,8 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
     fun delete(vararg items: WithAttributes){
         toDelete.addAll(items)
     }
-    fun where(whereScope: () -> Condition){
-        where = whereScope()
+    fun where(whereScope: WhereScope.() -> Condition){
+        where = WhereScope().whereScope()
     }
     fun result(vararg results: ResultValue<*>, transform: (() -> R)): List<R>{
         val r = mutableListOf<R>()
@@ -114,7 +117,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         }
         return r.toList()
     }
-
+    infix fun <T: Any>Attribute<T>.eq(value: T) { toSet[this] = value }
     companion object{
         @JvmStatic
         fun getPathQuery(path: List<WithAttributes>) = path.joinToString("-") {
