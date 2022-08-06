@@ -11,4 +11,8 @@ interface ResultValue<T> {
     interface LongResult: ResultValue<Long>
     interface DoubleResult: ResultValue<Double>
     interface BooleanResult: ResultValue<Boolean>
+    interface BooleanListResult: ResultValue<List<Boolean>>
+    interface StringListResult: ResultValue<List<String>>
+    interface DoubleListResult: ResultValue<List<Double>>
+    interface LongListResult: ResultValue<List<Long>>
 }
