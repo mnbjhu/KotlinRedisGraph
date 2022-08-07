@@ -44,7 +44,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
             "RETURN ${returnValues.joinToString()}",
         ).filter { it != "" }
 
-        return commands.joinToString(" ").also { println(it) }
+        return commands.joinToString(" ").also { println("GRAPH.QUERY ${graph.name} \"$it\"") }
     }
 
     private fun getDeleteString() = if(toDelete.isEmpty()) "" else "DELETE ${toDelete.joinToString { it.instanceName }}"
@@ -107,8 +107,9 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
                 is ResultValue.StringResult -> attribute.value = recordValues.first() as String
                 is ResultValue.DoubleResult -> attribute.value = recordValues.first() as Double
                 is ResultValue.LongResult -> attribute.value = recordValues.first() as Long
-                is ResultValue.BooleanResult -> attribute.value = recordValues.first() as Boolean
-                is Attribute<*> -> throw Exception("Invalid 'ResultValue'")
+                is ResultValue.BooleanResult -> attribute.value = recordValues.first() as Boolean//recordValues.first() as DoubleArray
+                is ResultValue.StringArrayResult -> attribute.value = (recordValues.first() as List<*>).map { it as String }
+                else -> throw Exception("Type not found: ${attribute::class}")
             }
             r.add(attribute.value!!)
         }
@@ -121,6 +122,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
             when (it) {
                 is RedisNode -> "(${it.instanceName}:${it.typeName})"
                 is RedisRelation<*, *> -> "[${it.instanceName}:${it.typeName}]"
+                else -> throw Exception("???")
             }
         }
     }

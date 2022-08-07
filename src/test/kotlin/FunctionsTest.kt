@@ -1,9 +1,10 @@
 import api.RedisGraph
-import functions.Average
-import functions.Max
-import functions.Min
-import functions.Sum
+import functions.math.Average
+import functions.math.Max
+import functions.math.Min
+import functions.math.Sum
 import org.amshove.kluent.`should be equal to`
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import schemas.MyNumber
 
@@ -62,4 +63,5 @@ class FunctionsTest {
             result(Sum(number.num))
         }.first() `should be equal to` 24.0
     }
+
 }

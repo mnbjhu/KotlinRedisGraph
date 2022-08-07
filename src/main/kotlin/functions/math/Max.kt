@@ -1,4 +1,4 @@
-package functions
+package functions.math
 
 import api.ResultValue
 import attributes.DoubleAttribute

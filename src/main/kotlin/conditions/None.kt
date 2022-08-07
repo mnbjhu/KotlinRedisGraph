@@ -1,5 +1,5 @@
 package conditions
 
-object None : Condition {
+object None: Condition {
     override fun toString() = ""
 }
