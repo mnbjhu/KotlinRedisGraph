@@ -1,8 +1,8 @@
 package conditions.equality
 
-import attributes.DoubleAttribute
-import conditions.Condition
+import api.ResultValue
 
-class DoubleEquality(val attribute: DoubleAttribute, val value: Double): Condition{
-    override fun toString() = "${attribute.getString()} = $value"
+class DoubleEquality(val attribute: ResultValue.DoubleResult, private val literal: Double): ResultValue.BooleanResult(){
+
+    override fun toString() = "$attribute = $literal"
 }

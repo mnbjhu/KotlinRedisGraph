@@ -1,8 +1,7 @@
 package conditions.equality
 
-import attributes.LongAttribute
-import conditions.Condition
+import api.ResultValue
 
-class LongEquality(val attribute: LongAttribute, val value: Long): Condition{
-    override fun toString() = "${attribute.getString()} = $value"
+class LongEquality(val attribute: LongResult, val literal: Long): ResultValue.BooleanResult(){
+    override fun toString() = "$attribute = $literal"
 }

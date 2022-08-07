@@ -1,8 +1,10 @@
 package conditions.array
 
-import attributes.ArrayAttribute
-import conditions.Condition
+import api.ResultValue
 
-class Contains<T>(val attribute: ArrayAttribute<T>, val value: T): Condition {
-    override fun toString(): String = "(${attribute.getString()} contains ${if(value is String) "'$value'" else "$value"})"
+class Contains<T>(val attribute: ArrayResult<T>, private val element: T): ResultValue.BooleanResult() {
+    override fun toString(): String = "($attribute contains ${if(element is String) "'$element'" else "$element"})"
+    companion object{
+        fun <T>ArrayResult<T>.contains(element: T) = Contains(this, element)
+    }
 }

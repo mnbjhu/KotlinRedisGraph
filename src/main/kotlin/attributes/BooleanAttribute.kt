@@ -3,10 +3,11 @@ package attributes
 import api.Attribute
 import api.ResultValue
 import api.WithAttributes
-import conditions.Condition
+import conditions.logic.And
+import conditions.logic.Or
 
-class BooleanAttribute(override val name: String, parent: WithAttributes):
-    Attribute<Boolean>(parent), ResultValue.BooleanResult, Condition{ override var value: Boolean? = null
-    override fun toString() = getString()
+class BooleanAttribute(override val name: String, override val parent: WithAttributes): ResultValue.BooleanResult(), Attribute<Boolean>{
+    init { parent.attributes.add(this) }
+    override fun toString() = getAttributeText()
 
 }

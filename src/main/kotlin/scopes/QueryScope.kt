@@ -2,14 +2,16 @@ package scopes
 
 import api.*
 import attributes.*
-import conditions.Condition
-import conditions.None
+import conditions.True
+
 
 class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
-    private var where: Condition = None
+    private var where: ResultValue.BooleanResult = True
     private val returnValues = mutableListOf<ResultValue<*>>()
     private val createPathScope = CreatePathScope()
     private val toDelete = mutableListOf<WithAttributes>()
+    private var transform: (() -> R)? = null
+    private var orderBy: ResultValue<*>? = null
     inline operator fun <reified T: RedisNode, reified U: RedisNode, reified V, W>W.invoke(name: String):
             Pair<U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V>{
         val obj = U::class.constructors.first().call(name)
@@ -38,80 +40,54 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
     override fun toString(): String{
         val commands = listOf(
             "MATCH ${getMatchString()}",
-            if(where !is None) "WHERE $where " else "",
+            if(where !is True) "WHERE $where " else "",
             getCreateString(),
             getDeleteString(),
-            "RETURN ${returnValues.joinToString()}",
+            getResultString(),
+            getOrderByString()
         ).filter { it != "" }
 
         return commands.joinToString(" ").also { println("GRAPH.QUERY ${graph.name} \"$it\"") }
     }
-
+    private fun getResultString() = if(returnValues.isEmpty()) "" else "RETURN ${returnValues.joinToString()}"
     private fun getDeleteString() = if(toDelete.isEmpty()) "" else "DELETE ${toDelete.joinToString { it.instanceName }}"
-
+    private fun getOrderByString() = if(orderBy == null) "" else "ORDER BY $orderBy"
     private fun getCreateString(): String{
         val pathString = createPathScope.getPathString()
         return if(pathString == "") "" else "CREATE $pathString"
     }
     fun create(scope: CreatePathScope.() -> List<R>): List<R> = createPathScope.scope()
-    fun delete(vararg items: WithAttributes){
+    fun delete(vararg items: WithAttributes): List<Unit>{
         toDelete.addAll(items)
+        return emptyList()
     }
-    fun where(whereScope: () -> Condition){
+    fun where(whereScope: () -> ResultValue.BooleanResult){
         where = whereScope()
     }
     fun result(vararg results: ResultValue<*>, transform: (() -> R)): List<R>{
-        val r = mutableListOf<R>()
         returnValues.addAll(results)
+        this.transform = transform
+        return emptyList()
+    }
+    fun orderBy(result: ResultValue<*>){
+        orderBy = result
+    }
+    fun evaluate(): List<R>{
+        val r = mutableListOf<R>()
         val records = graph.client.graphQuery(graph.name, this.toString())
         records.forEach { record ->
             val recordValues = record.values()
-            recordValues.mapIndexed{ index, attribute ->
-                when(attribute){
-                    is StringAttribute -> attribute.value = recordValues[index] as String
-                    is DoubleAttribute -> attribute.value = recordValues[index] as Double
-                    is LongAttribute -> attribute.value = recordValues[index] as Long
-                    is BooleanAttribute -> attribute.value = recordValues[index] as Boolean
+            recordValues.mapIndexed{ index, value ->
+                when(val attribute = returnValues[index]){
+                    is ResultValue.StringResult -> attribute.value = value as String
+                    is ResultValue.DoubleResult -> attribute.value = value as Double
+                    is ResultValue.LongResult -> attribute.value = value as Long
+                    is ResultValue.BooleanResult -> attribute.value = value as Boolean
+                    is ResultValue.StringArrayResult -> attribute.value = value as List<String>
+                    else ->throw Exception("class: ${attribute::class} not found")
                 }
             }
-            r += transform()
-        }
-        return r.toList()
-    }
-    fun <T>result(vararg attributes: ResultValue<out T>): List<List<T>>{
-        val r = mutableListOf<List<T>>()
-        returnValues.addAll(attributes)
-        val results = graph.client.graphQuery(graph.name, this.toString())
-        results.forEach { record ->
-            val recordValues = record .values()
-            attributes.mapIndexed{ index, attribute ->
-                when(attribute){
-                    is ResultValue.BooleanResult -> attribute.value = recordValues[index] as Boolean
-                    is ResultValue.DoubleResult -> attribute.value = recordValues[index] as Double
-                    is ResultValue.LongResult -> attribute.value = recordValues[index] as Long
-                    is ResultValue.StringResult -> attribute.value = recordValues[index] as String
-                    is Attribute<*> -> throw Exception("Invalid 'ResultValue'")
-                }
-            }
-            r.add(attributes.map { it.value!! })
-        }
-        return r.toList()
-    }
-    fun <T>result(attribute: ResultValue<out T>): List<T>{
-        val r = mutableListOf<T>()
-        returnValues.add(attribute)
-        val results = graph.client.graphQuery(graph.name, this.toString())
-        results.forEach { record ->
-            val recordValues = record.values()
-            when(attribute){
-                is ResultValue.StringResult -> attribute.value = recordValues.first() as String
-                is ResultValue.DoubleResult -> attribute.value = recordValues.first() as Double
-                is ResultValue.LongResult -> attribute.value = recordValues.first() as Long
-                is ResultValue.BooleanResult -> attribute.value = recordValues.first() as Boolean//recordValues.first() as DoubleArray
-                is ResultValue.StringArrayResult -> attribute.value = (recordValues.first() as List<*>).map { it as String }
-                else -> throw Exception("Type not found: ${attribute::class}")
-            }
-            r.add(attribute.value!!)
+            r += transform!!()
         }
         return r.toList()
     }

@@ -2,6 +2,7 @@ package scopes
 
 import api.RedisNode
 import api.RedisRelation
+import api.ResultValue
 import attributes.RelationAttribute
 import conditions.equality.escapedQuotes
 import kotlin.reflect.KClass
@@ -15,7 +16,7 @@ class CreatePathScope: PathBuilderScope() {
         with(relation){
             attributeBuilder()
             attributes.forEach{
-                if(it.value == null) throw Exception("All attributes are require on creation")
+                if((it as ResultValue<*>).value == null) throw Exception("All attributes are require on creation")
             }
         }
         return RedisNodeRelationPair(parent, V::class, name, attributeBuilder)
@@ -41,7 +42,7 @@ class CreatePathScope: PathBuilderScope() {
                 when (node) {
                     is RedisNode -> ">(${node.instanceName})"
                     is RedisRelation<*, *> -> "[${node.instanceName}:${node.typeName} {${
-                        node.attributes.joinToString {val v = it.value
+                        node.attributes.joinToString {val v = (it as ResultValue<*>).value
                             "${it.name}:${if (v is String) "'${v.escapedQuotes()}'" else it.value}"
                         }
                     }}]"

@@ -1,11 +1,9 @@
 package conditions.equality
 
-import attributes.StringAttribute
-import conditions.Condition
+import api.ResultValue
 
-class StringEquality(val attribute: StringAttribute, val value: String): Condition{
-    override fun toString() = "$${attribute.getString()} = '${value.escapedQuotes()}'"
-
+class StringEquality(val attribute: StringResult, val literal: String): ResultValue.BooleanResult(){
+    override fun toString() = "$$attribute = '${literal.escapedQuotes()}'"
 }
 fun String.escapedQuotes() = this
     .replace("\\", "\\\\")

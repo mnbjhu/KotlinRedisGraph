@@ -18,12 +18,13 @@ class RedisGraph(val name: String, host: String, port: Int = 6379) {
     }
     fun <T>query(action: QueryScope<T>.() -> List<T>): List<T> {
         val scope = QueryScope<T>(this)
-        return scope.action()
+        scope.action()
+        return scope.evaluate()
     }
     fun <T: RedisNode, U: KClass<out T>>create(clazz: U, createScope: T.() -> Unit){
         val instance = clazz.constructors.first().call("")
         instance.createScope()
-        if(instance.attributes.any { it.value == null }) throw Exception("All values must be set on creation")
+        if(instance.attributes.any { (it as ResultValue<*>).value == null }) throw Exception("All values must be set on creation")
         val queryString =  "CREATE ${instance.createString()}"
         client.graphQuery(name, queryString.also { println("GRAPH.QUERY $name \"$it\"") })
     }
@@ -45,7 +46,7 @@ class RedisGraph(val name: String, host: String, port: Int = 6379) {
                             prefix = "[",
                             postfix = "]"
                         ){ "'${it.escapedQuotes()}'" }
-                        else -> attribute.value!!.toString()
+                        else -> (attribute as ResultValue<*>).value!!.toString()
                     }
                 }"
             }

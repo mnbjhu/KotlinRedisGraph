@@ -1,11 +1,10 @@
 package conditions.logic
 
-import attributes.BooleanAttribute
-import conditions.Condition
+import api.ResultValue
 
-class And(private val first: Condition, private val second: Condition): Condition {
+class And(private val first: ResultValue.BooleanResult, private val second: ResultValue.BooleanResult): ResultValue.BooleanResult() {
     override fun toString(): String{
-        fun Condition.wrap() = if(this is And || this is BooleanAttribute) toString() else "(${toString()})"
+        fun BooleanResult.wrap() = if(this is And /*|| this is BooleanAttribute*/) toString() else "(${toString()})"
         return "${first.wrap()} AND ${second.wrap()}"
     }
 }

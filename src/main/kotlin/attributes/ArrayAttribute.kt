@@ -4,20 +4,26 @@ import api.Attribute
 import api.ResultValue
 import api.WithAttributes
 
-sealed class ArrayAttribute<T>(parent: WithAttributes) : Attribute<List<T>>(parent)
-class LongArrayAttribute(override val name: String, parent: WithAttributes):
-    ArrayAttribute<Long>(parent), ResultValue.LongArrayResult {
-    override var value: List<Long>? = null
-    }
-class StringArrayAttribute(override val name: String, parent: WithAttributes):
-    ArrayAttribute<String>(parent), ResultValue.StringArrayResult {
-    override var value: List<String>? = null
+class LongArrayAttribute(override val name: String, override val parent: WithAttributes):
+    ResultValue.LongArrayResult(), Attribute<List<Long>> {
+    init { parent.attributes.add(this) }
+
+    override fun toString(): String = getAttributeText()
+}class StringArrayAttribute(override val name: String, override val parent: WithAttributes):
+    ResultValue.StringArrayResult(), Attribute<List<String>> {
+    init { parent.attributes.add(this) }
+
+    override fun toString(): String = getAttributeText()
+}class DoubleArrayAttribute(override val name: String, override val parent: WithAttributes):
+    ResultValue.DoubleArrayResult(), Attribute<List<Double>> {
+    init { parent.attributes.add(this) }
+
+    override fun toString(): String = getAttributeText()
+}class BooleanArrayAttribute(override val name: String, override val parent: WithAttributes):
+    ResultValue.BooleanArrayResult(), Attribute<List<Boolean>> {
+    init { parent.attributes.add(this) }
+
+    override fun toString(): String = getAttributeText()
 }
-class DoubleArrayAttribute(override val name: String, parent: WithAttributes):
-    ArrayAttribute<Double>(parent), ResultValue.DoubleArrayResult{
-    override var value: List<Double>? = null
-}
-class BooleanArrayAttribute(override val name: String, parent: WithAttributes):
-    ArrayAttribute<Boolean>(parent), ResultValue.BooleanArrayResult{
-    override var value: List<Boolean>? = null
-}
+
+
