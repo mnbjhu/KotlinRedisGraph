@@ -7,7 +7,7 @@ import attributes.RelationAttribute
 import conditions.equality.escapedQuotes
 import kotlin.reflect.KClass
 
-class CreatePathScope: PathBuilderScope() {
+class CreatePathScope(val parent: QueryScope<*>): PathBuilderScope() {
     inline operator fun <reified T: RedisNode, reified U: RedisNode, reified V, W>
             W.invoke(name: String, noinline attributeBuilder: V.() -> Unit = {}):
             RedisNodeRelationPair<T, U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V> {
@@ -50,5 +50,15 @@ class CreatePathScope: PathBuilderScope() {
                 }
             }.drop(1)
         }
+    }
+    fun <T>result(vararg results: ResultValue<T>): List<List<T>>{
+        parent.returnValues.addAll(results)
+        (parent as QueryScope<List<T>>).transform = { results.map { it() } }
+        return listOf()
+    }
+    fun <T>result(result: ResultValue<T>): List<T>{
+        parent.returnValues.add(result)
+        (parent as QueryScope<T>).transform = { result() }
+        return listOf()
     }
 }

@@ -7,10 +7,10 @@ import conditions.True
 
 class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
     private var where: ResultValue.BooleanResult = True
-    private val returnValues = mutableListOf<ResultValue<*>>()
-    private val createPathScope = CreatePathScope()
+    val returnValues = mutableListOf<ResultValue<*>>()
+    private val createPathScope = CreatePathScope(this)
     private val toDelete = mutableListOf<WithAttributes>()
-    private var transform: (() -> R)? = null
+    var transform: (() -> R)? = null
     private var orderBy: ResultValue<*>? = null
     inline operator fun <reified T: RedisNode, reified U: RedisNode, reified V, W>W.invoke(name: String):
             Pair<U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V>{
@@ -91,7 +91,16 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         }
         return r.toList()
     }
-
+    fun <T>result(result: ResultValue<T>): List<T>{
+        returnValues.add(result)
+        transform = { result() as R }
+        return listOf()
+    }
+    fun <T, U: ResultValue<out T>>result(vararg results: U): List<List<T>>{
+        returnValues.addAll(results)
+        transform = { results.map { it() } as R }
+        return listOf()
+    }
     companion object{
         @JvmStatic
         fun getPathQuery(path: List<WithAttributes>) = path.joinToString("-") {
@@ -101,5 +110,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
                 else -> throw Exception("???")
             }
         }
+
+        //fun <T> QueryScope<T>.
     }
 }
