@@ -11,7 +11,7 @@ class ListsTests {
         host = "raspberrypi.local",
     )
 
-    fun deleteAll(){
+    private fun deleteAll(){
         listGraph.query {
             val listNode = variableOf<ListNode>("listNode")
             delete(listNode)

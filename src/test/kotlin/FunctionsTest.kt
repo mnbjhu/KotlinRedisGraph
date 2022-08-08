@@ -4,19 +4,33 @@ import functions.math.Max
 import functions.math.Min
 import functions.math.Sum
 import org.amshove.kluent.`should be equal to`
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import schemas.MyNumber
 
+/**
+ * Functions test
+ *
+ * @constructor Create empty Functions test
+ */
 class FunctionsTest {
-    val numbersGraph = RedisGraph(
+    private val numbersGraph = RedisGraph(
         name = "numbers",
         host = "raspberrypi.local",
     )
+
+    /**
+     * Delete all
+     *
+     */
     fun deleteAll() = numbersGraph.query {
         val number = variableOf<MyNumber>("number")
         delete(number)
     }
+
+    /**
+     * Test averages
+     *
+     */
     @Test
     fun `Test Averages`(){
 
@@ -26,10 +40,14 @@ class FunctionsTest {
         }
         numbersGraph.query {
             val number = variableOf<MyNumber>("number")
-            val average = Average(number.num)
-            result(average) { average() }
+            result(Average(number.num))
         }.first() `should be equal to` 8.0
     }
+
+    /**
+     * Test max
+     *
+     */
     @Test
     fun `Test Max`(){
         deleteAll()
@@ -38,10 +56,14 @@ class FunctionsTest {
         }
         numbersGraph.query {
             val number = variableOf<MyNumber>("number")
-            val max = Max(number.num)
-            result(max){max()}
+            result(Max(number.num))
         }.first() `should be equal to` 13.0
     }
+
+    /**
+     * Test min
+     *
+     */
     @Test
     fun `Test Min`(){
         deleteAll()
@@ -50,10 +72,14 @@ class FunctionsTest {
         }
         numbersGraph.query {
             val number = variableOf<MyNumber>("number")
-            val min = Min(number.num)
-            result(min){min()}
+            result(Min(number.num))
         }.first() `should be equal to` 1.0
     }
+
+    /**
+     * Test sum
+     *
+     */
     @Test
     fun `Test Sum`(){
         deleteAll()
@@ -62,8 +88,7 @@ class FunctionsTest {
         }
         numbersGraph.query {
             val number = variableOf<MyNumber>("number")
-            val sum = Sum(number.num)
-            result(sum){sum()}
+            result(Sum(number.num))
         }.first() `should be equal to` 24.0
     }
 
