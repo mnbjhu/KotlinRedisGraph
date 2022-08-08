@@ -5,8 +5,10 @@ import api.ResultValue
 import api.WithAttributes
 import conditions.equality.LongEquality
 
-class LongAttribute(override val name: String, parent: WithAttributes):
-    Attribute<Long>(parent), ResultValue.LongResult
+class LongAttribute(override val name: String, override val parent: WithAttributes):
+    ResultValue.LongResult(), Attribute<Long>
 {
-    override var value: Long? = null
+    init { parent.attributes.add(this) }
+    infix fun eq(literal: Long) = LongEquality(this, literal)
+    override fun toString() = getAttributeText()
 }

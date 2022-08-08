@@ -5,8 +5,10 @@ import api.ResultValue
 import api.WithAttributes
 import conditions.equality.StringEquality
 
-class StringAttribute(override val name: String, parent: WithAttributes):
-    Attribute<String>(parent), ResultValue.StringResult
+class StringAttribute(override val name: String, override val parent: WithAttributes):
+    ResultValue.StringResult(), Attribute<String>
 {
-    override var value: String? = null
+    init { parent.attributes.add(this) }
+    infix fun eq(literal: String) = StringEquality(this, literal)
+    override fun toString() = getAttributeText()
 }

@@ -1,9 +1,10 @@
 import api.RedisGraph
-import functions.Average
-import functions.Max
-import functions.Min
-import functions.Sum
+import functions.math.Average
+import functions.math.Max
+import functions.math.Min
+import functions.math.Sum
 import org.amshove.kluent.`should be equal to`
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import schemas.MyNumber
 
@@ -15,7 +16,6 @@ class FunctionsTest {
     fun deleteAll() = numbersGraph.query {
         val number = variableOf<MyNumber>("number")
         delete(number)
-        result(number.num)
     }
     @Test
     fun `Test Averages`(){
@@ -26,7 +26,8 @@ class FunctionsTest {
         }
         numbersGraph.query {
             val number = variableOf<MyNumber>("number")
-            result(Average(number.num))
+            val average = Average(number.num)
+            result(average) { average() }
         }.first() `should be equal to` 8.0
     }
     @Test
@@ -37,7 +38,8 @@ class FunctionsTest {
         }
         numbersGraph.query {
             val number = variableOf<MyNumber>("number")
-            result(Max(number.num))
+            val max = Max(number.num)
+            result(max){max()}
         }.first() `should be equal to` 13.0
     }
     @Test
@@ -48,7 +50,8 @@ class FunctionsTest {
         }
         numbersGraph.query {
             val number = variableOf<MyNumber>("number")
-            result(Min(number.num))
+            val min = Min(number.num)
+            result(min){min()}
         }.first() `should be equal to` 1.0
     }
     @Test
@@ -59,7 +62,9 @@ class FunctionsTest {
         }
         numbersGraph.query {
             val number = variableOf<MyNumber>("number")
-            result(Sum(number.num))
+            val sum = Sum(number.num)
+            result(sum){sum()}
         }.first() `should be equal to` 24.0
     }
+
 }

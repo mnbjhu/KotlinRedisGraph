@@ -1,5 +1,4 @@
 import api.RedisGraph
-import functions.Id
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain`
 import org.junit.jupiter.api.Test
@@ -7,17 +6,25 @@ import schemas.Actor
 import schemas.Movie
 
 class MoviesTest {
+    private val moviesGraph = RedisGraph(
+        name = "movies",
+        host = "raspberrypi.local",
+    )
+    //@BeforeEach
+    fun `Delete All`(){
+        moviesGraph.query {
+            val movie = variableOf<Movie>("movie")
+            val actor = variableOf<Actor>("actor")
+            delete(movie, actor)
+        }
+    }
     @Test
     fun `Movie Examples`() {
         /**
          * First, let's delete the movies graph (if exists).
          * Note that the entire graph data is accessible using a single key.
          */
-        val moviesGraph = RedisGraph(
-            name = "movies",
-            host = "raspberrypi.local",
-        )
-        moviesGraph.client.graphDelete("movies")
+        `Delete All`()
         /**
          * Let's add three nodes that represent actors and then add a node to represent a movie.
          * Note that the graph data structure 'movies' will be automatically created for us as and the nodes are added to it.
@@ -66,9 +73,10 @@ class MoviesTest {
                 val actedIn = actor.actedIn("r") { role["Princess Leila"] } - movie
                 result(actedIn.role)
             }
+
         }
 
-        val movies = moviesGraph.query {
+        val movies = moviesGraph.query{
             val movie = variableOf<Movie>("movie")
             result(movie.title)
         }
@@ -87,6 +95,7 @@ class MoviesTest {
             val actor = variableOf<Actor>("actor")
             val (movie) = actor.actedIn("movie")
             where { movie.movieId eq 1 }
+            orderBy(actor.actorId)
             result(actor.name, movie.title)
         }
 
@@ -106,27 +115,5 @@ class MoviesTest {
         }
         removedActor.size `should be equal to` 1
         removedActor.first() `should be equal to` "Mark Hamill"
-
-        val ids = moviesGraph.query {
-            val actor = variableOf<Actor>("actor")
-            result(Id(actor))
-        }
-        println(ids)
-
-        moviesGraph.query {
-            val actor = variableOf<Actor>("actor")
-            where {
-                actor.actorId eq 1L
-            }
-            actor.actorId eq 100L
-            result(actor.actorId)
-        }
-        moviesGraph.query {
-            val actor = variableOf<Actor>("actor")
-            where {
-                actor.actorId eq 100L
-            }
-            result(actor.actorId)
-        }.first() `should be equal to` 100L
     }
 }

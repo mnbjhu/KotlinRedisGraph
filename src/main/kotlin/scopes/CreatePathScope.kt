@@ -2,8 +2,8 @@ package scopes
 
 import api.RedisNode
 import api.RedisRelation
-import attributes.DoubleAttribute
-import attributes.LongAttribute
+
+import api.ResultValue
 import attributes.RelationAttribute
 import attributes.StringAttribute
 import conditions.equality.DoubleEquality
@@ -12,7 +12,7 @@ import conditions.equality.StringEquality
 import conditions.equality.escapedQuotes
 import kotlin.reflect.KClass
 
-class CreatePathScope: PathBuilderScope() {
+class CreatePathScope(val parent: QueryScope<*>): PathBuilderScope() {
     inline operator fun <reified T: RedisNode, reified U: RedisNode, reified V, W>
             W.invoke(name: String, noinline attributeBuilder: V.() -> Unit = {}):
             RedisNodeRelationPair<T, U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V> {
@@ -21,7 +21,7 @@ class CreatePathScope: PathBuilderScope() {
         with(relation){
             attributeBuilder()
             attributes.forEach{
-                if(it.value == null) throw Exception("All attributes are require on creation")
+                if((it as ResultValue<*>).value == null) throw Exception("All attributes are require on creation")
             }
         }
         return RedisNodeRelationPair(parent, V::class, name, attributeBuilder)
@@ -47,7 +47,7 @@ class CreatePathScope: PathBuilderScope() {
                 when (node) {
                     is RedisNode -> ">(${node.instanceName})"
                     is RedisRelation<*, *> -> "[${node.instanceName}:${node.typeName} {${
-                        node.attributes.joinToString {val v = it.value
+                        node.attributes.joinToString {val v = (it as ResultValue<*>).value
                             "${it.name}:${if (v is String) "'${v.escapedQuotes()}'" else it.value}"
                         }
                     }}]"
@@ -55,6 +55,15 @@ class CreatePathScope: PathBuilderScope() {
             }.drop(1)
         }
     }
-
+    fun <T>result(vararg results: ResultValue<T>): List<List<T>>{
+        parent.returnValues.addAll(results)
+        (parent as QueryScope<List<T>>).transform = { results.map { it() } }
+        return listOf()
+    }
+    fun <T>result(result: ResultValue<T>): List<T>{
+        parent.returnValues.add(result)
+        (parent as QueryScope<T>).transform = { result() }
+        return listOf()
+    }
 
 }
