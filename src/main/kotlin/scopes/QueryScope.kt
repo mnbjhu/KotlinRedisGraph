@@ -3,6 +3,7 @@ package scopes
 import api.*
 import attributes.*
 import conditions.True
+import java.util.function.DoubleBinaryOperator
 
 
 class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
@@ -57,7 +58,10 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         val pathString = createPathScope.getPathString()
         return if(pathString == "") "" else "CREATE $pathString"
     }
-    fun create(scope: CreatePathScope.() -> List<R>): List<R> = createPathScope.scope()
+
+    fun createAndResult(scope: CreatePathScope.() -> List<R>): List<R> = createPathScope.scope()
+    fun create(scope: CreatePathScope.() -> Unit) = listOf<Unit>().also{ createPathScope.scope() }
+
     fun delete(vararg items: WithAttributes): List<Unit>{
         toDelete.addAll(items)
         return emptyList()
@@ -85,7 +89,9 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
                     is ResultValue.LongResult -> attribute.value = value as Long
                     is ResultValue.BooleanResult -> attribute.value = value as Boolean
                     is ResultValue.StringArrayResult -> attribute.value = value as List<String>
-                    else ->throw Exception("class: ${attribute::class} not found")
+                    is ResultValue.BooleanArrayResult -> attribute.value = value as List<Boolean>
+                    is ResultValue.DoubleArrayResult -> attribute.value = value as List<Double>
+                    is ResultValue.LongArrayResult -> attribute.value = value as List<Long>
                 }
             }
             r += transform!!()

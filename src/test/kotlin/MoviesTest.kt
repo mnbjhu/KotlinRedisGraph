@@ -48,31 +48,20 @@ class MoviesTest {
         moviesGraph.query {
             val actor = variableOf<Actor>("actor")
             val movie = variableOf<Movie>("movie")
-            where {
-                (actor.actorId eq 1) and (movie.movieId eq 1)
-            }
-            create {
-                val actedIn = actor.actedIn("r") { role["Luke Skywalker"] } - movie
-                result(actedIn.role)
-            }
+            where { (actor.actorId eq 1) and (movie.movieId eq 1) }
+            create { actor.actedIn("r") { role["Luke Skywalker"] } - movie }
         }
         moviesGraph.query {
             val actor = variableOf<Actor>("actor")
             val movie = variableOf<Movie>("movie")
             where { (actor.actorId eq 2) and (movie.movieId eq 1) }
-            create {
-                val actedIn = actor.actedIn("r") { role["Han Solo"] } - movie
-                result(actedIn.role)
-            }
+            create { actor.actedIn("r") { role["Han Solo"] } - movie }
         }
         moviesGraph.query {
             val actor = variableOf<Actor>("actor")
             val movie = variableOf<Movie>("movie")
             where { (actor.actorId eq 3) and (movie.movieId eq 1) }
-            create {
-                val actedIn = actor.actedIn("r") { role["Princess Leila"] } - movie
-                result(actedIn.role)
-            }
+            create{ actor.actedIn("r") { role["Princess Leila"] } - movie }
 
         }
 
