@@ -43,7 +43,6 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
             "MATCH ${getMatchString()}",
             if(where !is True) "WHERE $where " else "",
             getCreateString(),
-            getSetString(),
             getDeleteString(),
             getResultString(),
             getOrderByString()
