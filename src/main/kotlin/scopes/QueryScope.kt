@@ -12,6 +12,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
     private val toDelete = mutableListOf<WithAttributes>()
     var transform: (() -> R)? = null
     private var orderBy: ResultValue<*>? = null
+
     inline operator fun <reified T: RedisNode, reified U: RedisNode, reified V, W>W.invoke(name: String):
             Pair<U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V>{
         val obj = U::class.constructors.first().call(name)
@@ -42,6 +43,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
             "MATCH ${getMatchString()}",
             if(where !is True) "WHERE $where " else "",
             getCreateString(),
+            getSetString(),
             getDeleteString(),
             getResultString(),
             getOrderByString()

@@ -2,8 +2,13 @@ package scopes
 
 import api.RedisNode
 import api.RedisRelation
+
 import api.ResultValue
 import attributes.RelationAttribute
+import attributes.StringAttribute
+import conditions.equality.DoubleEquality
+import conditions.equality.LongEquality
+import conditions.equality.StringEquality
 import conditions.equality.escapedQuotes
 import kotlin.reflect.KClass
 
@@ -46,7 +51,6 @@ class CreatePathScope(val parent: QueryScope<*>): PathBuilderScope() {
                             "${it.name}:${if (v is String) "'${v.escapedQuotes()}'" else it.value}"
                         }
                     }}]"
-                    else -> throw Exception("Compiler bug?")
                 }
             }.drop(1)
         }
@@ -61,4 +65,5 @@ class CreatePathScope(val parent: QueryScope<*>): PathBuilderScope() {
         (parent as QueryScope<T>).transform = { result() }
         return listOf()
     }
+
 }
