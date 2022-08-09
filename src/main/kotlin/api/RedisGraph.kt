@@ -9,18 +9,53 @@ import redis.clients.jedis.providers.PooledConnectionProvider
 import scopes.QueryScope
 import kotlin.reflect.KClass
 
-class RedisGraph(val name: String, host: String, port: Int = 6379) {
+
+/**
+ * Redis graph
+ *
+ * RedisGraph is the entry point for querying a specific graph in a redis database.
+ *
+ * @property name
+ * @property host
+ * @property port
+ * @constructor Creates a connection to
+ */
+class RedisGraph(
+    val name: String,
+    private val host: String,
+    private val port: Int = 6379
+) {
     val client: UnifiedJedis
     init {
+
         val config = HostAndPort(host, port)
         val provider = PooledConnectionProvider(config)
         client = UnifiedJedis(provider)
     }
+
+    /**
+     * Query
+     *
+     * @param T
+     * @param action
+     * @receiver
+     * @return
+     */
     fun <T>query(action: QueryScope<T>.() -> List<T>): List<T> {
         val scope = QueryScope<T>(this)
         scope.action()
         return scope.evaluate()
     }
+
+    /**
+     * Create
+     *
+     * @param T
+     * @param U
+     * @param clazz
+     * @param createScope
+     * @receiver
+     */
     fun <T: RedisNode, U: KClass<out T>>create(clazz: U, createScope: T.() -> Unit){
         val instance = clazz.constructors.first().call("")
         instance.createScope()
@@ -28,6 +63,18 @@ class RedisGraph(val name: String, host: String, port: Int = 6379) {
         val queryString =  "CREATE ${instance.createString()}"
         client.graphQuery(name, queryString.also { println("GRAPH.QUERY $name \"$it\"") })
     }
+
+    /**
+     * Create
+     *
+     * @param T
+     * @param U
+     * @param V
+     * @param clazz
+     * @param values
+     * @param createScope
+     * @receiver
+     */
     fun <T: RedisNode, U: KClass<out T>,V>create(clazz: U, values: Iterable<V>, createScope: T.(V) -> Unit){
         val instance = clazz.constructors.first().call("")
         val queryString = values.joinToString{

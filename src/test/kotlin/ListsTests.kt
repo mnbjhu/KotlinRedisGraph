@@ -1,8 +1,6 @@
 import api.RedisGraph
+import conditions.array.Contains.Companion.contains
 import org.amshove.kluent.`should be equal to`
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
-import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import schemas.ListNode
 
@@ -13,7 +11,7 @@ class ListsTests {
         host = "raspberrypi.local",
     )
 
-    fun deleteAll(){
+    private fun deleteAll(){
         listGraph.query {
             val listNode = variableOf<ListNode>("listNode")
             delete(listNode)
@@ -32,9 +30,7 @@ class ListsTests {
         `Test Create`()
         val result = listGraph.query {
             val myList = variableOf<ListNode>("my_list")
-            result(myList.myList){
-                myList.myList()
-            }
+            result(myList.myList)
         }
         result.size `should be equal to` 1
         val (first, second, third) = result.first()
@@ -47,8 +43,14 @@ class ListsTests {
         deleteAll()
         val currentList = mutableListOf(1)
         listGraph.create(ListNode::class, 1..10){
-            myList[listOf("first", "second", "third")]
-            //currentList += currentList.first() +1
+            myList[currentList.map { it.toString() }]
+            currentList += currentList.last() + 1
         }
+        val lists = listGraph.query {
+            val myList = variableOf<ListNode>("my_lists")
+            where { myList.myList contains "5" }
+            result(myList.myList)
+        }
+        lists.size `should be equal to` 6
     }
 }

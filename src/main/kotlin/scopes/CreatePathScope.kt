@@ -12,7 +12,25 @@ import conditions.equality.StringEquality
 import conditions.equality.escapedQuotes
 import kotlin.reflect.KClass
 
+/**
+ * Create path scope
+ *
+ * @property parent
+ * @constructor Create empty Create path scope
+ */
 class CreatePathScope(val parent: QueryScope<*>): PathBuilderScope() {
+    /**
+     * Invoke
+     *
+     * @param T
+     * @param U
+     * @param V
+     * @param W
+     * @param name
+     * @param attributeBuilder
+     * @receiver
+     * @return
+     */
     inline operator fun <reified T: RedisNode, reified U: RedisNode, reified V, W>
             W.invoke(name: String, noinline attributeBuilder: V.() -> Unit = {}):
             RedisNodeRelationPair<T, U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V> {
@@ -26,12 +44,31 @@ class CreatePathScope(val parent: QueryScope<*>): PathBuilderScope() {
         }
         return RedisNodeRelationPair(parent, V::class, name, attributeBuilder)
     }
+
+    /**
+     * Redis node relation pair
+     *
+     * @param T
+     * @param U
+     * @param V
+     * @property redisClass
+     * @property redisRelation
+     * @property name
+     * @property action
+     * @constructor Create empty Redis node relation pair
+     */
     inner class RedisNodeRelationPair<out T: RedisNode, U: RedisNode, V: RedisRelation<T, U>>(
         private val redisClass: T,
         private val redisRelation: KClass<V>,
         private val name: String,
         private val action: V.() -> Unit = {},
     ){
+        /**
+         * Minus
+         *
+         * @param other
+         * @return
+         */
         operator fun minus(other: U): V {
             val relation = redisRelation.constructors.first().call(redisClass, other, name)
             relation.apply {
@@ -41,6 +78,12 @@ class CreatePathScope(val parent: QueryScope<*>): PathBuilderScope() {
             return relation
         }
     }
+
+    /**
+     * Get path string
+     *
+     * @return
+     */
     fun getPathString(): String{
         return paths.joinToString { path ->
             path.joinToString("-") { node ->
@@ -55,11 +98,27 @@ class CreatePathScope(val parent: QueryScope<*>): PathBuilderScope() {
             }.drop(1)
         }
     }
+
+    /**
+     * Result
+     *
+     * @param T
+     * @param results
+     * @return
+     */
     fun <T>result(vararg results: ResultValue<T>): List<List<T>>{
         parent.returnValues.addAll(results)
         (parent as QueryScope<List<T>>).transform = { results.map { it() } }
         return listOf()
     }
+
+    /**
+     * Result
+     *
+     * @param T
+     * @param result
+     * @return
+     */
     fun <T>result(result: ResultValue<T>): List<T>{
         parent.returnValues.add(result)
         (parent as QueryScope<T>).transform = { result() }
