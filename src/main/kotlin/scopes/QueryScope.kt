@@ -3,7 +3,6 @@ package scopes
 import api.*
 import attributes.*
 import conditions.True
-import java.util.function.DoubleBinaryOperator
 
 
 /**
@@ -15,10 +14,10 @@ import java.util.function.DoubleBinaryOperator
  */
 class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
     private var where: ResultValue.BooleanResult = True
-    val returnValues = mutableListOf<ResultValue<*>>()
+    internal val returnValues = mutableListOf<ResultValue<*>>()
+    internal var transform: (() -> R)? = null
     private val createPathScope = CreatePathScope(this)
     private val toDelete = mutableListOf<WithAttributes>()
-    var transform: (() -> R)? = null
     private var orderBy: ResultValue<*>? = null
 
     /**
@@ -211,6 +210,12 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         transform = { results.map { it() } as R }
         return listOf()
     }
+    fun <T>CreatePathScope.registerReturnValue(resultValue: ResultValue<T>){
+        this@QueryScope.returnValues.add(resultValue)
+    }
+    fun <T>CreatePathScope.setTransform(resultValue: ResultValue<T>){
+        this@QueryScope.returnValues.add(resultValue)
+    }
     companion object{
         @JvmStatic
         fun getPathQuery(path: List<WithAttributes>) = path.joinToString("-") {
@@ -220,7 +225,5 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
                 else -> throw Exception("???")
             }
         }
-
-        //fun <T> QueryScope<T>.
     }
 }

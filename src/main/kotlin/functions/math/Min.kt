@@ -9,6 +9,6 @@ import attributes.DoubleAttribute
  * @property attribute
  * @constructor Create empty Min
  */
-class Min(val attribute: ResultValue.DoubleResult): ResultValue.DoubleResult() {
+class Min(val attribute: DoubleResult): ResultValue.DoubleResult() {
     override fun toString() = "min($attribute)"
 }

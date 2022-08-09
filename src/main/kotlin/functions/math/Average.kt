@@ -1,7 +1,6 @@
 package functions.math
 
 import api.ResultValue
-import attributes.DoubleAttribute
 
 /**
  * Average
@@ -9,6 +8,6 @@ import attributes.DoubleAttribute
  * @property attribute
  * @constructor Create empty Average
  */
-class Average(val attribute: ResultValue.DoubleResult): ResultValue.DoubleResult() {
+class Average(val attribute: DoubleResult): ResultValue.DoubleResult() {
     override fun toString() = "avg($attribute)"
 }

@@ -9,6 +9,6 @@ import api.ResultValue
  * @property literal
  * @constructor Create empty Long equality
  */
-class LongEquality(val attribute: LongResult, private val literal: Long): ResultValue.BooleanResult(){
+class LongEquality(private val attribute: LongResult, private val literal: Long): ResultValue.BooleanResult(){
     override fun toString() = "$attribute = $literal"
 }

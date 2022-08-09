@@ -2,7 +2,7 @@ package api
 
 import attributes.StringAttribute
 import attributes.StringArrayAttribute
-import conditions.equality.escapedQuotes
+import conditions.equality.StringEquality.Companion.escapedQuotes
 import redis.clients.jedis.HostAndPort
 import redis.clients.jedis.UnifiedJedis
 import redis.clients.jedis.providers.PooledConnectionProvider

@@ -9,6 +9,6 @@ import attributes.DoubleAttribute
  * @property attribute
  * @constructor Create empty Max
  */
-class Max(val attribute: ResultValue.DoubleResult): ResultValue.DoubleResult() {
+class Max(val attribute: DoubleResult): ResultValue.DoubleResult() {
     override fun toString() = "max($attribute)"
 }

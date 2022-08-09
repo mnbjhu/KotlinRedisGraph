@@ -9,14 +9,11 @@ import api.ResultValue
  * @property literal
  * @constructor Create empty String equality
  */
-class StringEquality(val attribute: StringResult, val literal: String): ResultValue.BooleanResult(){
+class StringEquality(private val attribute: StringResult, private val literal: String): ResultValue.BooleanResult(){
     override fun toString() = "$$attribute = '${literal.escapedQuotes()}'"
+    companion object{
+        fun String.escapedQuotes() = this
+            .replace("\\", "\\\\")
+            .replace("'", "\\'")
+    }
 }
-
-/**
- * Escaped quotes
- *
- */
-fun String.escapedQuotes() = this
-    .replace("\\", "\\\\")
-    .replace("'", "\\'")

@@ -5,11 +5,7 @@ import api.RedisRelation
 
 import api.ResultValue
 import attributes.RelationAttribute
-import attributes.StringAttribute
-import conditions.equality.DoubleEquality
-import conditions.equality.LongEquality
-import conditions.equality.StringEquality
-import conditions.equality.escapedQuotes
+import conditions.equality.StringEquality.Companion.escapedQuotes
 import kotlin.reflect.KClass
 
 /**
@@ -18,7 +14,7 @@ import kotlin.reflect.KClass
  * @property parent
  * @constructor Create empty Create path scope
  */
-class CreatePathScope(val parent: QueryScope<*>): PathBuilderScope() {
+class CreatePathScope(private val parent: QueryScope<*>): PathBuilderScope() {
     /**
      * Invoke
      *
@@ -120,7 +116,9 @@ class CreatePathScope(val parent: QueryScope<*>): PathBuilderScope() {
      * @return
      */
     fun <T>result(result: ResultValue<T>): List<T>{
-        parent.returnValues.add(result)
+        with(parent){
+            registerReturnValue(result)
+        }
         (parent as QueryScope<T>).transform = { result() }
         return listOf()
     }

@@ -19,7 +19,6 @@ dependencies {
     implementation("redis.clients:jedis:4.2.3")
     implementation(kotlin("reflect"))
     testImplementation("org.amshove.kluent:kluent:1.68")
-    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.10")
     testImplementation(kotlin("test"))
 }
 
