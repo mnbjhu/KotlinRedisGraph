@@ -2,12 +2,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.7.0"
+    id("org.jetbrains.dokka") version "1.7.10"
     `java-library`
     `maven-publish`
 }
 
 group = "uk.gibby"
-version = "0.0.1"
+version = "0.2.0"
 
 
 repositories {
@@ -18,6 +19,7 @@ dependencies {
     implementation("redis.clients:jedis:4.2.3")
     implementation(kotlin("reflect"))
     testImplementation("org.amshove.kluent:kluent:1.68")
+    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.10")
     testImplementation(kotlin("test"))
 }
 
