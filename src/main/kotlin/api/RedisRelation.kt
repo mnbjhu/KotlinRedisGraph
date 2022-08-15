@@ -1,5 +1,7 @@
 package api
 
+import attributes.Attribute
+
 /**
  * Redis relation
  *
@@ -17,6 +19,19 @@ abstract class RedisRelation<out T: RedisNode, out U: RedisNode>(
 ): WithAttributes() {
     override val attributes: MutableList<Attribute<*>> = mutableListOf()
     abstract override val instanceName: String
+    override fun toString(): String {
+        val attrs = attributes.mapNotNull {
+            if(it is ResultValue<*>){
+                when(it.value){
+                    null -> null
+                    is String -> "${it.name}: '${it.value}'"
+                    else -> "${it.name}: ${it.value}"
+                }
+            }
+            else throw Exception("Uh oh")
+        }.joinToString()
+        return "[$instanceName:$typeName{$attrs}]"
+    }
 }
 
 
