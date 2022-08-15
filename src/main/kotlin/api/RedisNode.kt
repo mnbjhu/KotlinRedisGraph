@@ -24,7 +24,7 @@ abstract class RedisNode(override val typeName: String): WithAttributes(), Match
     inline fun <reified T: RedisNode, reified U: RedisNode, reified V>T.relates(clazz: KClass<out V>) where V: RedisRelation<T, U> =
         RelationAttribute(clazz, this)
 
-    override fun toString(): String {
+    override fun getMatchString(): String {
         val attrs = attributes.mapNotNull {
             if(it is ResultValue<*>){
                 when(it.value){

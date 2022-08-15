@@ -48,7 +48,7 @@ class ListsTests {
         }
         val lists = listGraph.query {
             val myList = nodeOf<ListNode>("my_lists")
-            where { myList.myList contains "5" }
+            where ( myList.myList contains "5" )
             result(myList.myList)
         }
         lists.size `should be equal to` 6

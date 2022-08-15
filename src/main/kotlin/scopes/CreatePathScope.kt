@@ -90,6 +90,7 @@ class CreatePathScope(private val parent: QueryScope<*>): PathBuilderScope() {
                             "${it.name}:${if (v is String) "'${v.escapedQuotes()}'" else it.value}"
                         }
                     }}]"
+                    else -> throw Exception("Compiler bug??")
                 }
             }.drop(1)
         }

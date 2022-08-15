@@ -13,12 +13,14 @@ import conditions.True
  * @constructor Create empty Query scope
  */
 class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
-    private var where: ResultValue.BooleanResult = True
-    internal val returnValues = mutableListOf<ResultValue<*>>()
-    internal var transform: (() -> R)? = null
-    private val createPathScope = CreatePathScope(this)
-    private val toDelete = mutableListOf<WithAttributes>()
-    private var orderBy: ResultValue<*>? = null
+    var match: MutableList<Matchable> = mutableListOf()
+    var where: ResultValue.BooleanResult = True
+    var returnValues: MutableList<ResultValue<*>> = mutableListOf()
+    var transform: (() -> R)? = null
+    var orderBy: ResultValue<*>? = null
+    var create: MutableList<Creatable> = mutableListOf()
+    var toDelete: MutableList<WithAttributes> = mutableListOf()
+
 
     /**
      * Invoke
@@ -30,35 +32,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
      * @param name
      * @return
      */
-    inline operator fun <reified T: RedisNode, reified U: RedisNode, reified V, W>W.invoke(name: String):
-            Pair<U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V>{
-        val obj = U::class.constructors.first().call(name)
-        val relation = V::class.constructors.first().call(parent, obj, "${name}Relation")
-        addToPaths(parent, obj, relation)
-        return obj to relation
-    }
 
-    /**
-     * Invoke
-     *
-     * @param T
-     * @param U
-     * @param V
-     * @param W
-     * @param name
-     * @param attributeBuilder
-     * @receiver
-     * @return
-     */
-    inline operator fun <reified T: RedisNode, reified U: RedisNode, reified V, W>
-            W.invoke(name: String, attributeBuilder: V.() -> Unit):
-            Pair<U, V> where V: RedisRelation<T, U>, W: RelationAttribute<T, U, V>{
-        val obj = U::class.constructors.first().call(name)
-        val relation = V::class.constructors.first().call(parent, obj, "${name}Relation")
-        relation.attributeBuilder()
-        addToPaths(parent, obj, relation)
-        return obj to relation
-    }
 
     /**
      * Add to paths
@@ -78,32 +52,32 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
     }
     override fun toString(): String{
         val commands = listOf(
-            "MATCH ${getMatchString()}",
+            "MATCH ${match.joinToString()}",
             if(where !is True) "WHERE $where " else "",
-            getCreateString(),
+            if(create.isEmpty()) "" else "CREATE ${create.joinToString()}",
             getDeleteString(),
             getResultString(),
             getOrderByString()
-        ).filter { it != "" }
+        ).mapNotNull { it }.filter { it != "" }
 
         return commands.joinToString(" ").also { println("GRAPH.QUERY ${graph.name} \"$it\"") }
     }
     private fun getResultString() = if(returnValues.isEmpty()) "" else "RETURN ${returnValues.joinToString()}"
     private fun getDeleteString() = if(toDelete.isEmpty()) "" else "DELETE ${toDelete.joinToString { it.instanceName }}"
     private fun getOrderByString() = if(orderBy == null) "" else "ORDER BY $orderBy"
-    private fun getCreateString(): String{
-        val pathString = createPathScope.getPathString()
-        return if(pathString == "") "" else "CREATE $pathString"
-    }
 
-    /**
-     * Create and result
-     *
-     * @param scope
-     * @receiver
-     * @return
-     */
-    fun createAndResult(scope: CreatePathScope.() -> List<R>): List<R> = createPathScope.scope()
+    fun <A: RedisNode>match(node: A) = node.also { match.add(it) }
+    fun <A: RedisNode, B: RedisNode>match(node1: A, node2: B): Pair<A, B>{
+        match.add(node1)
+        match.add(node2)
+        return node1 to node2
+    }
+    fun match(path: Path) = path.also{ match.add(it) }
+
+
+
+
+
 
     /**
      * Create
@@ -111,7 +85,8 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
      * @param scope
      * @receiver
      */
-    fun create(scope: CreatePathScope.() -> Unit) = listOf<Unit>().also{ createPathScope.scope() }
+
+    fun create(vararg paths: Creatable): List<Unit> = listOf<Unit>().also{ create.addAll(paths) }
 
     /**
      * Delete
@@ -130,8 +105,8 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
      * @param whereScope
      * @receiver
      */
-    fun where(whereScope: () -> ResultValue.BooleanResult){
-        where = whereScope()
+    fun where(predicate: ResultValue.BooleanResult){
+        where = predicate
     }
 
     /**

@@ -20,7 +20,7 @@ abstract class PathBuilderScope {
      */
     inline fun<reified T: RedisNode>nodeOf(name: String): T{
         val obj = T::class.constructors.first().call(name)
-        `access$paths`.add(listOf(obj))
+        //`access$paths`.add(listOf(obj))
         return obj
     }
 

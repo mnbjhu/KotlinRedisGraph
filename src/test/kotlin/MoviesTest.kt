@@ -49,8 +49,9 @@ class MoviesTest {
         moviesGraph.query {
             val actor = nodeOf<Actor>("actor")
             val movie = nodeOf<Movie>("movie")
-            where { (actor.actorId eq 1) and (movie.movieId eq 1) }
-            create { actor.actedIn("r") { role["Luke Skywalker"] } - movie }
+            where ( (actor.actorId eq 1) and (movie.movieId eq 1) )
+            val path = actor - {actedIn} - movie
+            create(actor - { actedIn{  } } - movie)
         }
         moviesGraph.query {
             val actor = nodeOf<Actor>("actor")
@@ -61,10 +62,14 @@ class MoviesTest {
         moviesGraph.query {
             val actor = nodeOf<Actor>("actor")
             val movie = nodeOf<Movie>("movie")
-            where { (actor.actorId eq 3) and (movie.movieId eq 1) }
-            create{ actor.actedIn("r") { role["Princess Leila"] } - movie }
+            where ( (actor.actorId eq 3) and (movie.movieId eq 1) )
+            create( actor - { actedIn } - movie )
         }
-
+        moviesGraph.query {
+            val (actor, movie) = match(Actor("actor"), Movie("movie"))
+            where ( (actor.actorId eq 1) and (movie.movieId eq 1) )
+            create( actor - { actedIn{} } - movie )
+        }
         val movies = moviesGraph.query{
             val movie = nodeOf<Movie>("movie")
             result(movie.title)
@@ -83,7 +88,7 @@ class MoviesTest {
         val actedInMovies = moviesGraph.query {
             val actor = nodeOf<Actor>("actor")
             val (movie) = actor.actedIn("movie")
-            where { movie.movieId eq 1 }
+            where ( movie.movieId eq 1 )
             orderBy(actor.actorId)
             result(actor.name, movie.title)
         }
@@ -98,7 +103,7 @@ class MoviesTest {
         val removedActor = moviesGraph.query {
             val actor = nodeOf<Actor>("actor")
             val (_, relationship) = actor.actedIn("movie")
-            where { actor.actorId eq 1 }
+            where ( actor.actorId eq 1 )
             delete(relationship)
             result(actor.name)
         }
@@ -107,7 +112,8 @@ class MoviesTest {
         moviesGraph.query {
             val actor = nodeOf<Actor>("actor")
             val movie = nodeOf<Movie>("movie")
-            actor - { actedIn } - movie
+            match(actor, movie)
+            create(actor - { actedIn } - movie)
             result(actor.name)
         }
     }
