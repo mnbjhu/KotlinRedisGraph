@@ -4,22 +4,29 @@ import attributes.RelationAttribute
 import conditions.True
 import kotlin.reflect.KClass
 
-operator fun <T: RedisNode, U: RedisNode, V: RedisRelation<T, U>, W: RelationAttribute<T, U, V>>T.minus(scope: T.() -> W) =
-    OpenPath1(this, scope().relation)
+object RelationCounter{
+    private var count = 1
+    fun getNext() = "relation${count++}"
+}
+operator fun <A: RedisNode, C: RedisNode, B: RedisRelation<A, C>, W: RelationAttribute<A, C, B>>A.minus(scope: A.() -> W): OpenPath1<A, out B, C> {
+    val attribute = scope()
+    return OpenPath1(this, attribute.relation, attribute.setArgs)
+
+}
 class OpenPath1<A: RedisNode, B: RedisRelation<A, C>, C: RedisNode,>
-    (val first: A, val firstToSecond: KClass<B>){
-        operator fun minus(node: C) = Path2(first, firstToSecond.constructors.first().call(first, node), node)
+    (val first: A, val firstToSecond: KClass<B>, val setArgs: B.() -> Unit){
+        operator fun minus(node: C) = Path2(first, firstToSecond.constructors.first().call(first, node, RelationCounter.getNext()).apply(setArgs), node)
     }
 class Path2<A: RedisNode, B: RedisRelation<A, C>, C: RedisNode>
     (val first: A, val firstToSecond: B, val second: C): Path {
     operator fun <E : RedisNode, D : RedisRelation<C, E>, W : RelationAttribute<C, E, D>> minus(scope: C.() -> W) =
         OpenPath2(first, firstToSecond, second, second.scope().relation)
-    operator fun <X: RedisNode, Y: RedisRelation<X, Z>, Z: RedisNode>C.invoke(scope: Y.() -> Unit): C{
-        TODO()
-    }
+    operator fun component1() = first
+    operator fun component2() =firstToSecond
+    operator fun component3() = second
     override fun getMatchString(): String = "$first-$firstToSecond->$second"
     override fun getCreateString(): String = "(${first.instanceName})-$firstToSecond->(${first.instanceName})"
-
+    override fun toString() = getMatchString()
 }
 
 class Path3<A : RedisNode, B : RedisRelation<A, C>, C : RedisNode, D : RedisRelation<C, E>, E : RedisNode>

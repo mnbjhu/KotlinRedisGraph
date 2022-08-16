@@ -54,7 +54,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         val commands = listOf(
             "MATCH ${match.joinToString()}",
             if(where !is True) "WHERE $where " else "",
-            if(create.isEmpty()) "" else "CREATE ${create.joinToString()}",
+            if(create.isEmpty()) "" else "CREATE ${create.joinToString{ it.getCreateString() }}",
             getDeleteString(),
             getResultString(),
             getOrderByString()
@@ -72,7 +72,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         match.add(node2)
         return node1 to node2
     }
-    fun match(path: Path) = path.also{ match.add(it) }
+    fun <T:Path>match(path: T) = path.also{ match.add(it) }
 
 
 

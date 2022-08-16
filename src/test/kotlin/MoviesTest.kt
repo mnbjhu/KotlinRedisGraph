@@ -9,13 +9,12 @@ import schemas.Movie
 class MoviesTest {
     private val moviesGraph = RedisGraph(
         name = "movies",
-        host = "raspberrypi.local",
+        host = "localhost",
     )
     //@BeforeEach
     private fun deleteAll(){
         moviesGraph.query {
-            val movie = nodeOf<Movie>("movie")
-            val actor = nodeOf<Actor>("actor")
+            val (movie, actor) = match(Movie("movie"), Actor("actor"))
             delete(movie, actor)
         }
     }
@@ -47,21 +46,17 @@ class MoviesTest {
         }
 
         moviesGraph.query {
-            val actor = nodeOf<Actor>("actor")
-            val movie = nodeOf<Movie>("movie")
+            val (actor, movie) = match(Actor("actor"), Movie("movie"))
             where ( (actor.actorId eq 1) and (movie.movieId eq 1) )
-            val path = actor - {actedIn} - movie
-            create(actor - { actedIn{  } } - movie)
+            create(actor - { actedIn { role["Luke Skywalker"] } } - movie)
         }
         moviesGraph.query {
-            val actor = nodeOf<Actor>("actor")
-            val movie = nodeOf<Movie>("movie")
-            where { (actor.actorId eq 2) and (movie.movieId eq 1) }
-            create { actor.actedIn("r") { role["Han Solo"] } - movie }
+            val (actor, movie) = match(Actor("actor"), Movie("movie"))
+            where ( (actor.actorId eq 2) and (movie.movieId eq 1) )
+            create(actor - { actedIn{role["Han Solo"]} } - movie)
         }
         moviesGraph.query {
-            val actor = nodeOf<Actor>("actor")
-            val movie = nodeOf<Movie>("movie")
+            val (actor, movie) = match(Actor("actor"), Movie("movie"))
             where ( (actor.actorId eq 3) and (movie.movieId eq 1) )
             create( actor - { actedIn } - movie )
         }
@@ -71,13 +66,13 @@ class MoviesTest {
             create( actor - { actedIn{} } - movie )
         }
         val movies = moviesGraph.query{
-            val movie = nodeOf<Movie>("movie")
+            val movie = match( Movie("movie"))
             result(movie.title)
         }
         movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
 
         val (title, releaseYear, id) = moviesGraph.query {
-            val movie = nodeOf<Movie>("movie")
+            val movie = match( Movie("movie"))
             result(movie.title, movie.releaseYear, movie.movieId)
         }.first()
 
@@ -86,8 +81,7 @@ class MoviesTest {
         id as Long `should be equal to` 1
 
         val actedInMovies = moviesGraph.query {
-            val actor = nodeOf<Actor>("actor")
-            val (movie) = actor.actedIn("movie")
+            val (actor, _, movie) = match(Actor("actor") - { actedIn }  - Movie("movie"))
             where ( movie.movieId eq 1 )
             orderBy(actor.actorId)
             result(actor.name, movie.title)
@@ -101,20 +95,13 @@ class MoviesTest {
         movieName `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
 
         val removedActor = moviesGraph.query {
-            val actor = nodeOf<Actor>("actor")
-            val (_, relationship) = actor.actedIn("movie")
+            val (actor, relationship) = Actor("actor") - { actedIn }  - Movie("movie")
             where ( actor.actorId eq 1 )
             delete(relationship)
             result(actor.name)
         }
         removedActor.size `should be equal to` 1
         removedActor.first() `should be equal to` "Mark Hamill"
-        moviesGraph.query {
-            val actor = nodeOf<Actor>("actor")
-            val movie = nodeOf<Movie>("movie")
-            match(actor, movie)
-            create(actor - { actedIn } - movie)
-            result(actor.name)
-        }
+
     }
 }
