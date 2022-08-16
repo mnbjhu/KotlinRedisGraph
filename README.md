@@ -55,21 +55,20 @@ Node types and their relationships are defined by a schema. To create a node typ
 * Sets the **typeName** in the **RedisClass** constructor
 
 ```kotlin
-import api.RedisClass
+import api.RedisNode
 import api.RedisRelation
 
-class Actor(override val instanceName: String) : RedisClass("Actor"){
+class Actor: RedisNode("Actor"){
     val name = string("name")
-    val actorId = int("actor_id")
+    val actorId = long("actor_id")
     val actedIn = relates(ActedIn::class)
 }
-class Movie(override val instanceName: String) : RedisClass("Movie"){
+class Movie: RedisNode("Movie"){
     val title = string("title")
-    val releaseYear = int("release_year")
-    val movieId = int("movie_id")
+    val releaseYear = long("release_year")
+    val movieId = long("movie_id")
 }
-class ActedIn(from: Actor, to: Movie, override val instanceName: String):
-    RedisRelation<Actor, Movie>(from, to, "ACTED_IN"){
+class ActedIn: RedisRelation<Actor, Movie>("ACTED_IN"){
     val role = string("role")
 }
 ```
@@ -122,8 +121,7 @@ Currently all other functionality is performed with the **query** function which
 ```kotlin
 moviesGraph.query {
 
-    // Create references to varaibles and paths
-    
+    create ( /* Create path or nodes */ )
     //Optional
     where {
         // Filter queries
@@ -133,9 +131,7 @@ moviesGraph.query {
     delete( /* vararg of nodes/relationships */ )
     
     // Optional
-    create {
-        // Create relationships between nodes
-    }
+    create ( /* Create path */ )
     
     // Required (Can be placed in the create block)
     result( /* vararg of attribute */ ){
@@ -148,38 +144,47 @@ moviesGraph.query {
 References to nodes can be created using the **variableOf** function. These refences can be used to filter the data in the where block and relationships between matching nodes can then be made using the create block.
 ```kotlin
 moviesGraph.query {
-    val actor = variableOf<Actor>("actor")
-    val movie = variableOf<Movie>("movie")
-    where { (actor.actorId eq 1) and (movie.movieId eq 1) }
-    create {
-        val actedIn = actor.actedIn("r") { role["Luke Skywalker"] } - movie
-        result(actedIn.role)
-    }
+    val (actor, movie) = match(Actor(), Movie())
+    where ( (actor.actorId eq 1) and (movie.movieId eq 1) )
+    create(actor - { actedIn { role["Luke Skywalker"] } } - movie)
+}
+moviesGraph.query {
+    val (actor, movie) = match(Actor(), Movie())
+    where ( (actor.actorId eq 2) and (movie.movieId eq 1) )
+    create(actor - { actedIn{role["Han Solo"]} } - movie)
+}
+moviesGraph.query {
+    val (actor, movie) = match(Actor(), Movie())
+    where ( (actor.actorId eq 3) and (movie.movieId eq 1) )
+    create( actor - { actedIn{role["Princess Leia"]} } - movie )
 }
 ```
 ##### Generated Cypher
 ```cypher
-MATCH (actor:Actor), (movie:Movie) WHERE (actor.actor_id = 1) AND (movie.movie_id = 1)  CREATE (actor)-[r:ACTED_IN {role:'Luke Skywalker'}]->(movie) RETURN r.role
+MATCH (actor:Actor), (movie:Movie)
+WHERE (actor.actor_id = 1) AND (movie.movie_id = 1)
+CREATE (actor)-[r:ACTED_IN {role:'Luke Skywalker'}]->(movie)
 ```
 ### Make Queries
 In this example we search for all movies and return the movie 'title'.
 ```kotlin
-val movies = moviesGraph.query {
-    val movie = variableOf<Movie>("movie")
+val movies = moviesGraph.query{
+    val movie = match(Movie())
     result(movie.title)
 }
 movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
 ```
 ##### Generated Cypher
 ```cypher
-MATCH (movie:Movie) RETURN movie.title
+MATCH (movie:Movie)
+RETURN movie.title
 ```
 The same however we also return the 'releaseYear' and the 'movieId'. We can also map our return type to a data class to preserve the types.
 ```kotlin
 data class MovieData(val title: String, val releaseYear: Long, val movieId: Long)
 
 val (title, releaseYear, id) = moviesGraph.query {
-    val movie = variableOf<Movie>("movie")
+    val movie = match( Movie())
     result(movie.title, movie.releaseYear, movie.movieId){
         MovieData(
           movie.title(),
@@ -189,51 +194,58 @@ val (title, releaseYear, id) = moviesGraph.query {
     }
 }.first()
 
-title `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
-releaseYear `should be equal to` 1980
-id `should be equal to` 1
+title as String `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
+releaseYear as Long `should be equal to` 1980
+id as Long `should be equal to` 1
+
+
 ```
 ##### Generated Cypher
 ```cypher
-MATCH (movie:Movie) RETURN movie.title, movie.release_year, movie.movie_id
+MATCH (movie:Movie)
+RETURN movie.title, movie.release_year, movie.movie_id
 ```
 Here we:
 * Search for an actor and a movie where the actor acted in the movie.
 * Filter by movieId = 1
 * And return the actor name and movie title
 ```kotlin
-val actedIn = moviesGraph.query {
-    val actor = variableOf<Actor>("actor")
-    val (movie) = actor.actedIn("movie")
-    where { movie.movieId eq 1 }
+val actedInMovies = moviesGraph.query {
+    val (actor, _, movie) = match(Actor() - { actedIn }  - Movie())
+    where ( movie.movieId eq 1 )
+    orderBy(actor.actorId)
     result(actor.name, movie.title)
 }
 
-actedIn.size `should be equal to` 3
+actedInMovies.size `should be equal to` 3
 
-val (actorName, movieName) = actedIn.last()
+val (actorName, movieName) = actedInMovies.last()
 
 actorName `should be equal to` "Carrie Fisher"
 movieName `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
 ```
 ##### Generated Cypher
 ```cypher
-MATCH (actor:Actor)-[movieRelation:ACTED_IN]-(movie:Movie) WHERE movie.movie_id = 1  RETURN actor.name, movie.title
+MATCH (actor:Actor)-[movieRelation:ACTED_IN]-(movie:Movie)
+WHERE movie.movie_id = 1
+RETURN actor.name, movie.title
+ORDER BY actor.actor_id
 ```
 ### Delete Nodes And Relationships
 Any nodes or relationships referenced in the Query block can be deleted calling them in the (vararg) delete function:
 ```kotlin
-val removedRoles = moviesGraph.query {
-    val actor = variableOf<Actor>("actor")
-    val (_, relationship) = actor.actedIn("movie")
-    where { actor.actorId eq 1 }
+val removedActor = moviesGraph.query {
+    val (actor, relationship) = match(Actor() - { actedIn }  - Movie())
+    where ( actor.actorId eq 1 )
     delete(relationship)
-    result(relationship.role)
+    result(actor.name)
 }
-removedRoles.size `should be equal to` 1
-removedRoles.first() `should be equal to` "Luke Skywalker"
+removedActor.size `should be equal to` 1
+removedActor.first() `should be equal to` "Mark Hamill"
 ```
 ##### Generated Cypher
 ```cypher
-MATCH (actor:Actor)-[movieRelation:ACTED_IN]-(movie:Movie) WHERE actor.actor_id = 1  RETURN movieRelation.role
+MATCH (actor:Actor)-[movieRelation:ACTED_IN]-(movie:Movie)
+WHERE actor.actor_id = 1
+RETURN movieRelation.role
 ```
