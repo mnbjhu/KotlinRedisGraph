@@ -53,7 +53,7 @@ class CreatePathScope(private val parent: QueryScope<*>): PathBuilderScope() {
      * @property action
      * @constructor Create empty Redis node relation pair
      */
-    inner class RedisNodeRelationPair<out T: RedisNode, U: RedisNode, V: RedisRelation<T, U>>(
+    inner class RedisNodeRelationPair<T: RedisNode, U: RedisNode, V: RedisRelation<T, U>>(
         val node: T,
         private val relation: KClass<V>,
         private val name: String,

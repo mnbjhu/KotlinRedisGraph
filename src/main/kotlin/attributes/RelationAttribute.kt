@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
  * @property parent
  * @constructor Create empty Relation attribute
  */
-class RelationAttribute<out T: RedisNode, out U: RedisNode, V: RedisRelation<T, U>>(val relation: KClass<out V>, val parent: T){
+class RelationAttribute<T: RedisNode, U: RedisNode, V: RedisRelation<T, U>>(val relation: KClass<out V>, val parent: T){
     var setArgs: V.() -> Unit = {}
     operator fun invoke(scope: V.() -> Unit) = this.also { setArgs = scope }
 }

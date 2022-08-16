@@ -1,8 +1,8 @@
 import api.RedisGraph
-import api.minus
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain`
 import org.junit.jupiter.api.Test
+import paths.minus
 import schemas.Actor
 import schemas.Movie
 
@@ -14,7 +14,7 @@ class MoviesTest {
     //@BeforeEach
     private fun deleteAll(){
         moviesGraph.query {
-            val (movie, actor) = match(Movie("movie"), Actor("actor"))
+            val (movie, actor) = match(Movie(), Actor())
             delete(movie, actor)
         }
     }
@@ -46,28 +46,28 @@ class MoviesTest {
         }
 
         moviesGraph.query {
-            val (actor, movie) = match(Actor("actor"), Movie("movie"))
+            val (actor, movie) = match(Actor(), Movie())
             where ( (actor.actorId eq 1) and (movie.movieId eq 1) )
             create(actor - { actedIn { role["Luke Skywalker"] } } - movie)
         }
         moviesGraph.query {
-            val (actor, movie) = match(Actor("actor"), Movie("movie"))
+            val (actor, movie) = match(Actor(), Movie())
             where ( (actor.actorId eq 2) and (movie.movieId eq 1) )
             create(actor - { actedIn{role["Han Solo"]} } - movie)
         }
         moviesGraph.query {
-            val (actor, movie) = match(Actor("actor"), Movie("movie"))
+            val (actor, movie) = match(Actor(), Movie())
             where ( (actor.actorId eq 3) and (movie.movieId eq 1) )
             create( actor - { actedIn{role["Princess Leia"]} } - movie )
         }
         val movies = moviesGraph.query{
-            val movie = match( Movie("movie"))
+            val movie = match( Movie())
             result(movie.title)
         }
         movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
 
         val (title, releaseYear, id) = moviesGraph.query {
-            val movie = match( Movie("movie"))
+            val movie = match( Movie())
             result(movie.title, movie.releaseYear, movie.movieId)
         }.first()
 
@@ -76,7 +76,7 @@ class MoviesTest {
         id as Long `should be equal to` 1
 
         val actedInMovies = moviesGraph.query {
-            val (actor, _, movie) = match(Actor("actor") - { actedIn }  - Movie("movie"))
+            val (actor, _, movie) = match(Actor() - { actedIn }  - Movie())
             where ( movie.movieId eq 1 )
             orderBy(actor.actorId)
             result(actor.name, movie.title)
@@ -90,7 +90,7 @@ class MoviesTest {
         movieName `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
 
         val removedActor = moviesGraph.query {
-            val (actor, relationship) = match(Actor("actor") - { actedIn }  - Movie("movie"))
+            val (actor, relationship) = match(Actor() - { actedIn }  - Movie())
             where ( actor.actorId eq 1 )
             delete(relationship)
             result(actor.name)

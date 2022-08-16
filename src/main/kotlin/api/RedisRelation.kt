@@ -12,13 +12,12 @@ import attributes.Attribute
  * @property typeName
  * @constructor Create empty Redis relation
  */
-abstract class RedisRelation<out T: RedisNode, out U: RedisNode>(
-    val from: T,
-    val to: U,
+abstract class RedisRelation<T: RedisNode, U: RedisNode>(
     override val typeName: String
 ): WithAttributes() {
+    lateinit var from: T
+    lateinit var to: U
     override val attributes: MutableList<Attribute<*>> = mutableListOf()
-    abstract override val instanceName: String
     override fun toString(): String {
         val attrs = attributes.mapNotNull {
             if(it is ResultValue<*>){
@@ -32,6 +31,7 @@ abstract class RedisRelation<out T: RedisNode, out U: RedisNode>(
         }.joinToString()
         return "[$instanceName:$typeName{$attrs}]"
     }
+
 }
 
 

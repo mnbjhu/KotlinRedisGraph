@@ -3,6 +3,7 @@ package scopes
 import api.*
 import attributes.*
 import conditions.True
+import paths.Path
 
 
 /**
@@ -72,7 +73,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         match.add(node2)
         return node1 to node2
     }
-    fun <T:Path>match(path: T) = path.also{ match.add(it) }
+    fun <T: Path>match(path: T) = path.also{ match.add(it) }
 
 
 

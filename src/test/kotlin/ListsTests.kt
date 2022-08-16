@@ -13,7 +13,7 @@ class ListsTests {
 
     private fun deleteAll(){
         listGraph.query {
-            val myList = match(ListNode("my_list"))
+            val myList = match(ListNode())
             delete(myList)
         }
     }
@@ -29,7 +29,7 @@ class ListsTests {
         deleteAll()
         `Test Create`()
         val result = listGraph.query {
-            val myList = match(ListNode("my_list"))
+            val myList = match(ListNode())
             result(myList.myList)
         }
         result.size `should be equal to` 1
@@ -47,7 +47,7 @@ class ListsTests {
             currentList += currentList.last() + 1
         }
         val lists = listGraph.query {
-            val myList = match(ListNode("my_list"))
+            val myList = match(ListNode())
             where ( myList.myList contains "5" )
             result(myList.myList)
         }
