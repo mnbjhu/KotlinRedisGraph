@@ -1,4 +1,6 @@
-package api
+package attributes
+
+import api.WithAttributes
 
 
 /**
@@ -6,7 +8,7 @@ package api
  *
  * @param T
  */
-interface Attribute<T> {
+sealed interface Attribute<T> {
     val parent: WithAttributes
     val name: String
 

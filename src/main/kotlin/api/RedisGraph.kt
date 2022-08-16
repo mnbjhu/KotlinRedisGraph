@@ -57,7 +57,7 @@ class RedisGraph(
      * @receiver
      */
     fun <T: RedisNode, U: KClass<out T>>create(clazz: U, createScope: T.() -> Unit){
-        val instance = clazz.constructors.first().call("")
+        val instance = clazz.constructors.first().call()
         instance.createScope()
         if(instance.attributes.any { (it as ResultValue<*>).value == null }) throw Exception("All values must be set on creation")
         val queryString =  "CREATE ${instance.createString()}"
@@ -76,7 +76,7 @@ class RedisGraph(
      * @receiver
      */
     fun <T: RedisNode, U: KClass<out T>,V>create(clazz: U, values: Iterable<V>, createScope: T.(V) -> Unit){
-        val instance = clazz.constructors.first().call("")
+        val instance = clazz.constructors.first().call()
         val queryString = values.joinToString{
             instance.createScope(it)
             instance.createString()

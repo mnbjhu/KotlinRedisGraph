@@ -2,19 +2,19 @@ import api.RedisGraph
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain`
 import org.junit.jupiter.api.Test
+import paths.minus
 import schemas.Actor
 import schemas.Movie
 
 class MoviesTest {
     private val moviesGraph = RedisGraph(
         name = "movies",
-        host = "raspberrypi.local",
+        host = "localhost",
     )
     //@BeforeEach
     private fun deleteAll(){
         moviesGraph.query {
-            val movie = variableOf<Movie>("movie")
-            val actor = variableOf<Actor>("actor")
+            val (movie, actor) = match(Movie(), Actor())
             delete(movie, actor)
         }
     }
@@ -46,32 +46,28 @@ class MoviesTest {
         }
 
         moviesGraph.query {
-            val actor = variableOf<Actor>("actor")
-            val movie = variableOf<Movie>("movie")
-            where { (actor.actorId eq 1) and (movie.movieId eq 1) }
-            create { actor.actedIn("r") { role["Luke Skywalker"] } - movie }
+            val (actor, movie) = match(Actor(), Movie())
+            where ( (actor.actorId eq 1) and (movie.movieId eq 1) )
+            create(actor - { actedIn { role["Luke Skywalker"] } } - movie)
         }
         moviesGraph.query {
-            val actor = variableOf<Actor>("actor")
-            val movie = variableOf<Movie>("movie")
-            where { (actor.actorId eq 2) and (movie.movieId eq 1) }
-            create { actor.actedIn("r") { role["Han Solo"] } - movie }
+            val (actor, movie) = match(Actor(), Movie())
+            where ( (actor.actorId eq 2) and (movie.movieId eq 1) )
+            create(actor - { actedIn{role["Han Solo"]} } - movie)
         }
         moviesGraph.query {
-            val actor = variableOf<Actor>("actor")
-            val movie = variableOf<Movie>("movie")
-            where { (actor.actorId eq 3) and (movie.movieId eq 1) }
-            create{ actor.actedIn("r") { role["Princess Leila"] } - movie }
+            val (actor, movie) = match(Actor(), Movie())
+            where ( (actor.actorId eq 3) and (movie.movieId eq 1) )
+            create( actor - { actedIn{role["Princess Leia"]} } - movie )
         }
-
         val movies = moviesGraph.query{
-            val movie = variableOf<Movie>("movie")
+            val movie = match( Movie())
             result(movie.title)
         }
         movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
 
         val (title, releaseYear, id) = moviesGraph.query {
-            val movie = variableOf<Movie>("movie")
+            val movie = match( Movie())
             result(movie.title, movie.releaseYear, movie.movieId)
         }.first()
 
@@ -79,29 +75,28 @@ class MoviesTest {
         releaseYear as Long `should be equal to` 1980
         id as Long `should be equal to` 1
 
-        val actedIn = moviesGraph.query {
-            val actor = variableOf<Actor>("actor")
-            val (movie) = actor.actedIn("movie")
-            where { movie.movieId eq 1 }
+        val actedInMovies = moviesGraph.query {
+            val (actor, _, movie) = match(Actor() - { actedIn }  - Movie())
+            where ( movie.movieId eq 1 )
             orderBy(actor.actorId)
             result(actor.name, movie.title)
         }
 
-        actedIn.size `should be equal to` 3
+        actedInMovies.size `should be equal to` 3
 
-        val (actorName, movieName) = actedIn.last()
+        val (actorName, movieName) = actedInMovies.last()
 
         actorName `should be equal to` "Carrie Fisher"
         movieName `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
 
         val removedActor = moviesGraph.query {
-            val actor = variableOf<Actor>("actor")
-            val (_, relationship) = actor.actedIn("movie")
-            where { actor.actorId eq 1 }
+            val (actor, relationship) = match(Actor() - { actedIn }  - Movie())
+            where ( actor.actorId eq 1 )
             delete(relationship)
             result(actor.name)
         }
         removedActor.size `should be equal to` 1
         removedActor.first() `should be equal to` "Mark Hamill"
+
     }
 }

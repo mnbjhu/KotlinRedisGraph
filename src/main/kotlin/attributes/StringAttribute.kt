@@ -1,6 +1,5 @@
 package attributes
 
-import api.Attribute
 import api.ResultValue
 import api.WithAttributes
 import conditions.equality.StringEquality

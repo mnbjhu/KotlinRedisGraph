@@ -47,15 +47,15 @@ class CreatePathScope(private val parent: QueryScope<*>): PathBuilderScope() {
      * @param T
      * @param U
      * @param V
-     * @property redisClass
-     * @property redisRelation
+     * @property node
+     * @property relation
      * @property name
      * @property action
      * @constructor Create empty Redis node relation pair
      */
-    inner class RedisNodeRelationPair<out T: RedisNode, U: RedisNode, V: RedisRelation<T, U>>(
-        private val redisClass: T,
-        private val redisRelation: KClass<V>,
+    inner class RedisNodeRelationPair<T: RedisNode, U: RedisNode, V: RedisRelation<T, U>>(
+        val node: T,
+        private val relation: KClass<V>,
         private val name: String,
         private val action: V.() -> Unit = {},
     ){
@@ -66,11 +66,11 @@ class CreatePathScope(private val parent: QueryScope<*>): PathBuilderScope() {
          * @return
          */
         operator fun minus(other: U): V {
-            val relation = redisRelation.constructors.first().call(redisClass, other, name)
+            val relation = relation.constructors.first().call(node, other, name)
             relation.apply {
                 action()
             }
-            this@CreatePathScope.paths.add(listOf(redisClass, relation, other))
+            this@CreatePathScope.paths.add(listOf(node, relation, other))
             return relation
         }
     }
@@ -90,6 +90,7 @@ class CreatePathScope(private val parent: QueryScope<*>): PathBuilderScope() {
                             "${it.name}:${if (v is String) "'${v.escapedQuotes()}'" else it.value}"
                         }
                     }}]"
+                    else -> throw Exception("Compiler bug??")
                 }
             }.drop(1)
         }

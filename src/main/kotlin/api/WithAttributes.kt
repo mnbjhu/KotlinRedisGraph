@@ -1,6 +1,7 @@
 package api
 
 import attributes.*
+import paths.NameCounter
 
 /**
  * With attributes
@@ -8,9 +9,10 @@ import attributes.*
  * @constructor Create empty With attributes
  */
 sealed class WithAttributes {
-    abstract val instanceName: String
+
     abstract val typeName: String
     abstract val attributes: MutableList<Attribute<*>>
+    val instanceName = NameCounter.getNext()
 
     /**
      * String

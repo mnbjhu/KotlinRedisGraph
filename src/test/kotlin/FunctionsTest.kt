@@ -15,7 +15,7 @@ import schemas.MyNumber
 class FunctionsTest {
     private val numbersGraph = RedisGraph(
         name = "numbers",
-        host = "raspberrypi.local",
+        host = "localhost",
     )
 
     /**
@@ -23,7 +23,7 @@ class FunctionsTest {
      *
      */
     fun deleteAll() = numbersGraph.query {
-        val number = variableOf<MyNumber>("number")
+        val number = match(MyNumber())
         delete(number)
     }
 
@@ -39,7 +39,7 @@ class FunctionsTest {
             num[it]
         }
         numbersGraph.query {
-            val number = variableOf<MyNumber>("number")
+            val number = match(MyNumber())
             result(Average(number.num))
         }.first() `should be equal to` 8.0
     }
@@ -55,7 +55,7 @@ class FunctionsTest {
             num[it]
         }
         numbersGraph.query {
-            val number = variableOf<MyNumber>("number")
+            val number = match(MyNumber())
             result(Max(number.num))
         }.first() `should be equal to` 13.0
     }
@@ -71,7 +71,7 @@ class FunctionsTest {
             num[it]
         }
         numbersGraph.query {
-            val number = variableOf<MyNumber>("number")
+            val number = match(MyNumber())
             result(Min(number.num))
         }.first() `should be equal to` 1.0
     }
@@ -87,7 +87,7 @@ class FunctionsTest {
             num[it]
         }
         numbersGraph.query {
-            val number = variableOf<MyNumber>("number")
+            val number = match(MyNumber())
             result(Sum(number.num))
         }.first() `should be equal to` 24.0
     }

@@ -8,13 +8,13 @@ import schemas.ListNode
 class ListsTests {
     private val listGraph = RedisGraph(
         name = "list",
-        host = "raspberrypi.local",
+        host = "localhost",
     )
 
     private fun deleteAll(){
         listGraph.query {
-            val listNode = variableOf<ListNode>("listNode")
-            delete(listNode)
+            val myList = match(ListNode())
+            delete(myList)
         }
     }
     @Test
@@ -29,7 +29,7 @@ class ListsTests {
         deleteAll()
         `Test Create`()
         val result = listGraph.query {
-            val myList = variableOf<ListNode>("my_list")
+            val myList = match(ListNode())
             result(myList.myList)
         }
         result.size `should be equal to` 1
@@ -47,8 +47,8 @@ class ListsTests {
             currentList += currentList.last() + 1
         }
         val lists = listGraph.query {
-            val myList = variableOf<ListNode>("my_lists")
-            where { myList.myList contains "5" }
+            val myList = match(ListNode())
+            where ( myList.myList contains "5" )
             result(myList.myList)
         }
         lists.size `should be equal to` 6
