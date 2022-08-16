@@ -1,6 +1,7 @@
 package api
 
 import attributes.*
+import paths.NameCounter
 
 /**
  * With attributes
@@ -11,7 +12,7 @@ sealed class WithAttributes {
 
     abstract val typeName: String
     abstract val attributes: MutableList<Attribute<*>>
-    val instanceName = nextName()
+    val instanceName = NameCounter.getNext()
 
     /**
      * String
@@ -68,9 +69,4 @@ sealed class WithAttributes {
      * @param name
      */
     fun booleanList(name: String) = BooleanArrayAttribute(name, this)
-
-    companion object{
-        private var count = 1
-        fun WithAttributes.nextName(): String = "$instanceName$count"
-    }
 }
