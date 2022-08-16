@@ -58,12 +58,7 @@ class MoviesTest {
         moviesGraph.query {
             val (actor, movie) = match(Actor("actor"), Movie("movie"))
             where ( (actor.actorId eq 3) and (movie.movieId eq 1) )
-            create( actor - { actedIn } - movie )
-        }
-        moviesGraph.query {
-            val (actor, movie) = match(Actor("actor"), Movie("movie"))
-            where ( (actor.actorId eq 1) and (movie.movieId eq 1) )
-            create( actor - { actedIn{} } - movie )
+            create( actor - { actedIn{role["Princess Leia"]} } - movie )
         }
         val movies = moviesGraph.query{
             val movie = match( Movie("movie"))
@@ -95,7 +90,7 @@ class MoviesTest {
         movieName `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
 
         val removedActor = moviesGraph.query {
-            val (actor, relationship) = Actor("actor") - { actedIn }  - Movie("movie")
+            val (actor, relationship) = match(Actor("actor") - { actedIn }  - Movie("movie"))
             where ( actor.actorId eq 1 )
             delete(relationship)
             result(actor.name)
