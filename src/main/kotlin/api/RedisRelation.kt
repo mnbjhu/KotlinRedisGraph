@@ -17,6 +17,7 @@ abstract class RedisRelation<T: RedisNode, U: RedisNode>(
 ): WithAttributes() {
     lateinit var from: T
     lateinit var to: U
+    var isMultipleRelation = false
     override val attributes: MutableList<Attribute<*>> = mutableListOf()
     override fun toString(): String {
         val attrs = attributes.mapNotNull {
@@ -29,7 +30,7 @@ abstract class RedisRelation<T: RedisNode, U: RedisNode>(
             }
             else throw Exception("Uh oh")
         }.joinToString()
-        return "[$instanceName:$typeName{$attrs}]"
+        return if(isMultipleRelation) "[$instanceName:$typeName* {$attrs}]" else "[$instanceName:$typeName {$attrs}]"
     }
 
 }
