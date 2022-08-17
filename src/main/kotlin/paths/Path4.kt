@@ -20,6 +20,8 @@ class Path4<
     operator fun component3() = second
     operator fun component4() = secondToThird
     operator fun component5() = third
+    operator fun component6() = thirdToForth
+    operator fun component7() = forth
     override fun getMatchString() = "$first-$firstToSecond->$second-$secondToThird->$third-$thirdToForth->$forth"
     override fun getCreateString(): String = "(${first.instanceName})-$firstToSecond->(${second.instanceName})-$secondToThird->(${third.instanceName})-$thirdToForth->(${forth.instanceName})"
     override fun toString() = getMatchString()
