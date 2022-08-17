@@ -1,4 +1,6 @@
 import api.RedisGraph
+import api.RedisRelation
+import functions.relation.endNode
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain`
 import org.junit.jupiter.api.Test
@@ -61,7 +63,7 @@ class MoviesTest {
             create( actor - { actedIn{role["Princess Leia"]} } - movie )
         }
         val movies = moviesGraph.query{
-            val movie = match( Movie())
+            val movie = match(Movie())
             result(movie.title)
         }
         movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
@@ -76,8 +78,8 @@ class MoviesTest {
         id as Long `should be equal to` 1
 
         val actedInMovies = moviesGraph.query {
-            val (actor, _, movie) = match(Actor() - { actedIn }  - Movie())
-            where ( movie.movieId eq 1 )
+            val (actor, relation, movie) = match(Actor() - { +actedIn }  - Movie())
+            where (endNode(relation).movieId eq 1)
             orderBy(actor.actorId)
             result(actor.name, movie.title)
         }
@@ -97,6 +99,5 @@ class MoviesTest {
         }
         removedActor.size `should be equal to` 1
         removedActor.first() `should be equal to` "Mark Hamill"
-
     }
 }

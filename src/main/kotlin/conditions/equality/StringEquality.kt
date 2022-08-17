@@ -10,7 +10,7 @@ import api.ResultValue
  * @constructor Create empty String equality
  */
 class StringEquality(private val attribute: StringResult, private val literal: String): ResultValue.BooleanResult(){
-    override fun toString() = "$$attribute = '${literal.escapedQuotes()}'"
+    override fun toString() = "$attribute = '${literal.escapedQuotes()}'"
     companion object{
         fun String.escapedQuotes() = this
             .replace("\\", "\\\\")

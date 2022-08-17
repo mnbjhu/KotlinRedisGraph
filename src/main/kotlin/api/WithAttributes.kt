@@ -12,7 +12,7 @@ sealed class WithAttributes {
 
     abstract val typeName: String
     abstract val attributes: MutableList<Attribute<*>>
-    val instanceName = NameCounter.getNext()
+    var instanceName = NameCounter.getNext()
 
     /**
      * String

@@ -3,7 +3,7 @@ package schemas
 import api.RedisNode
 import api.RedisRelation
 
-class Actor : RedisNode("Actor"){
+class Actor: RedisNode("Actor"){
     val name = string("name")
     val actorId = long("actor_id")
     val actedIn = relates(ActedIn::class)
