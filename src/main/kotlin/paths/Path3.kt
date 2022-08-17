@@ -3,6 +3,7 @@ package paths
 import api.RedisNode
 import api.RedisRelation
 import attributes.RelationAttribute
+import kotlin.reflect.KProperty
 
 class Path3<A : RedisNode, B : RedisRelation<A, C>, C : RedisNode, D : RedisRelation<C, E>, E : RedisNode>
     (val first: A, private val firstToSecond: B, val second: C, val secondToThird: D, val third: E): Path {
@@ -13,6 +14,7 @@ class Path3<A : RedisNode, B : RedisRelation<A, C>, C : RedisNode, D : RedisRela
     operator fun component3() = second
     operator fun component4() = secondToThird
     operator fun component5() = third
+    fun nodes() = Triple(first, second, third)
     override fun getMatchString() = "$first-$firstToSecond->$second-$secondToThird->$third"
     override fun getCreateString(): String = "(${first.instanceName})-$firstToSecond->(${second.instanceName})-$secondToThird->(${third.instanceName})"
     override fun toString() = getMatchString()
