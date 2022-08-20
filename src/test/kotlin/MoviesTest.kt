@@ -55,12 +55,12 @@ class MoviesTest {
         moviesGraph.query {
             val (actor, movie) = match(Actor(), Movie())
             where ( (actor.actorId eq 2) and (movie.movieId eq 1) )
-            create(actor - { actedIn{role["Han Solo"]} } - movie)
+            create(actor - { actedIn{ role["Han Solo"] } } - movie)
         }
         moviesGraph.query {
             val (actor, movie) = match(Actor(), Movie())
             where ( (actor.actorId eq 3) and (movie.movieId eq 1) )
-            create( actor - { actedIn{role["Princess Leia"]} } - movie )
+            create( actor - { actedIn{ role["Princess Leia"] } } - movie )
         }
         val movies = moviesGraph.query{
             val movie = match(Movie())

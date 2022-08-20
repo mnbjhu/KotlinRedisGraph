@@ -3,6 +3,7 @@ import conditions.equality.SerializableEquality.Companion.eq
 import org.junit.jupiter.api.Test
 
 import schemas.EnumSchema
+import schemas.MyEnum
 
 class SerializableTest {
     val enumGraph = RedisGraph("EnumGraph", "localhost")

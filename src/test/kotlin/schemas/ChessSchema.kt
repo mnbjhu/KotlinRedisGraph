@@ -20,7 +20,7 @@ class Board: RedisNode("Board"){
 
     companion object{
         fun QueryScope<Unit>.setupChessBoard(){
-            //match()
+            create()
         }
     }
 }
