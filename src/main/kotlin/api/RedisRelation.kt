@@ -1,5 +1,6 @@
 package api
 
+import results.ResultValue
 import attributes.Attribute
 
 /**

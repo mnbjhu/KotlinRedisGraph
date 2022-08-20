@@ -1,6 +1,7 @@
 package conditions.equality
 
-import api.ResultValue
+import results.primative.BooleanResult
+import results.primative.StringResult
 
 /**
  * String equality
@@ -9,7 +10,7 @@ import api.ResultValue
  * @property literal
  * @constructor Create empty String equality
  */
-class StringEquality(private val attribute: StringResult, private val literal: String): ResultValue.BooleanResult(){
+class StringEquality(private val attribute: StringResult, private val literal: String): BooleanResult(){
     override fun toString() = "$attribute = '${literal.escapedQuotes()}'"
     companion object{
         fun String.escapedQuotes() = this

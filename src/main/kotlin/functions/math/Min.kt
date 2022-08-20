@@ -1,7 +1,6 @@
 package functions.math
 
-import api.ResultValue
-import attributes.DoubleAttribute
+import results.primative.DoubleResult
 
 /**
  * Min
@@ -9,6 +8,6 @@ import attributes.DoubleAttribute
  * @property attribute
  * @constructor Create empty Min
  */
-class Min(val attribute: DoubleResult): ResultValue.DoubleResult() {
+class Min(val attribute: DoubleResult): DoubleResult() {
     override fun toString() = "min($attribute)"
 }

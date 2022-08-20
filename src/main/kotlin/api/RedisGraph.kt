@@ -1,9 +1,12 @@
 package api
 
-import attributes.StringAttribute
-import attributes.StringArrayAttribute
+import results.ResultValue
+import attributes.primative.StringAttribute
+import attributes.array.StringArrayAttribute
 import conditions.equality.StringEquality.Companion.escapedQuotes
 import redis.clients.jedis.HostAndPort
+import redis.clients.jedis.Jedis
+import redis.clients.jedis.JedisClientConfig
 import redis.clients.jedis.UnifiedJedis
 import redis.clients.jedis.providers.PooledConnectionProvider
 import scopes.QueryScope
@@ -23,14 +26,16 @@ import kotlin.reflect.KClass
 class RedisGraph(
     val name: String,
     private val host: String,
-    private val port: Int = 6379
+    private val port: Int = 6379,
+    password: String? = null
 ) {
     val client: UnifiedJedis
     init {
-
-        val config = HostAndPort(host, port)
-        val provider = PooledConnectionProvider(config)
-        client = UnifiedJedis(provider)
+        val hostAndPort = HostAndPort(host, port)
+        val jedis = Jedis(hostAndPort)
+        jedis.connect()
+        password?.let { jedis.auth(it) }
+        client = UnifiedJedis(jedis.client)
     }
 
     /**
@@ -63,7 +68,6 @@ class RedisGraph(
         val queryString =  "CREATE ${instance.createString()}"
         client.graphQuery(name, queryString.also { println("GRAPH.QUERY $name \"$it\"") })
     }
-
     /**
      * Create
      *

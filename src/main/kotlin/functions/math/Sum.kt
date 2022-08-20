@@ -1,6 +1,6 @@
 package functions.math
 
-import api.ResultValue
+import results.primative.DoubleResult
 
 /**
  * Sum
@@ -8,6 +8,6 @@ import api.ResultValue
  * @property attribute
  * @constructor Create empty Sum
  */
-class Sum(val attribute: DoubleResult): ResultValue.DoubleResult() {
+class Sum(val attribute: DoubleResult): DoubleResult() {
     override fun toString() = "sum($attribute)"
 }

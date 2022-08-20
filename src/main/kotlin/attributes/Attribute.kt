@@ -8,7 +8,7 @@ import api.WithAttributes
  *
  * @param T
  */
-sealed interface Attribute<T> {
+interface Attribute<T> {
     val parent: WithAttributes
     val name: String
 
@@ -18,3 +18,4 @@ sealed interface Attribute<T> {
      */
     fun getAttributeText() = "${parent.instanceName}.$name"
 }
+

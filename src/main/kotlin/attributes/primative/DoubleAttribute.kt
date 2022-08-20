@@ -1,7 +1,8 @@
-package attributes
+package attributes.primative
 
-import api.ResultValue
+import results.primative.DoubleResult
 import api.WithAttributes
+import attributes.Attribute
 import conditions.equality.DoubleEquality
 
 /**
@@ -12,7 +13,7 @@ import conditions.equality.DoubleEquality
  * @constructor Create empty Double attribute
  */
 class DoubleAttribute(override val name: String, override val parent: WithAttributes):
-     ResultValue.DoubleResult(), Attribute<Double>
+     DoubleResult(), Attribute<Double>
 {
     init { parent.attributes.add(this) }
 

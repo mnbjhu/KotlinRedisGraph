@@ -1,6 +1,13 @@
 package api
 
 import attributes.*
+import attributes.array.DoubleArrayAttribute
+import attributes.array.LongArrayAttribute
+import attributes.array.StringArrayAttribute
+import attributes.primative.BooleanAttribute
+import attributes.primative.DoubleAttribute
+import attributes.primative.LongAttribute
+import attributes.primative.StringAttribute
 import paths.NameCounter
 
 /**
@@ -69,4 +76,6 @@ sealed class WithAttributes {
      * @param name
      */
     fun booleanList(name: String) = BooleanArrayAttribute(name, this)
+
+    inline fun <reified T: Any>serializable(name: String) = SerializableAttribute(name, this, T::class)
 }

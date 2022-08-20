@@ -1,7 +1,6 @@
 package functions.math
 
-import api.ResultValue
-import attributes.DoubleAttribute
+import results.primative.DoubleResult
 
 /**
  * Max
@@ -9,6 +8,6 @@ import attributes.DoubleAttribute
  * @property attribute
  * @constructor Create empty Max
  */
-class Max(val attribute: DoubleResult): ResultValue.DoubleResult() {
+class Max(val attribute: DoubleResult): DoubleResult() {
     override fun toString() = "max($attribute)"
 }
