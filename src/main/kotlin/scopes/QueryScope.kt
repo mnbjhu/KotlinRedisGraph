@@ -73,9 +73,7 @@ class QueryScope<R>(private val graph: RedisGraph){
         return node1 to node2
     }
     fun <T: Path>match(path: T) = path.also{ toMatch.add(it) }
-    fun set(scope: SetScope.() -> Unit){
-        SetScope().scope()
-    }
+    fun set(scope: SetScope.() -> Unit) = emptyList<Unit>().also { SetScope().scope() }
     inner class SetScope{
         infix fun <T>Attribute<T>.setTo(newValue: T){
 
