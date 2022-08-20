@@ -6,7 +6,11 @@ import schemas.EnumSchema
 import schemas.MyEnum
 
 class SerializableTest {
-    val enumGraph = RedisGraph("EnumGraph", "localhost")
+    val enumGraph = RedisGraph("EnumGraph",
+        host = TestAuth.host,
+        port = TestAuth.port,
+        password = TestAuth.password
+    )
     @Test
     fun test(){
         enumGraph.create(EnumSchema::class){

@@ -8,7 +8,9 @@ import schemas.ListNode
 class ListsTests {
     private val listGraph = RedisGraph(
         name = "list",
-        host = "localhost",
+        host = TestAuth.host,
+        port = TestAuth.port,
+        password = TestAuth.password
     )
 
     private fun deleteAll(){

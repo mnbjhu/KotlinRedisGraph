@@ -11,7 +11,9 @@ import schemas.Movie
 class MoviesTest {
     private val moviesGraph = RedisGraph(
         name = "movies",
-        host = "localhost",
+        host = TestAuth.host,
+        port = TestAuth.port,
+        password = TestAuth.password
     )
     //@BeforeEach
     private fun deleteAll(){

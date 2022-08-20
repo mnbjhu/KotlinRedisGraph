@@ -16,7 +16,9 @@ import schemas.MyNumber
 class FunctionsTest {
     private val numbersGraph = RedisGraph(
         name = "numbers",
-        host = "localhost",
+        host = TestAuth.host,
+        port = TestAuth.port,
+        password = TestAuth.password
     )
     @BeforeEach
     fun setup(){
