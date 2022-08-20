@@ -1,7 +1,8 @@
-package attributes
+package attributes.primative
 
-import api.ResultValue
+import Results.primative.StringResult
 import api.WithAttributes
+import attributes.Attribute
 import conditions.equality.StringEquality
 
 /**
@@ -12,7 +13,7 @@ import conditions.equality.StringEquality
  * @constructor Create empty String attribute
  */
 class StringAttribute(override val name: String, override val parent: WithAttributes):
-    ResultValue.StringResult(), Attribute<String>
+    StringResult(), Attribute<String>
 {
     init { parent.attributes.add(this) }
 

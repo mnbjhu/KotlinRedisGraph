@@ -1,6 +1,6 @@
 package functions.string
 
-import attributes.StringAttribute
+import attributes.primative.StringAttribute
 
 /**
  * Contains

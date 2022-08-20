@@ -1,6 +1,7 @@
 package conditions.equality
 
-import api.ResultValue
+import Results.primative.BooleanResult
+import Results.primative.LongResult
 
 /**
  * Long equality
@@ -9,6 +10,7 @@ import api.ResultValue
  * @property literal
  * @constructor Create empty Long equality
  */
-class LongEquality(private val attribute: LongResult, private val literal: Long): ResultValue.BooleanResult(){
+class LongEquality(private val attribute: LongResult, private val literal: Long): BooleanResult(){
     override fun toString() = "$attribute = $literal"
+
 }

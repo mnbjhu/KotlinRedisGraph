@@ -1,7 +1,7 @@
 package conditions
 
-import api.ResultValue
+import Results.primative.BooleanResult
 
-object True: ResultValue.BooleanResult() {
+object True: BooleanResult() {
     override fun toString() = ""
 }

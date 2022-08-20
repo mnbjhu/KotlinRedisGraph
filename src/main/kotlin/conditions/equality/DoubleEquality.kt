@@ -1,6 +1,7 @@
 package conditions.equality
 
-import api.ResultValue
+import Results.primative.BooleanResult
+import Results.primative.DoubleResult
 
 /**
  * Double equality
@@ -9,6 +10,6 @@ import api.ResultValue
  * @property literal
  * @constructor Create empty Double equality
  */
-class DoubleEquality(private val attribute: DoubleResult, private val literal: Double): ResultValue.BooleanResult(){
+class DoubleEquality(private val attribute: DoubleResult, private val literal: Double): BooleanResult(){
     override fun toString() = "$attribute = $literal"
 }

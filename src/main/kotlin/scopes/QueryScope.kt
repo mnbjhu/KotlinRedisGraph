@@ -1,5 +1,7 @@
 package scopes
 
+import Results.primative.BooleanResult
+import Results.ResultValue
 import api.*
 import attributes.*
 import conditions.True
@@ -13,9 +15,9 @@ import paths.Path
  * @property graph
  * @constructor Create empty Query scope
  */
-class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
+class QueryScope<R>(private val graph: RedisGraph){
     var match: MutableList<Matchable> = mutableListOf()
-    var where: ResultValue.BooleanResult = True
+    var where: BooleanResult = True
     var returnValues: MutableList<ResultValue<*>> = mutableListOf()
     var transform: (() -> R)? = null
     var orderBy: ResultValue<*>? = null
@@ -42,15 +44,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
      * @param new
      * @param relation
      */
-    fun addToPaths(parent: RedisNode, new: RedisNode, relation: RedisRelation<*, *>){
-        val matching = paths.filter { it.last() == parent }
-        if(matching.isNotEmpty()) {
-            paths.removeAll(matching.toSet())
-            val newPath = matching.map { it + listOf(relation, new) }.toSet()
-            paths.addAll(newPath)
-        }
-        else paths.add(listOf(parent, relation, new))
-    }
+
     override fun toString(): String{
         val commands = listOf(
             "MATCH ${match.joinToString()}",
@@ -106,7 +100,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
      * @param whereScope
      * @receiver
      */
-    fun where(predicate: ResultValue.BooleanResult){
+    fun where(predicate: BooleanResult){
         where = predicate
     }
 
@@ -144,16 +138,7 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         records.forEach { record ->
             val recordValues = record.values()
             recordValues.mapIndexed{ index, value ->
-                when(val attribute = returnValues[index]){
-                    is ResultValue.StringResult -> attribute.value = value as String
-                    is ResultValue.DoubleResult -> attribute.value = value as Double
-                    is ResultValue.LongResult -> attribute.value = value as Long
-                    is ResultValue.BooleanResult -> attribute.value = value as Boolean
-                    is ResultValue.StringArrayResult -> attribute.value = value as List<String>
-                    is ResultValue.BooleanArrayResult -> attribute.value = value as List<Boolean>
-                    is ResultValue.DoubleArrayResult -> attribute.value = value as List<Double>
-                    is ResultValue.LongArrayResult -> attribute.value = value as List<Long>
-                }
+                returnValues[index].set(value)
             }
             r += transform!!()
         }
@@ -186,10 +171,10 @@ class QueryScope<R>(private val graph: RedisGraph): PathBuilderScope(){
         transform = { results.map { it() } as R }
         return listOf()
     }
-    fun <T>CreatePathScope.registerReturnValue(resultValue: ResultValue<T>){
+    fun <T>registerReturnValue(resultValue: ResultValue<T>){
         this@QueryScope.returnValues.add(resultValue)
     }
-    fun <T>CreatePathScope.setTransform(resultValue: ResultValue<T>){
+    fun <T>setTransform(resultValue: ResultValue<T>){
         this@QueryScope.returnValues.add(resultValue)
     }
     companion object{

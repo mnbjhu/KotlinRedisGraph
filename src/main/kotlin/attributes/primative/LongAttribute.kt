@@ -1,7 +1,8 @@
-package attributes
+package attributes.primative
 
-import api.ResultValue
+import Results.primative.LongResult
 import api.WithAttributes
+import attributes.Attribute
 import conditions.equality.LongEquality
 
 /**
@@ -12,7 +13,7 @@ import conditions.equality.LongEquality
  * @constructor Create empty Long attribute
  */
 class LongAttribute(override val name: String, override val parent: WithAttributes):
-    ResultValue.LongResult(), Attribute<Long>
+    LongResult(), Attribute<Long>
 {
     init { parent.attributes.add(this) }
 

@@ -3,7 +3,7 @@ package scopes
 import api.RedisNode
 import api.RedisRelation
 
-import api.ResultValue
+import Results.ResultValue
 import attributes.RelationAttribute
 import conditions.equality.StringEquality.Companion.escapedQuotes
 import kotlin.reflect.KClass
@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
  * @property parent
  * @constructor Create empty Create path scope
  */
-class CreatePathScope(private val parent: QueryScope<*>): PathBuilderScope() {
+class CreatePathScope(private val parent: QueryScope<*>) {
     /**
      * Invoke
      *
@@ -65,14 +65,7 @@ class CreatePathScope(private val parent: QueryScope<*>): PathBuilderScope() {
          * @param other
          * @return
          */
-        operator fun minus(other: U): V {
-            val relation = relation.constructors.first().call(node, other, name)
-            relation.apply {
-                action()
-            }
-            this@CreatePathScope.paths.add(listOf(node, relation, other))
-            return relation
-        }
+
     }
 
     /**
@@ -80,21 +73,7 @@ class CreatePathScope(private val parent: QueryScope<*>): PathBuilderScope() {
      *
      * @return
      */
-    fun getPathString(): String{
-        return paths.joinToString { path ->
-            path.joinToString("-") { node ->
-                when (node) {
-                    is RedisNode -> ">(${node.instanceName})"
-                    is RedisRelation<*, *> -> "[${node.instanceName}:${node.typeName} {${
-                        node.attributes.joinToString {val v = (it as ResultValue<*>).value
-                            "${it.name}:${if (v is String) "'${v.escapedQuotes()}'" else it.value}"
-                        }
-                    }}]"
-                    else -> throw Exception("Compiler bug??")
-                }
-            }.drop(1)
-        }
-    }
+
 
     /**
      * Result

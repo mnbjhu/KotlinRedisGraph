@@ -1,7 +1,8 @@
 package api
 
-import attributes.StringAttribute
-import attributes.StringArrayAttribute
+import Results.ResultValue
+import attributes.primative.StringAttribute
+import attributes.array.StringArrayAttribute
 import conditions.equality.StringEquality.Companion.escapedQuotes
 import redis.clients.jedis.HostAndPort
 import redis.clients.jedis.UnifiedJedis
@@ -27,7 +28,6 @@ class RedisGraph(
 ) {
     val client: UnifiedJedis
     init {
-
         val config = HostAndPort(host, port)
         val provider = PooledConnectionProvider(config)
         client = UnifiedJedis(provider)
@@ -63,7 +63,6 @@ class RedisGraph(
         val queryString =  "CREATE ${instance.createString()}"
         client.graphQuery(name, queryString.also { println("GRAPH.QUERY $name \"$it\"") })
     }
-
     /**
      * Create
      *

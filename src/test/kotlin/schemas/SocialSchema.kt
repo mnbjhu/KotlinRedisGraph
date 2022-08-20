@@ -16,6 +16,12 @@ class FriendsWith:
 class SharedPosts: RedisRelation<User, Post>("SHARED_POSTS")
 class SharedPhotos: RedisRelation<User, Photo>("SHARED_PHOTOS")
 
+enum class MyEnum{
+    A,
+    B,
+    C,
+}
+
 class Post: RedisNode("Post"){
     val title = string("title")
     val content = string("content")
