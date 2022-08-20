@@ -1,5 +1,6 @@
 package results.primative
 
+import conditions.equality.StringEquality
 import results.ResultValue
 
 /**
@@ -7,4 +8,6 @@ import results.ResultValue
  *
  * @constructor Create empty String result
  */
-abstract class StringResult: ResultValue<String>()
+abstract class StringResult: ResultValue<String>(){
+    infix fun eq(literal: String) = StringEquality(this, literal)
+}

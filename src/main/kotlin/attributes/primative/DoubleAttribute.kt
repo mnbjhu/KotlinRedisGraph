@@ -22,6 +22,5 @@ class DoubleAttribute(override val name: String, override val parent: WithAttrib
      *
      * @param literal
      */
-    infix fun eq(literal: Double) = DoubleEquality(this, literal)
     override fun toString() = getAttributeText()
 }
