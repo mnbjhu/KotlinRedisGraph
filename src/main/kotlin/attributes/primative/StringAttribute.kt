@@ -22,6 +22,5 @@ class StringAttribute(override val name: String, override val parent: WithAttrib
      *
      * @param literal
      */
-    infix fun eq(literal: String) = StringEquality(this, literal)
     override fun toString() = getAttributeText()
 }

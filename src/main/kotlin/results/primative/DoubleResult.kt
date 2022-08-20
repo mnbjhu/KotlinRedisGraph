@@ -1,5 +1,6 @@
 package results.primative
 
+import conditions.equality.DoubleEquality
 import results.ResultValue
 
 /**
@@ -7,4 +8,6 @@ import results.ResultValue
  *
  * @constructor Create empty Double result
  */
-abstract class DoubleResult: ResultValue<Double>()
+abstract class DoubleResult: ResultValue<Double>(){
+    infix fun eq(literal: Double) = DoubleEquality(this, literal)
+}

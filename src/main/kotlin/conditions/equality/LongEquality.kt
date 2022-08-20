@@ -12,5 +12,4 @@ import results.primative.LongResult
  */
 class LongEquality(private val attribute: LongResult, private val literal: Long): BooleanResult(){
     override fun toString() = "$attribute = $literal"
-
 }

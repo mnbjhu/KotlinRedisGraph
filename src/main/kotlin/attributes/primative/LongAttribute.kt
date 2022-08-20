@@ -22,6 +22,5 @@ class LongAttribute(override val name: String, override val parent: WithAttribut
      *
      * @param literal
      */
-    infix fun eq(literal: Long) = LongEquality(this, literal)
     override fun toString() = getAttributeText()
 }
