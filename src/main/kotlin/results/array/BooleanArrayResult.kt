@@ -1,4 +1,4 @@
-package Results.array
+package results.array
 
 /**
  * Boolean array result

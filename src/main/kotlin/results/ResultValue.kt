@@ -1,4 +1,4 @@
-package Results
+package results
 
 /**
  * Result value

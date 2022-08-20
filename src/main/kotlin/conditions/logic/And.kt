@@ -1,6 +1,6 @@
 package conditions.logic
 
-import Results.primative.BooleanResult
+import results.primative.BooleanResult
 import attributes.primative.BooleanAttribute
 
 /**

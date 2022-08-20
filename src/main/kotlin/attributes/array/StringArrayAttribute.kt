@@ -1,6 +1,6 @@
 package attributes.array
 
-import Results.array.StringArrayResult
+import results.array.StringArrayResult
 import api.WithAttributes
 import attributes.Attribute
 

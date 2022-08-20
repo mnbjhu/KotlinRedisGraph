@@ -1,6 +1,6 @@
 package attributes.primative
 
-import Results.primative.DoubleResult
+import results.primative.DoubleResult
 import api.WithAttributes
 import attributes.Attribute
 import conditions.equality.DoubleEquality

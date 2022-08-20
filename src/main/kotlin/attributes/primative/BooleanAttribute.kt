@@ -1,6 +1,6 @@
 package attributes.primative
 
-import Results.primative.BooleanResult
+import results.primative.BooleanResult
 import api.WithAttributes
 import attributes.Attribute
 

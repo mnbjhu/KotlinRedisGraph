@@ -1,6 +1,6 @@
 package functions.math
 
-import Results.primative.DoubleResult
+import results.primative.DoubleResult
 
 /**
  * Min

@@ -1,6 +1,6 @@
 package conditions.array
 
-import Results.array.LongArrayResult
+import results.array.LongArrayResult
 
 class Range(val first: Long, val second: Long): LongArrayResult(){
     companion object{

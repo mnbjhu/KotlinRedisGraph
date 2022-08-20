@@ -1,6 +1,6 @@
 package attributes.primative
 
-import Results.primative.LongResult
+import results.primative.LongResult
 import api.WithAttributes
 import attributes.Attribute
 import conditions.equality.LongEquality

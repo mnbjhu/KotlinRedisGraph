@@ -1,6 +1,6 @@
 package functions.math
 
-import Results.primative.LongResult
+import results.primative.LongResult
 import api.RedisNode
 
 /**

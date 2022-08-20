@@ -1,6 +1,6 @@
-package Results.array
+package results.array
 
-import Results.ResultValue
+import results.ResultValue
 
 /**
  * Array result

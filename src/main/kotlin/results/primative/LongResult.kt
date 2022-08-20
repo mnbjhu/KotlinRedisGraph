@@ -1,6 +1,6 @@
-package Results.primative
+package results.primative
 
-import Results.ResultValue
+import results.ResultValue
 
 /**
  * Long result

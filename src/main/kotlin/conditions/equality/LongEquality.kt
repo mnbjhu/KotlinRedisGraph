@@ -1,7 +1,7 @@
 package conditions.equality
 
-import Results.primative.BooleanResult
-import Results.primative.LongResult
+import results.primative.BooleanResult
+import results.primative.LongResult
 
 /**
  * Long equality

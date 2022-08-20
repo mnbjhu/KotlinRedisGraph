@@ -1,6 +1,6 @@
 package conditions
 
-import Results.primative.BooleanResult
+import results.primative.BooleanResult
 
 object True: BooleanResult() {
     override fun toString() = ""

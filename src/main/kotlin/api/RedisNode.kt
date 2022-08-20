@@ -1,6 +1,6 @@
 package api
 
-import Results.ResultValue
+import results.ResultValue
 import attributes.Attribute
 import attributes.RelationAttribute
 import kotlin.reflect.KClass

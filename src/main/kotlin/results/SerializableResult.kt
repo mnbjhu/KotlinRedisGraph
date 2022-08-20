@@ -1,4 +1,4 @@
-package Results
+package results
 
 import api.WithAttributes
 import attributes.primative.StringAttribute

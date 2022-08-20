@@ -1,8 +1,7 @@
 package conditions.equality
 
-import Results.SerializableResult
-import Results.primative.BooleanResult
-import attributes.SerializableAttribute
+import results.SerializableResult
+import results.primative.BooleanResult
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

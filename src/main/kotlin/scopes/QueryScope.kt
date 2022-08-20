@@ -1,7 +1,7 @@
 package scopes
 
-import Results.primative.BooleanResult
-import Results.ResultValue
+import results.primative.BooleanResult
+import results.ResultValue
 import api.*
 import attributes.*
 import conditions.True

@@ -4,6 +4,7 @@ import functions.math.Max
 import functions.math.Min
 import functions.math.Sum
 import org.amshove.kluent.`should be equal to`
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import schemas.MyNumber
 
@@ -17,12 +18,21 @@ class FunctionsTest {
         name = "numbers",
         host = "localhost",
     )
-
+    @BeforeEach
+    fun setup(){
+        deleteAll()
+        setupList()
+    }
+    private fun setupList() {
+        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)) {
+            num[it]
+        }
+    }
     /**
      * Delete all
      *
      */
-    fun deleteAll() = numbersGraph.query {
+    private fun deleteAll() = numbersGraph.query {
         val number = match(MyNumber())
         delete(number)
     }
@@ -33,11 +43,7 @@ class FunctionsTest {
      */
     @Test
     fun `Test Averages`(){
-
-        deleteAll()
-        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)){
-            num[it]
-        }
+        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)){ num[it] }
         numbersGraph.query {
             val number = match(MyNumber())
             result(Average(number.num))
@@ -50,10 +56,6 @@ class FunctionsTest {
      */
     @Test
     fun `Test Max`(){
-        deleteAll()
-        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)){
-            num[it]
-        }
         numbersGraph.query {
             val number = match(MyNumber())
             result(Max(number.num))
@@ -66,10 +68,6 @@ class FunctionsTest {
      */
     @Test
     fun `Test Min`(){
-        deleteAll()
-        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)){
-            num[it]
-        }
         numbersGraph.query {
             val number = match(MyNumber())
             result(Min(number.num))
@@ -82,10 +80,6 @@ class FunctionsTest {
      */
     @Test
     fun `Test Sum`(){
-        deleteAll()
-        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)){
-            num[it]
-        }
         numbersGraph.query {
             val number = match(MyNumber())
             result(Sum(number.num))

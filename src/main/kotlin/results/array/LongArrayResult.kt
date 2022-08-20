@@ -1,4 +1,4 @@
-package Results.array
+package results.array
 
 /**
  * Long array result

@@ -1,6 +1,6 @@
 package api
 
-import Results.ResultValue
+import results.ResultValue
 import attributes.primative.StringAttribute
 import attributes.array.StringArrayAttribute
 import conditions.equality.StringEquality.Companion.escapedQuotes

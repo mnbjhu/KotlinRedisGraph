@@ -3,9 +3,8 @@ package scopes
 import api.RedisNode
 import api.RedisRelation
 
-import Results.ResultValue
+import results.ResultValue
 import attributes.RelationAttribute
-import conditions.equality.StringEquality.Companion.escapedQuotes
 import kotlin.reflect.KClass
 
 /**

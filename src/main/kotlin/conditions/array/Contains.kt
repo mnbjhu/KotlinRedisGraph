@@ -1,7 +1,7 @@
 package conditions.array
 
-import Results.array.ArrayResult
-import Results.primative.BooleanResult
+import results.array.ArrayResult
+import results.primative.BooleanResult
 
 /**
  * Contains

@@ -1,3 +1,5 @@
+package schemas
+
 import api.RedisNode
 import api.RedisRelation
 

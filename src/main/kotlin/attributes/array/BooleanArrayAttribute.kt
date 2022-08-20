@@ -1,6 +1,6 @@
 package attributes
 
-import Results.array.BooleanArrayResult
+import results.array.BooleanArrayResult
 import api.WithAttributes
 
 /**
