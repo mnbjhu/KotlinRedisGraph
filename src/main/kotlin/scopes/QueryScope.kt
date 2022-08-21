@@ -53,9 +53,9 @@ class QueryScope<R>(private val graph: RedisGraph){
         val commands = listOf(
             "MATCH ${toMatch.joinToString()}",
             if(matchPredicate !is True) "WHERE $matchPredicate " else "",
+            getDeleteString(),
             if(toCreate.isEmpty()) "" else "CREATE ${toCreate.joinToString{ it.getCreateString() }}",
             if(allUpdates.isEmpty()) null else "SET ${allUpdates.joinToString()}",
-            getDeleteString(),
             getResultString(),
             getOrderByString()
         ).mapNotNull { it }.filter { it != "" }
