@@ -6,11 +6,9 @@ import api.*
 import attributes.*
 import attributes.array.StringArrayAttribute
 import attributes.primative.StringAttribute
-import conditions.True
 import conditions.equality.StringEquality.Companion.escapedQuotes
 import paths.Path
-import kotlin.reflect.full.primaryConstructor
-
+import statements.*
 
 /**
  * Query scope
@@ -20,14 +18,9 @@ import kotlin.reflect.full.primaryConstructor
  * @constructor Create empty Query scope
  */
 class QueryScope<R>(private val graph: RedisGraph){
-    var toMatch: MutableList<Matchable> = mutableListOf()
-    var matchPredicate: BooleanResult = True
+    val commands = mutableListOf<Statement>()
     var returnValues: MutableList<ResultValue<*>> = mutableListOf()
     var transform: (() -> R)? = null
-    var orderBy: ResultValue<*>? = null
-    var toCreate: MutableList<Creatable> = mutableListOf()
-    val allUpdates = mutableListOf<String>()
-    var toDelete: MutableList<WithAttributes> = mutableListOf()
 
     /**
      * Invoke
@@ -49,30 +42,20 @@ class QueryScope<R>(private val graph: RedisGraph){
      * @param relation
      */
 
-    override fun toString(): String{
-        val commands = listOf(
-            "MATCH ${toMatch.joinToString()}",
-            if(matchPredicate !is True) "WHERE $matchPredicate " else "",
-            getDeleteString(),
-            if(toCreate.isEmpty()) "" else "CREATE ${toCreate.joinToString{ it.getCreateString() }}",
-            if(allUpdates.isEmpty()) null else "SET ${allUpdates.joinToString()}",
-            getResultString(),
-            getOrderByString()
-        ).mapNotNull { it }.filter { it != "" }
-
-        return commands.joinToString(" ").also { println("GRAPH.QUERY ${graph.name} \"$it\"") }
+    override fun toString(): String {
+        val first = commands.filter { it !is OrderBy }
+        val last = commands.filterIsInstance<OrderBy>()
+        return first.joinToString(" ") { it.getCommand() } + " " +
+                getResultString() + " " + last.joinToString(" ") { it.getCommand() }
     }
     private fun getResultString() = if(returnValues.isEmpty()) "" else "RETURN ${returnValues.joinToString()}"
-    private fun getDeleteString() = if(toDelete.isEmpty()) "" else "DELETE ${toDelete.joinToString { it.instanceName }}"
-    private fun getOrderByString() = if(orderBy == null) "" else "ORDER BY $orderBy"
 
-    fun <A: RedisNode>match(node: A) = node.also { toMatch.add(it) }
+    fun <A: RedisNode>match(node: A) = node.also { commands.add(Match(listOf(it))) }
     fun <A: RedisNode, B: RedisNode>match(node1: A, node2: B): Pair<A, B>{
-        toMatch.add(node1)
-        toMatch.add(node2)
+        commands.add(Match(listOf(node1, node2)))
         return node1 to node2
     }
-    fun <T: Path>match(path: T) = path.also{ toMatch.add(it) }
+    fun <T: Path>match(path: T) = path.also{ commands.add(Match(listOf(it))) }
     fun set(scope: SetScope.() -> Unit) = emptyList<Unit>().also { SetScope().scope() }
     inner class SetScope{
         infix fun <T>Attribute<T>.setTo(newValue: T){
@@ -85,7 +68,7 @@ class QueryScope<R>(private val graph: RedisGraph){
                 ){ "'${it.escapedQuotes()}'" }
                 else -> newValue.toString()
             }
-            allUpdates.add("$this = $wrapped")
+            commands.add(Update("$this = $wrapped"))
         }
     }
 
@@ -96,7 +79,8 @@ class QueryScope<R>(private val graph: RedisGraph){
      * @receiver
      */
 
-    fun create(vararg paths: Creatable): List<Unit> = listOf<Unit>().also{ toCreate.addAll(paths) }
+    fun create(vararg paths: Creatable): List<Unit> = listOf<Unit>()
+        .also{ commands.add(Create(paths.toList())) }
 
     /**
      * Delete
@@ -105,7 +89,7 @@ class QueryScope<R>(private val graph: RedisGraph){
      * @return
      */
     fun delete(vararg items: WithAttributes): List<Unit>{
-        toDelete.addAll(items)
+        commands.add(Delete(items.toList()))
         return emptyList()
     }
 
@@ -116,7 +100,7 @@ class QueryScope<R>(private val graph: RedisGraph){
      * @receiver
      */
     fun where(predicate: BooleanResult){
-        matchPredicate = predicate
+        commands.add(Where(predicate))
     }
 
     /**
@@ -139,7 +123,7 @@ class QueryScope<R>(private val graph: RedisGraph){
      * @param result
      */
     fun orderBy(result: ResultValue<*>){
-        orderBy = result
+        commands.add(OrderBy(result))
     }
 
     /**
