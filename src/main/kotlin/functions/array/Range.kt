@@ -1,8 +1,8 @@
 package functions.array
 
-import results.array.LongArrayResult
+import results.array.ArrayResult
 
-class Range(val first: Long, val second: Long, val step: Long?): LongArrayResult(){
+class Range(val first: Long, private val second: Long, private val step: Long?): ArrayResult<Long>(){
     companion object{
         @JvmStatic
         fun range(first: Int, second: Int) = range(first.toLong(), second.toLong(), step = null)

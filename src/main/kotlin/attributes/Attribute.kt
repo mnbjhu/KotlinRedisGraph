@@ -11,7 +11,6 @@ import api.WithAttributes
 interface Attribute<T> {
     val parent: WithAttributes
     val name: String
-
     /**
      * Get attribute text
      *
