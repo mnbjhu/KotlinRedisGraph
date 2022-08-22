@@ -173,17 +173,5 @@ class QueryScope<R>(private val graph: RedisGraph){
     fun <T>registerReturnValue(resultValue: ResultValue<T>){
         this@QueryScope.returnValues.add(resultValue)
     }
-    fun <T>setTransform(resultValue: ResultValue<T>){
-        this@QueryScope.returnValues.add(resultValue)
-    }
-    companion object{
-        @JvmStatic
-        fun getPathQuery(path: List<WithAttributes>) = path.joinToString("-") {
-            when (it) {
-                is RedisNode -> "(${it.instanceName}:${it.typeName})"
-                is RedisRelation<*, *> -> "[${it.instanceName}:${it.typeName}]"
-                else -> throw Exception("???")
-            }
-        }
-    }
+
 }
