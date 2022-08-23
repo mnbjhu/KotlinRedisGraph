@@ -7,8 +7,11 @@ import attributes.*
 import attributes.array.StringArrayAttribute
 import attributes.primative.StringAttribute
 import conditions.equality.StringEquality.Companion.escapedQuotes
+import paths.NameCounter
 import paths.Path
+import results.array.ArrayResult
 import statements.*
+import kotlin.reflect.full.primaryConstructor
 
 /**
  * Query scope
@@ -70,6 +73,14 @@ class QueryScope<R>(private val graph: RedisGraph){
             }
             commands.add(Update("$this = $wrapped"))
         }
+    }
+    fun <T, U: ArrayResult<T>>unwind(arr: U): ResultValue<T>{
+        val result = object: ResultValue<T>(){
+            val name = NameCounter.getNext()
+            override fun toString() = name
+        }
+        commands.add(Unwind(arr, result))
+        return result
     }
 
     /**

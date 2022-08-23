@@ -66,7 +66,8 @@ class RedisGraph(
         instance.createScope()
         if(instance.attributes.any { (it as ResultValue<*>).value == null }) throw Exception("All values must be set on creation")
         val queryString =  "CREATE ${instance.createString()}"
-        client.graphQuery(name, queryString.also { println("GRAPH.QUERY $name \"$it\"") })
+        println("GRAPH.QUERY $name \"$queryString\"")
+        client.graphQuery(name, queryString)
     }
     /**
      * Create
