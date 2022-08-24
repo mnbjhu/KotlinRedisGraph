@@ -1,6 +1,7 @@
 package api
 
 import attributes.*
+import attributes.array.BooleanArrayAttribute
 import attributes.array.DoubleArrayAttribute
 import attributes.array.LongArrayAttribute
 import attributes.array.StringArrayAttribute

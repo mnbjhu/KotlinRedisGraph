@@ -8,4 +8,4 @@ import results.ResultValue
  * @param T
  * @constructor Create empty Array result
  */
-sealed class ArrayResult<T>: ResultValue<List<T>>()
+abstract class ArrayResult<T>: ResultValue<List<T>>()

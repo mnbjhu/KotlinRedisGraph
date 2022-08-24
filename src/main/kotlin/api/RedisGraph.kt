@@ -1,14 +1,14 @@
 package api
 
+import attributes.Attribute
 import results.ResultValue
 import attributes.primative.StringAttribute
-import attributes.array.StringArrayAttribute
 import conditions.equality.StringEquality.Companion.escapedQuotes
 import redis.clients.jedis.HostAndPort
 import redis.clients.jedis.Jedis
-import redis.clients.jedis.JedisClientConfig
 import redis.clients.jedis.UnifiedJedis
-import redis.clients.jedis.providers.PooledConnectionProvider
+import results.array.ArrayResult
+import results.primative.StringResult
 import scopes.QueryScope
 import kotlin.reflect.KClass
 
@@ -66,7 +66,8 @@ class RedisGraph(
         instance.createScope()
         if(instance.attributes.any { (it as ResultValue<*>).value == null }) throw Exception("All values must be set on creation")
         val queryString =  "CREATE ${instance.createString()}"
-        client.graphQuery(name, queryString.also { println("GRAPH.QUERY $name \"$it\"") })
+        println("GRAPH.QUERY $name \"$queryString\"")
+        client.graphQuery(name, queryString)
     }
     /**
      * Create
@@ -92,11 +93,11 @@ class RedisGraph(
             attributes.joinToString { attribute ->
                 "${attribute.name}:${
                     when(attribute) {
-                        is StringAttribute -> "'${attribute.value!!.escapedQuotes()}'"
-                        is StringArrayAttribute -> attribute.value!!.joinToString(
+                        is StringResult -> "'${attribute.value!!.escapedQuotes()}'"
+                        is ArrayResult<*> ->  attribute.value!!.joinToString(
                             prefix = "[",
                             postfix = "]"
-                        ){ "'${it.escapedQuotes()}'" }
+                        ){ if(it is String) "'${it.escapedQuotes()}'" else "$it" }
                         else -> (attribute as ResultValue<*>).value!!.toString()
                     }
                 }"

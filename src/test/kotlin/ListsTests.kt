@@ -55,4 +55,19 @@ class ListsTests {
         }
         lists.size `should be equal to` 6
     }
+    @Test
+    fun `Test Unwind`(){
+        deleteAll()
+        val currentList = mutableListOf(1)
+        listGraph.create(ListNode::class, 1..10){
+            myList[currentList.map { it.toString() }]
+            currentList += currentList.last() + 1
+        }
+        val lists = listGraph.query {
+            val myList = match(ListNode())
+            val element = unwind(myList.myList)
+            result(element)
+        }
+        println(lists)
+    }
 }
