@@ -33,9 +33,7 @@ class CreatePathScope(private val parent: QueryScope<*>) {
         val relation = V::class.constructors.first().call(parent, obj, "${name}Relation")
         with(relation){
             attributeBuilder()
-            attributes.forEach{
-                if((it as ResultValue<*>).value == null) throw Exception("All attributes are require on creation")
-            }
+            if(!hasAllAttributes()) throw Exception("All attributes are require on creation")
         }
         return RedisNodeRelationPair(parent, V::class, name, attributeBuilder)
     }
