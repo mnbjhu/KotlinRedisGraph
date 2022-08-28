@@ -53,7 +53,7 @@ class QueryScope<R>(private val graph: RedisGraph){
     }
     private fun getResultString() = if(returnValues.isEmpty()) "" else "RETURN ${returnValues.joinToString()}"
 
-    fun <A: RedisNode>match(node: A) = node.also { commands.add(Match(listOf(it))) }
+    fun <A: RedisNode>match(node: A) = node.also { it.matched = false; commands.add(Match(listOf(it))) }
     fun <A: RedisNode, B: RedisNode>match(node1: A, node2: B): Pair<A, B>{
         commands.add(Match(listOf(node1, node2)))
         return node1 to node2

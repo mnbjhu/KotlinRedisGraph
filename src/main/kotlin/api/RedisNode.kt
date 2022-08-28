@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
  */
 abstract class RedisNode(override val typeName: String): WithAttributes(), Matchable {
     override val attributes: MutableList<Attribute<*>> = mutableListOf()
-
+    var matched = false
     /**
      * Relates
      *
@@ -22,9 +22,9 @@ abstract class RedisNode(override val typeName: String): WithAttributes(), Match
      * @param V
      * @param clazz
      */
-    inline fun <reified T: RedisNode, reified U: RedisNode, reified V>T.relates(clazz: KClass<out V>) where V: RedisRelation<T, U> =
+    protected inline fun <reified T: RedisNode, reified U: RedisNode, reified V>
+            T.relates(clazz: KClass<out V>) where V: RedisRelation<T, U> =
         RelationAttribute(clazz, this)
-
     override fun toString() = getMatchString()
     override fun getMatchString(): String {
         val attrs = attributes.mapNotNull {

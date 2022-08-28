@@ -1,6 +1,7 @@
 import api.RedisGraph
 import conditions.array.Contains.Companion.contains
 import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.`should contain same`
 import org.junit.jupiter.api.Test
 import schemas.ListNode
 
@@ -68,6 +69,17 @@ class ListsTests {
             val element = unwind(myList.myList)
             result(element)
         }
-        println(lists)
+        lists `should contain same` listOf<Long>(
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+            1, 2, 3, 4, 5, 6, 7, 8, 9,
+            1, 2, 3, 4, 5, 6, 7, 8,
+            1, 2, 3, 4, 5, 6, 7,
+            1, 2, 3, 4, 5, 6,
+            1, 2, 3, 4, 5,
+            1, 2, 3, 4,
+            1, 2, 3,
+            1, 2,
+            1
+        ).map { it.toString() }
     }
 }

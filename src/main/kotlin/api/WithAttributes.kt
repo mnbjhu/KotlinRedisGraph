@@ -10,6 +10,7 @@ import attributes.primative.DoubleAttribute
 import attributes.primative.LongAttribute
 import attributes.primative.StringAttribute
 import paths.NameCounter
+import results.ResultValue
 
 /**
  * With attributes
@@ -18,65 +19,64 @@ import paths.NameCounter
  */
 sealed class WithAttributes {
 
-    abstract val typeName: String
-    abstract val attributes: MutableList<Attribute<*>>
+    internal abstract val typeName: String
+    internal abstract val attributes: MutableList<Attribute<*>>
     var instanceName = NameCounter.getNext()
-
     /**
      * String
      *
      * @param name
      */
-    fun string(name: String) = StringAttribute(name, this)
+    protected fun string(name: String) = StringAttribute(name, this)
 
     /**
      * Long
      *
      * @param name
      */
-    fun long(name: String) = LongAttribute(name, this)
+    protected fun long(name: String) = LongAttribute(name, this)
 
     /**
      * Double
      *
      * @param name
      */
-    fun double(name: String) = DoubleAttribute(name, this)
+    protected fun double(name: String) = DoubleAttribute(name, this)
 
     /**
      * Boolean
      *
      * @param name
      */
-    fun boolean(name: String) = BooleanAttribute(name, this)
+     protected fun boolean(name: String) = BooleanAttribute(name, this)
 
     /**
      * Long list
      *
      * @param name
      */
-    fun longList(name: String) = LongArrayAttribute(name, this)
+    protected fun longList(name: String) = LongArrayAttribute(name, this)
 
     /**
      * Double list
      *
      * @param name
      */
-    fun doubleList(name: String) = DoubleArrayAttribute(name, this)
+    protected fun doubleList(name: String) = DoubleArrayAttribute(name, this)
 
     /**
      * String list
      *
      * @param name
      */
-    fun stringList(name: String) = StringArrayAttribute(name, this)
+    protected fun stringList(name: String) = StringArrayAttribute(name, this)
 
     /**
      * Boolean list
      *
      * @param name
      */
-    fun booleanList(name: String) = BooleanArrayAttribute(name, this)
-
-    inline fun <reified T: Any>serializable(name: String) = SerializableAttribute(name, this, T::class)
+    protected fun booleanList(name: String) = BooleanArrayAttribute(name, this)
+    protected inline fun <reified T: Any>serializable(name: String) = SerializableAttribute(name, this, T::class)
+    fun hasAllAttributes() = attributes.all{ (it as ResultValue<*>).value != null }
 }
