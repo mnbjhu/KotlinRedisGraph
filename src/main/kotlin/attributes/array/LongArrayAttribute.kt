@@ -1,6 +1,6 @@
 package attributes.array
 
-import api.WithAttributes
+import core.WithAttributes
 import attributes.Attribute
 import results.array.ArrayResult
 

@@ -1,4 +1,4 @@
-package api
+package core
 
 import results.ResultValue
 import attributes.Attribute

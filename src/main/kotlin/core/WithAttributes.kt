@@ -1,4 +1,4 @@
-package api
+package core
 
 import attributes.*
 import attributes.array.BooleanArrayAttribute

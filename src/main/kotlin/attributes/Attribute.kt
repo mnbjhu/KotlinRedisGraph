@@ -1,6 +1,6 @@
 package attributes
 
-import api.WithAttributes
+import core.WithAttributes
 
 
 /**

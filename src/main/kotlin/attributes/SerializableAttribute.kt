@@ -1,7 +1,7 @@
 package attributes
 
 import results.SerializableResult
-import api.WithAttributes
+import core.WithAttributes
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer

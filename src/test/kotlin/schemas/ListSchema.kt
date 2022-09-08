@@ -1,6 +1,6 @@
 package schemas
 
-import api.RedisNode
+import core.RedisNode
 
 class ListNode : RedisNode("ListNode") {
     val myList = stringList("my_list")

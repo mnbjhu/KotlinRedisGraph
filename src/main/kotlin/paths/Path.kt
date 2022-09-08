@@ -1,6 +1,6 @@
 package paths
 
-import api.Creatable
-import api.Matchable
+import core.Creatable
+import core.Matchable
 
 interface Path: Matchable, Creatable

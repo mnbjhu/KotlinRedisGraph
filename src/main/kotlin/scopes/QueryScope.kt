@@ -2,7 +2,7 @@ package scopes
 
 import results.primative.BooleanResult
 import results.ResultValue
-import api.*
+import core.*
 import attributes.*
 import attributes.array.StringArrayAttribute
 import attributes.primative.StringAttribute
@@ -11,7 +11,6 @@ import paths.NameCounter
 import paths.Path
 import results.array.ArrayResult
 import statements.*
-import kotlin.reflect.full.primaryConstructor
 
 /**
  * Query scope
@@ -20,11 +19,9 @@ import kotlin.reflect.full.primaryConstructor
  * @property graph
  * @constructor Create empty Query scope
  */
-class QueryScope<R>(private val graph: RedisGraph){
+class QueryScope{
     val commands = mutableListOf<Statement>()
     var returnValues: MutableList<ResultValue<*>> = mutableListOf()
-    var transform: (() -> R)? = null
-
     /**
      * Invoke
      *
@@ -52,7 +49,6 @@ class QueryScope<R>(private val graph: RedisGraph){
                 getResultString() + " " + last.joinToString(" ") { it.getCommand() }
     }
     private fun getResultString() = if(returnValues.isEmpty()) "" else "RETURN ${returnValues.joinToString()}"
-
     fun <A: RedisNode>match(node: A) = node.also { it.matched = false; commands.add(Match(listOf(it))) }
     fun <A: RedisNode, B: RedisNode>match(node1: A, node2: B): Pair<A, B>{
         commands.add(Match(listOf(node1, node2)))
@@ -113,7 +109,7 @@ class QueryScope<R>(private val graph: RedisGraph){
     fun where(predicate: BooleanResult){
         commands.add(Where(predicate))
     }
-
+/*
     /**
      * Result
      *
@@ -127,7 +123,7 @@ class QueryScope<R>(private val graph: RedisGraph){
         this.transform = transform
         return emptyList()
     }
-
+*/
     /**
      * Order by
      *
@@ -136,7 +132,7 @@ class QueryScope<R>(private val graph: RedisGraph){
     fun orderBy(result: ResultValue<*>){
         commands.add(OrderBy(result))
     }
-
+/*
     /**
      * Evaluate
      *
@@ -181,6 +177,8 @@ class QueryScope<R>(private val graph: RedisGraph){
         transform = { results.map { it() } as R }
         return listOf()
     }
+
+ */
     fun <T>registerReturnValue(resultValue: ResultValue<T>){
         this@QueryScope.returnValues.add(resultValue)
     }

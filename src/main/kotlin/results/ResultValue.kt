@@ -10,7 +10,6 @@ abstract class ResultValue<T> {
     var value: T? = null
     abstract override fun toString(): String
     open fun set(data: Any?) {
-
         value = data as T
     }
     /**

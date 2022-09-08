@@ -1,8 +1,9 @@
-import api.RedisGraph
+import core.RedisGraph
 import conditions.array.Contains.Companion.contains
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain same`
 import org.junit.jupiter.api.Test
+import results.ResultValue
 import schemas.ListNode
 
 
@@ -33,7 +34,7 @@ class ListsTests {
         `Test Create`()
         val result = listGraph.query {
             val myList = match(ListNode())
-            result(myList.myList)
+            myList.myList
         }
         result.size `should be equal to` 1
         val (first, second, third) = result.first()
@@ -52,7 +53,7 @@ class ListsTests {
         val lists = listGraph.query {
             val myList = match(ListNode())
             where ( myList.myList contains "5" )
-            result(myList.myList)
+            myList.myList
         }
         lists.size `should be equal to` 6
     }
@@ -67,7 +68,7 @@ class ListsTests {
         val lists = listGraph.query {
             val myList = match(ListNode())
             val element = unwind(myList.myList)
-            result(element)
+            element
         }
         lists `should contain same` listOf<Long>(
             1, 2, 3, 4, 5, 6, 7, 8, 9, 10,

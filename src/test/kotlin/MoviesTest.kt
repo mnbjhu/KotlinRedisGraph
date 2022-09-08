@@ -1,5 +1,4 @@
-import api.RedisGraph
-import api.RedisRelation
+import core.RedisGraph
 import functions.relation.endNode
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain`
@@ -49,24 +48,24 @@ class MoviesTest {
             movieId[1]
         }
 
-        moviesGraph.query {
+        moviesGraph.queryWithoutResult {
             val (actor, movie) = match(Actor(), Movie())
             where ( (actor.actorId eq 1) and (movie.movieId eq 1) )
             create(actor - { actedIn { role["Luke Skywalker"] } } - movie)
         }
-        moviesGraph.query {
+        moviesGraph.queryWithoutResult {
             val (actor, movie) = match(Actor(), Movie())
             where ( (actor.actorId eq 2) and (movie.movieId eq 1) )
             create(actor - { actedIn{ role["Han Solo"] } } - movie)
         }
-        moviesGraph.query {
+        moviesGraph.queryWithoutResult {
             val (actor, movie) = match(Actor(), Movie())
             where ( (actor.actorId eq 3) and (movie.movieId eq 1) )
             create( actor - { actedIn{ role["Princess Leia"] } } - movie )
         }
         val movies = moviesGraph.query{
             val movie = match(Movie())
-            result(movie.title)
+            movie.title
         }
         movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
 

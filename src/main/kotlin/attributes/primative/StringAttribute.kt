@@ -1,9 +1,8 @@
 package attributes.primative
 
 import results.primative.StringResult
-import api.WithAttributes
+import core.WithAttributes
 import attributes.Attribute
-import conditions.equality.StringEquality
 
 /**
  * String attribute

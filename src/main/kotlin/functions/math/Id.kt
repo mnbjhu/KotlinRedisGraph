@@ -1,7 +1,7 @@
 package functions.math
 
 import results.primative.LongResult
-import api.RedisNode
+import core.RedisNode
 
 /**
  * Id

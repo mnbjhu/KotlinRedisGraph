@@ -1,7 +1,7 @@
 package paths
 
-import api.RedisNode
-import api.RedisRelation
+import core.RedisNode
+import core.RedisRelation
 import kotlin.reflect.KClass
 
 class OpenPath2<A : RedisNode, B : RedisRelation<A, C>, C : RedisNode, D : RedisRelation<C, E>, E : RedisNode>

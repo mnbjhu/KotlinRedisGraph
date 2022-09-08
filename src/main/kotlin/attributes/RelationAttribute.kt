@@ -1,7 +1,7 @@
 package attributes
 
-import api.RedisNode
-import api.RedisRelation
+import core.RedisNode
+import core.RedisRelation
 import kotlin.reflect.KClass
 
 /**

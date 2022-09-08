@@ -1,4 +1,4 @@
-import api.RedisGraph
+import core.RedisGraph
 import org.junit.jupiter.api.Test
 import paths.minus
 import schemas.*

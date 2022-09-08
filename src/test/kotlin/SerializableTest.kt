@@ -1,4 +1,4 @@
-import api.RedisGraph
+import core.RedisGraph
 import conditions.equality.SerializableEquality.Companion.eq
 import org.junit.jupiter.api.Test
 

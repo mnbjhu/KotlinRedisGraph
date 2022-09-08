@@ -1,8 +1,7 @@
 package paths
 
-import api.RedisNode
-import api.RedisRelation
-import kotlin.reflect.KProperty
+import core.RedisNode
+import core.RedisRelation
 
 class Path4<
         A : RedisNode, B : RedisRelation<A, C>,

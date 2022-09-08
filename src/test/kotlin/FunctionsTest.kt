@@ -1,4 +1,4 @@
-import api.RedisGraph
+import core.RedisGraph
 import functions.math.Average
 import functions.math.Max
 import functions.math.Min
@@ -34,7 +34,7 @@ class FunctionsTest {
      * Delete all
      *
      */
-    private fun deleteAll() = numbersGraph.query {
+    private fun deleteAll() = numbersGraph.queryWithoutResult {
         val number = match(MyNumber())
         delete(number)
     }
@@ -48,7 +48,7 @@ class FunctionsTest {
         numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)){ num[it] }
         numbersGraph.query {
             val number = match(MyNumber())
-            result(Average(number.num))
+            Average(number.num)
         }.first() `should be equal to` 8.0
     }
 
@@ -60,7 +60,7 @@ class FunctionsTest {
     fun `Test Max`(){
         numbersGraph.query {
             val number = match(MyNumber())
-            result(Max(number.num))
+            Max(number.num)
         }.first() `should be equal to` 13.0
     }
 
@@ -72,7 +72,7 @@ class FunctionsTest {
     fun `Test Min`(){
         numbersGraph.query {
             val number = match(MyNumber())
-            result(Min(number.num))
+            Min(number.num)
         }.first() `should be equal to` 1.0
     }
 
@@ -84,7 +84,7 @@ class FunctionsTest {
     fun `Test Sum`(){
         numbersGraph.query {
             val number = match(MyNumber())
-            result(Sum(number.num))
+            Sum(number.num)
         }.first() `should be equal to` 24.0
     }
 

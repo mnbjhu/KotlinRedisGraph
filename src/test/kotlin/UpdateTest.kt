@@ -1,8 +1,5 @@
-import api.RedisGraph
-import api.RedisRelation
-import functions.relation.endNode
+import core.RedisGraph
 import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should contain`
 import org.junit.jupiter.api.Test
 import paths.minus
 import schemas.Actor

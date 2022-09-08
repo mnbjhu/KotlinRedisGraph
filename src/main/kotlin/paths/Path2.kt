@@ -1,9 +1,8 @@
 package paths
 
-import api.RedisNode
-import api.RedisRelation
+import core.RedisNode
+import core.RedisRelation
 import attributes.RelationAttribute
-import kotlin.reflect.KProperty
 
 class Path2<A: RedisNode, B: RedisRelation<A, C>, C: RedisNode>
     (val first: A, val firstToSecond: B, val second: C): Path {

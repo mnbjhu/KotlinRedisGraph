@@ -1,6 +1,6 @@
 package results
 
-import api.WithAttributes
+import core.WithAttributes
 import attributes.primative.StringAttribute
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json

@@ -1,8 +1,6 @@
-package api
+package core
 
-import attributes.Attribute
 import results.ResultValue
-import attributes.primative.StringAttribute
 import conditions.equality.StringEquality.Companion.escapedQuotes
 import redis.clients.jedis.HostAndPort
 import redis.clients.jedis.Jedis
@@ -12,6 +10,7 @@ import results.primative.StringResult
 import scopes.QueryScope
 import kotlin.reflect.KClass
 
+typealias PairQueryScope<T, U> = QueryScope.() -> Pair<ResultValue<T>, ResultValue<U>>
 
 /**
  * Redis graph
@@ -23,10 +22,14 @@ import kotlin.reflect.KClass
  * @property port
  * @constructor Creates a connection to
  */
+
+fun interface QueryBuilder<T, out U: ResultValue<T>>{
+    fun QueryScope.action(): U
+}
 class RedisGraph(
     val name: String,
-    private val host: String,
-    private val port: Int = 6379,
+    host: String,
+    port: Int = 6379,
     password: String? = null
 ) {
     val client: UnifiedJedis
@@ -37,7 +40,7 @@ class RedisGraph(
         password?.let { jedis.auth(it) }
         client = UnifiedJedis(jedis.client)
     }
-
+/*
     /**
      * Query
      *
@@ -51,6 +54,18 @@ class RedisGraph(
         scope.action()
         return scope.evaluate()
     }
+*/
+    fun <T, U: ResultValue<T>>query(builder: QueryBuilder<T, U>): List<T>{
+        val response = client.graphQuery(name, "${QueryScope().apply { with(builder){ action() } }}")
+        return response.map { it.values().first() as T }
+    }
+
+
+
+    fun queryWithoutResult(action: QueryScope.() -> Unit){
+        client.graphQuery(name, "${QueryScope().apply { action() }}")
+    }
+
 
     /**
      * Create

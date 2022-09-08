@@ -1,9 +1,8 @@
 package attributes.primative
 
 import results.primative.LongResult
-import api.WithAttributes
+import core.WithAttributes
 import attributes.Attribute
-import conditions.equality.LongEquality
 
 /**
  * Long attribute
