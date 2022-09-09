@@ -9,11 +9,12 @@ import attributes.Attribute
  *
  * @property name
  * @property parent
- * @constructor Create empty Boolean attribute
+ * @constructdor Create empty Boolean attribute
  */
-class BooleanAttribute(override val name: String, override val parent: WithAttributes): BooleanResult(),
-    Attribute<Boolean> {
+class BooleanAttribute(override val name: String, override val parent: WithAttributes): Attribute<Boolean>() {
     init { parent.attributes.add(this) }
-    override fun toString() = getAttributeText()
+    override fun parse(result: Iterator<Any>): Boolean {
+        return result.next() as Boolean
+    }
 
 }

@@ -1,6 +1,7 @@
 package attributes
 
 import core.WithAttributes
+import results.ResultValue
 
 
 /**
@@ -8,13 +9,10 @@ import core.WithAttributes
  *
  * @param T
  */
-interface Attribute<T> {
-    val parent: WithAttributes
-    val name: String
-    /**
-     * Get attribute text
-     *
-     */
-    fun getAttributeText() = "${parent.instanceName}.$name"
+abstract class Attribute<T>: ResultValue<T> {
+    abstract val parent: WithAttributes
+    abstract val name: String
+    override fun toString(): String = "${parent.instanceName}.$name"
+    open fun getSetString(value: T): String = "${parent.instanceName}.$name = $value"
 }
 

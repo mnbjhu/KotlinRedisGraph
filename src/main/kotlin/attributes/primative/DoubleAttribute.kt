@@ -11,8 +11,7 @@ import attributes.Attribute
  * @property parent
  * @constructor Create empty Double attribute
  */
-class DoubleAttribute(override val name: String, override val parent: WithAttributes):
-     DoubleResult(), Attribute<Double>
+class DoubleAttribute(override val name: String, override val parent: WithAttributes): Attribute<Double>()
 {
     init { parent.attributes.add(this) }
 
@@ -21,5 +20,7 @@ class DoubleAttribute(override val name: String, override val parent: WithAttrib
      *
      * @param literal
      */
-    override fun toString() = getAttributeText()
+    override fun parse(result: Iterator<Any>): Double {
+        return result.next() as Double
+    }
 }

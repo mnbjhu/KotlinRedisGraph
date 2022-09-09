@@ -1,3 +1,4 @@
+/*
 package schemas
 
 import core.RedisNode
@@ -29,4 +30,4 @@ class Piece: RedisNode("Piece"){
     val type = serializable<PieceType>("type")
 
 
-}
+}*/
