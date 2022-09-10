@@ -1,7 +1,7 @@
 package schemas
 
-import core.RedisNode
-import core.RedisRelation
+import uk.gibby.redis.core.RedisNode
+import uk.gibby.redis.core.RedisRelation
 
 class User: RedisNode("User"){
     val firstName = string("firstName")

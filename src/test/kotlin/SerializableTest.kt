@@ -1,10 +1,10 @@
-import core.RedisGraph
-import conditions.equality.SerializableEquality.Companion.eq
+import uk.gibby.redis.core.RedisGraph
+import uk.gibby.redis.conditions.equality.SerializableEquality.Companion.eq
 import org.junit.jupiter.api.Test
-
+import uk.gibby.redis.statements.Match.Companion.match
 import schemas.EnumSchema
 import schemas.MyEnum
-import statements.Where.Companion.where
+import uk.gibby.redis.statements.Where.Companion.where
 
 class SerializableTest {
     val enumGraph = RedisGraph("EnumGraph",

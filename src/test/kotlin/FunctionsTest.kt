@@ -1,13 +1,14 @@
-import core.RedisGraph
-import functions.math.Average
-import functions.math.Max
-import functions.math.Min
-import functions.math.Sum
+import uk.gibby.redis.core.RedisGraph
+import uk.gibby.redis.functions.math.Average
+import uk.gibby.redis.functions.math.Max
+import uk.gibby.redis.functions.math.Min
+import uk.gibby.redis.functions.math.Sum
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import schemas.MyNumber
-import statements.Delete.Companion.delete
+import uk.gibby.redis.statements.Delete.Companion.delete
+import uk.gibby.redis.statements.Match.Companion.match
 
 /**
  * Functions test
