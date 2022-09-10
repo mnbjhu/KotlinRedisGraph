@@ -35,7 +35,7 @@ class FunctionsTest {
      * Delete all
      *
      */
-    private fun deleteAll() = numbersGraph.queryWithoutResult {
+    private fun deleteAll() = numbersGraph.query {
         val number = match(MyNumber())
         delete(number)
     }

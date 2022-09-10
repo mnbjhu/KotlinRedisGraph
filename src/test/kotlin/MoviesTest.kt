@@ -54,20 +54,20 @@ class MoviesTest {
             it[movieId] = 1
         }
 
-        moviesGraph.queryWithoutResult {
+        moviesGraph.query {
             val (actor, movie) = match(Actor(), Movie())
-            where ( (actor.actorId eq 1) and (movie.movieId eq 1) )
+            where ((actor.actorId eq 1) and (movie.movieId eq 1))
             create(actor - { actedIn { it[role] = "Luke Skywalker" } } - movie)
         }
-        moviesGraph.queryWithoutResult {
+        moviesGraph.query {
             val (actor, movie) = match(Actor(), Movie())
             where ( (actor.actorId eq 2) and (movie.movieId eq 1) )
             create(actor - { actedIn{ it[role] = "Han Solo" } } - movie)
         }
-        moviesGraph.queryWithoutResult {
+        moviesGraph.query {
             val (actor, movie) = match(Actor(), Movie())
-            where ( (actor.actorId eq 3) and (movie.movieId eq 1) )
-            create( actor - { actedIn{ it[role] = "Princess Leia" } } - movie )
+            where((actor.actorId eq 3) and (movie.movieId eq 1))
+            create(actor - { actedIn{ it[role] = "Princess Leia" } } - movie)
         }
         val movies = moviesGraph.query{
             val movie = match(Movie())
@@ -79,11 +79,11 @@ class MoviesTest {
             val movie = match( Movie())
             result(movie.title, movie.releaseYear, movie.movieId)
         }.first()
-        /*
+
         title as String `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
         releaseYear as Long `should be equal to` 1980
         id as Long `should be equal to` 1
-*/
+
         val actedInMovies = moviesGraph.query {
             val (actor, relation, movie) = match(Actor() - { +actedIn }  - Movie())
             where (endNode(relation).movieId eq 1)

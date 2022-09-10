@@ -50,20 +50,20 @@ class UpdateTest {
             it[movieId] = 1
         }
 
-        moviesGraph.queryWithoutResult {
+        moviesGraph.query {
             val (actor, movie) = match(Actor(), Movie())
             where ( (actor.actorId eq 1) and (movie.movieId eq 1) )
             create(actor - { actedIn { it[role] = "Luke Skywalker" } } - movie)
         }
-        moviesGraph.queryWithoutResult {
+        moviesGraph.query {
             val (actor, movie) = match(Actor(), Movie())
             where ((actor.actorId eq 2) and (movie.movieId eq 1))
             create(actor - { actedIn{ it[role] = "Han Solo" } } - movie)
         }
-        moviesGraph.queryWithoutResult {
+        moviesGraph.query {
             val (actor, movie) = match(Actor(), Movie())
-            where ( (actor.actorId eq 3) and (movie.movieId eq 1) )
-            create( actor - { actedIn{ it[role] = "Princess Leia" } } - movie )
+            where ((actor.actorId eq 3) and (movie.movieId eq 1) )
+            create(actor - { actedIn{ it[role] = "Princess Leia" } } - movie)
         }
 
         moviesGraph.query{
