@@ -8,10 +8,11 @@ package results
  */
 interface ResultValue<out T> {
     fun getReferenceString(): String
-    fun parse(result: Iterator<Any?>): T
+    fun parse(result: Iterator<Any?>): T = result.next() as T
 }
 
-abstract class ArrayResult<T>(val type: ResultValue<T>): ResultValue<List<T>>{
+interface ArrayResult<T>: ResultValue<List<T>>{
+    val type: ResultValue<T>
     override fun parse(result: Iterator<Any?>): List<T> {
         val values = (result.next() as List<*>)
         val innerIter = values.iterator()

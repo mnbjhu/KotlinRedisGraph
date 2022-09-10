@@ -14,13 +14,4 @@ import attributes.Attribute
 class DoubleAttribute(override val name: String, override val parent: WithAttributes?): Attribute<Double>(), DoubleResult
 {
     init { parent?.attributes?.add(this) }
-
-    /**
-     * Eq
-     *
-     * @param literal
-     */
-    override fun parse(result: Iterator<Any?>): Double {
-        return result.next() as Double
-    }
 }

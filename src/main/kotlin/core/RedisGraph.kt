@@ -5,8 +5,7 @@ import conditions.equality.StringEquality.Companion.escapedQuotes
 import redis.clients.jedis.HostAndPort
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.UnifiedJedis
-import results.array.ArrayResult
-import results.primative.StringResult
+import scopes.EmptyResult
 import scopes.QueryScope
 import kotlin.reflect.KClass
 
@@ -40,32 +39,17 @@ class RedisGraph(
         password?.let { jedis.auth(it) }
         client = UnifiedJedis(jedis.client)
     }
-/*
-    /**
-     * Query
-     *
-     * @param T
-     * @param action
-     * @receiver
-     * @return
-     */
-    fun <T>query(action: QueryScope<T>.() -> List<T>): List<T> {
-        val scope = QueryScope<T>(this)
-        scope.action()
-        return scope.evaluate()
+    fun <T>query(builder: QueryScope.() -> ResultValue<T>): List<T>{
+        val scope = QueryScope()
+        val result = scope.builder()
+        val response = client.graphQuery(name, scope.getQueryString(result).also { println(it) })
+        return response.map { result.parse(it.values().iterator()) }
     }
-*/
-    fun <T, U: ResultValue<T>>query(builder: QueryBuilder<T, U>): List<T>{
-        val response = client.graphQuery(name, "${QueryScope().apply { with(builder){ action() } }}")
-        return response.map { it.values().first() as T }
-    }
-
-
-
     fun queryWithoutResult(action: QueryScope.() -> Unit){
-        client.graphQuery(name, "${QueryScope().apply { action() }}")
+        val scope = QueryScope()
+        scope.action()
+        client.graphQuery(name, scope.getQueryString(EmptyResult))
     }
-
 
     /**
      * Create
@@ -76,14 +60,18 @@ class RedisGraph(
      * @param createScope
      * @receiver
      */
-    fun <T: RedisNode, U: KClass<out T>>create(clazz: U, createScope: T.() -> Unit){
+    fun <T: RedisNode, U: KClass<out T>>create(clazz: U, createScope: T.(ParamMap) -> Unit){
         val instance = clazz.constructors.first().call()
-        instance.createScope()
-        if(instance.attributes.any { (it as ResultValue<*>).value == null }) throw Exception("All values must be set on creation")
-        val queryString =  "CREATE ${instance.createString()}"
-        println("GRAPH.QUERY $name \"$queryString\"")
-        client.graphQuery(name, queryString)
+        val p = ParamMap()
+        instance.createScope(p)
+        instance.params = p.getParams()
+        instance.getCreateString()
+        client.graphQuery(name, "CREATE ${instance.getCreateString()}".also { println(it) })
     }
+
+
+
+
     /**
      * Create
      *
@@ -95,28 +83,18 @@ class RedisGraph(
      * @param createScope
      * @receiver
      */
-    fun <T: RedisNode, U: KClass<out T>,V>create(clazz: U, values: Iterable<V>, createScope: T.(V) -> Unit){
+    fun <T: RedisNode, U: KClass<out T>,V>create(clazz: U, values: Iterable<V>, createScope: T.(ParamMap, V) -> Unit){
         val instance = clazz.constructors.first().call()
         val queryString = values.joinToString{
-            instance.createScope(it)
-            instance.createString()
+            val p = ParamMap()
+            instance.createScope(p, it)
+            instance.params = p.getParams()
+            instance.getCreateString()
         }
-        client.graphQuery(name, "CREATE $queryString".also { println("GRAPH.QUERY $name \"$it\"") })
-    }
-    companion object{
-        fun RedisNode.createString() = "(:${ typeName }{${
-            attributes.joinToString { attribute ->
-                "${attribute.name}:${
-                    when(attribute) {
-                        is StringResult -> "'${attribute.value!!.escapedQuotes()}'"
-                        is ArrayResult<*> ->  attribute.value!!.joinToString(
-                            prefix = "[",
-                            postfix = "]"
-                        ){ if(it is String) "'${it.escapedQuotes()}'" else "$it" }
-                        else -> (attribute as ResultValue<*>).value!!.toString()
-                    }
-                }"
-            }
-        }})"
+        client.graphQuery(
+            name,
+            "CREATE $queryString".also { println("GRAPH.QUERY $name \"$it\""
+                .also { query -> println(query) }) }
+        )
     }
 }

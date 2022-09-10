@@ -11,16 +11,13 @@ import attributes.Attribute
  * @property parent
  * @constructor Create empty String attribute
  */
-class StringAttribute(override val name: String, override val parent: WithAttributes?): Attribute<String>(), StringResult
+class StringAttribute(
+    override val name: String,
+    override val parent: WithAttributes?
+    ): Attribute<String>(), StringResult
 {
-    init {
-        parent?.attributes?.add(this)
-    }
-    override fun parse(result: Iterator<Any?>): String {
-        return result.next() as String
-    }
-
+    init { parent?.attributes?.add(this) }
     override fun getLiteralString(value: String): String {
-        return "$this = '$value'"
+        return "'$value'"
     }
 }

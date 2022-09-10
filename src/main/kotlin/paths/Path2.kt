@@ -3,7 +3,6 @@ package paths
 import core.RedisNode
 import core.RedisRelation
 import attributes.RelationAttribute
-import core.ParameterPair
 
 class Path2<A: RedisNode, B: RedisRelation<A, C>, C: RedisNode>
     (val first: A, val firstToSecond: B, val second: C): Path {
@@ -13,7 +12,11 @@ class Path2<A: RedisNode, B: RedisRelation<A, C>, C: RedisNode>
     operator fun component2() = firstToSecond
     operator fun component3() = second
     fun nodes() = first to second
-    override fun getMatchString(attrs: List<ParameterPair<*>>): String = "$first-$firstToSecond->$second"
-    override fun getCreateString(): String = "(${first.instanceName})-$firstToSecond->(${second.instanceName})"
-    override fun toString() = getMatchString()
+    override fun getMatchString(): String =
+        "${first.getMatchString()}-${firstToSecond.getMatchString()}->${second.getMatchString()}"
+            .also { first.matched = true; second.matched = true }
+    override fun getCreateString(): String {
+        //listOf(first, second).forEach { it.params =  }
+        return "${first.getCreateString()}-${firstToSecond.getCreateString()}->${second.getCreateString()}"
+    }
 }

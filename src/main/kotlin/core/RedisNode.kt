@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
  * @property typeName
  * @constructor Create empty Redis node
  */
-abstract class RedisNode(override val typeName: String): WithAttributes(), Matchable {
+abstract class RedisNode(override val typeName: String): WithAttributes(), Matchable, Creatable {
     override val attributes: MutableList<Attribute<*>> = mutableListOf()
     var matched = false
     /**
@@ -24,9 +24,15 @@ abstract class RedisNode(override val typeName: String): WithAttributes(), Match
     protected inline fun <reified T: RedisNode, reified U: RedisNode, reified V>
             T.relates(clazz: KClass<out V>) where V: RedisRelation<T, U> =
         RelationAttribute(clazz, this)
-    override fun toString() = getMatchString()
-    override fun getMatchString(attrs: List<ParameterPair<*>>): String {
-        val attrs = attributes.joinToString { it.getLiteralString() }
-        return "($instanceName:$typeName{$attrs})"
+    override fun getMatchString(): String {
+        matched = true
+        return "($instanceName:$typeName{${params?.joinToString { (it as ParameterPair<Any?>).getLocalEqualityString()} ?: ""}})"
+    }
+    override fun getCreateString(): String {
+        if(matched) return "($instanceName)"/*
+        if((params?.size ?: 0) != attributes.size)
+            throw Exception("Node ($instanceName:$typeName) should be created with all parameters (${attributes.size} attributes) found ${params?.size ?: 0}")
+        */
+        return "(:$typeName{${params?.joinToString { (it as ParameterPair<Any?>).getLocalEqualityString() } ?: ""}})"
     }
 }

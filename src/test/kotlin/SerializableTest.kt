@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 
 import schemas.EnumSchema
 import schemas.MyEnum
+import statements.Where.Companion.where
 
 class SerializableTest {
     val enumGraph = RedisGraph("EnumGraph",
@@ -14,12 +15,12 @@ class SerializableTest {
     @Test
     fun test(){
         enumGraph.create(EnumSchema::class){
-            enum[MyEnum.B]
+           it[enum] = MyEnum.B
         }
         val x =  enumGraph.query {
             val enum = match(EnumSchema())
             where(enum.enum eq MyEnum.B)
-            result(enum.enum)
+            enum.enum
         }
         println(x)
     }

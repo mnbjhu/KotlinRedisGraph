@@ -1,6 +1,7 @@
 import core.RedisGraph
 import org.junit.jupiter.api.Test
 import paths.minus
+import results.result
 import schemas.*
 
 
@@ -14,7 +15,7 @@ class SocialTest {
         )
         socialGraph.query {
             val (_, familyMember, post, photo) = match(
-                User() - { +friendsWith{ isFamily[true] } } - User()
+                User() - { +friendsWith{ it[isFamily] = true } } - User()
                         - { sharedPosts } - Post() - { linkedPhoto } - Photo()
             ).nodes()
             result(familyMember.firstName, familyMember.lastName, post.title, photo.imageName)

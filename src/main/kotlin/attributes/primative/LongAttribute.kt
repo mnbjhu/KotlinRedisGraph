@@ -15,12 +15,4 @@ class LongAttribute(override val name: String, override val parent: WithAttribut
 {
     init { parent?.attributes?.add(this) }
 
-    /**
-     * Eq
-     *
-     * @param literal
-     */
-    override fun parse(result: Iterator<Any?>): Long {
-        return result.next() as Long
-    }
 }

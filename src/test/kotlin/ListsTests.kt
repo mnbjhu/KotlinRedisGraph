@@ -5,6 +5,8 @@ import org.amshove.kluent.`should contain same`
 import org.junit.jupiter.api.Test
 import results.ResultValue
 import schemas.ListNode
+import statements.Delete.Companion.delete
+import statements.Where.Companion.where
 
 
 class ListsTests {
@@ -25,7 +27,7 @@ class ListsTests {
     fun `Test Create`(){
         deleteAll()
         listGraph.create(ListNode::class){
-            myList[listOf("first", "second", "third")]
+            it[myList] = listOf("first", "second", "third")
         }
     }
     @Test
@@ -46,8 +48,8 @@ class ListsTests {
     fun `Test Where`(){
         deleteAll()
         val currentList = mutableListOf(1)
-        listGraph.create(ListNode::class, 1..10){
-            myList[currentList.map { it.toString() }]
+        listGraph.create(ListNode::class, 1..10){attr, _ ->
+            attr[myList] = currentList.map { it.toString() }
             currentList += currentList.last() + 1
         }
         val lists = listGraph.query {
@@ -61,8 +63,8 @@ class ListsTests {
     fun `Test Unwind`(){
         deleteAll()
         val currentList = mutableListOf(1)
-        listGraph.create(ListNode::class, 1..10){
-            myList[currentList.map { it.toString() }]
+        listGraph.create(ListNode::class, 1..10){attr, _ ->
+            attr[myList] = currentList.map { it.toString() }
             currentList += currentList.last() + 1
         }
         val lists = listGraph.query {

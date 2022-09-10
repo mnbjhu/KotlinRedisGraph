@@ -1,6 +1,7 @@
 package attributes
 
 import core.WithAttributes
+import results.ArrayResult
 import results.ResultValue
 
 
@@ -18,9 +19,9 @@ abstract class Attribute<T>: ResultValue<T> {
 
 class ArrayAttribute<T>(
     override val name: String,
-    private val type: Attribute<T>,
+    override val type: Attribute<T>,
     override val parent: WithAttributes?,
-    ): Attribute<List<T>>() {
+    ): Attribute<List<T>>(), ArrayResult<T> {
     override fun parse(result: Iterator<Any?>): List<T> {
         val values = (result.next() as List<*>)
         val innerIter = values.iterator()

@@ -1,6 +1,5 @@
 package core
 
-import results.ResultValue
 import attributes.Attribute
 
 /**
@@ -20,20 +19,13 @@ abstract class RedisRelation<T: RedisNode, U: RedisNode>(
     lateinit var to: U
     var isMultipleRelation = false
     override val attributes: MutableList<Attribute<*>> = mutableListOf()
-    override fun toString(): String {
-        val attrs = attributes.mapNotNull {
-            if(it is ResultValue<*>){
-                when(it.value){
-                    null -> null
-                    is String -> "${it.name}: '${it.value}'"
-                    else -> "${it.name}: ${it.value}"
-                }
-            }
-            else throw Exception("Uh oh")
-        }.joinToString()
-        return if(isMultipleRelation) "[$instanceName:$typeName* {$attrs}]" else "[$instanceName:$typeName {$attrs}]"
+    fun getMatchString(): String {
+        return "[$instanceName:$typeName${if(isMultipleRelation) "*" else ""}{${params?.joinToString { (it as ParameterPair<Any?>).getLocalEqualityString()} ?: ""}}]"
     }
-
+    fun getCreateString(): String {
+        if((params?.size ?: 0) != attributes.size) throw Exception("Relations should be created with all parameters (${attributes.size} attributes) found ${params?.size ?: 0}")
+        return "[:$typeName{${params?.joinToString { (it as ParameterPair<Any?>).getLocalEqualityString() } ?: ""}}]"
+    }
 }
 
 

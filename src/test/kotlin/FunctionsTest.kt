@@ -7,6 +7,7 @@ import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import schemas.MyNumber
+import statements.Delete.Companion.delete
 
 /**
  * Functions test
@@ -26,8 +27,8 @@ class FunctionsTest {
         setupList()
     }
     private fun setupList() {
-        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)) {
-            num[it]
+        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)) { attr, iter ->
+            attr[num] = iter
         }
     }
     /**
@@ -45,7 +46,7 @@ class FunctionsTest {
      */
     @Test
     fun `Test Averages`(){
-        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)){ num[it] }
+        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)){ attr, iter -> attr[num] = iter }
         numbersGraph.query {
             val number = match(MyNumber())
             Average(number.num)

@@ -2,8 +2,12 @@ import core.RedisGraph
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 import paths.minus
+import results.result
 import schemas.Actor
 import schemas.Movie
+import statements.Create.Companion.create
+import statements.Delete.Companion.delete
+import statements.Where.Companion.where
 
 class UpdateTest {
     private val moviesGraph = RedisGraph(
@@ -36,36 +40,36 @@ class UpdateTest {
             "Harrison Ford",
             "Carrie Fisher"
         )
-        moviesGraph.create(Actor::class, actors) {
-            name[it]
-            actorId[index++]
+        moviesGraph.create(Actor::class, actors) {attr, iter ->
+            attr[name] = iter
+            attr[actorId] = index++
         }
         moviesGraph.create(Movie::class) {
-            title["Star Wars: Episode V - The Empire Strikes Back"]
-            releaseYear[1980]
-            movieId[1]
+            it[title] = "Star Wars: Episode V - The Empire Strikes Back"
+            it[releaseYear] = 1980
+            it[movieId] = 1
         }
 
-        moviesGraph.query {
+        moviesGraph.queryWithoutResult {
             val (actor, movie) = match(Actor(), Movie())
             where ( (actor.actorId eq 1) and (movie.movieId eq 1) )
-            create(actor - { actedIn { role["Luke Skywalker"] } } - movie)
+            create(actor - { actedIn { it[role] = "Luke Skywalker" } } - movie)
         }
-        moviesGraph.query {
+        moviesGraph.queryWithoutResult {
             val (actor, movie) = match(Actor(), Movie())
-            where ( (actor.actorId eq 2) and (movie.movieId eq 1) )
-            create(actor - { actedIn{ role["Han Solo"] } } - movie)
+            where ((actor.actorId eq 2) and (movie.movieId eq 1))
+            create(actor - { actedIn{ it[role] = "Han Solo" } } - movie)
         }
-        moviesGraph.query {
+        moviesGraph.queryWithoutResult {
             val (actor, movie) = match(Actor(), Movie())
             where ( (actor.actorId eq 3) and (movie.movieId eq 1) )
-            create( actor - { actedIn{ role["Princess Leia"] } } - movie )
+            create( actor - { actedIn{ it[role] = "Princess Leia" } } - movie )
         }
 
         moviesGraph.query{
             val movie = match(Movie())
-            set { movie.title setTo  "asdasd" }
-            result(movie.title)
+            set ( movie.title to  "asdasd" )
+            movie.title
         }.first() `should be equal to` "asdasd"
     }
 }

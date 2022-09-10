@@ -1,10 +1,6 @@
 package core
 
 import attributes.*
-import attributes.array.BooleanArrayAttribute
-import attributes.array.DoubleArrayAttribute
-import attributes.array.LongArrayAttribute
-import attributes.array.StringArrayAttribute
 import attributes.primative.BooleanAttribute
 import attributes.primative.DoubleAttribute
 import attributes.primative.LongAttribute
@@ -18,7 +14,7 @@ import results.ResultValue
  * @constructor Create empty With attributes
  */
 sealed class WithAttributes {
-
+    var params: List<ParameterPair<*>>? = null
     internal abstract val typeName: String
     internal abstract val attributes: MutableList<Attribute<*>>
     var instanceName = NameCounter.getNext()
@@ -49,9 +45,22 @@ sealed class WithAttributes {
      * @param name
      */
     protected fun boolean(name: String? = null) = if(name != null) BooleanAttribute(name, this) else BooleanAttribute("", null)
-
-    //protected fun array(attribute: Att) =
-
+    protected fun <T>array(type: Attribute<T>, name: String? = null) = if(name == null) ArrayAttribute("", type, null)
+        else ArrayAttribute(name, type, this)
     protected inline fun <reified T: Any>serializable(name: String) = SerializableAttribute(name, this, T::class)
-    //fun hasAllAttributes() = attributes.all{ (it as ResultValue<*>).value != null }
+
+
+}
+class ParamMap{
+    private val map = mutableListOf<ParameterPair<*>>()
+    fun getParams() = map.toList()
+    operator fun <T: Any?>set(attribute: Attribute<T>, value: T){
+        map.add(attribute to value)
+    }
+}
+
+operator fun <T: WithAttributes>T.invoke(scope: T.(ParamMap) -> Unit) {
+    val params = ParamMap()
+    scope(params)
+    this.params = params.getParams()
 }
