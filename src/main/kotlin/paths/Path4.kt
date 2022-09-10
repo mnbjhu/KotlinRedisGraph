@@ -1,5 +1,6 @@
 package paths
 
+import core.ParameterPair
 import core.RedisNode
 import core.RedisRelation
 
@@ -23,7 +24,7 @@ class Path4<
     operator fun component6() = thirdToForth
     operator fun component7() = forth
     fun nodes() = Nodes4(first, second, third, forth)
-    override fun getMatchString() = "$first-$firstToSecond->$second-$secondToThird->$third-$thirdToForth->$forth"
+    override fun getMatchString(attrs: List<ParameterPair<*>>) = "$first-$firstToSecond->$second-$secondToThird->$third-$thirdToForth->$forth"
     override fun getCreateString(): String = "(${first.instanceName})-$firstToSecond->(${second.instanceName})-$secondToThird->(${third.instanceName})-$thirdToForth->(${forth.instanceName})"
     override fun toString() = getMatchString()
 }

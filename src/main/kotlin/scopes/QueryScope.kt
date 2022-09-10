@@ -9,6 +9,7 @@ import attributes.primative.StringAttribute
 import conditions.equality.StringEquality.Companion.escapedQuotes
 import paths.NameCounter
 import paths.Path
+import results.ArrayResult
 import results.array.ArrayResult
 import statements.*
 
@@ -58,22 +59,16 @@ class QueryScope{
     fun set(scope: SetScope.() -> Unit) = emptyList<Unit>().also { SetScope().scope() }
     inner class SetScope{
         infix fun <T>Attribute<T>.setTo(newValue: T){
-
-            val wrapped = when(this) {
-                is StringAttribute -> "'${(newValue as String).escapedQuotes()}'"
-                is StringArrayAttribute -> (newValue as List<String>).joinToString(
-                    prefix = "[",
-                    postfix = "]"
-                ){ "'${it.escapedQuotes()}'" }
-                else -> newValue.toString()
-            }
-            commands.add(Update("$this = $wrapped"))
+            commands.add(Update((this to newValue).getEqualityString()))
         }
     }
     fun <T, U: ArrayResult<T>>unwind(arr: U): ResultValue<T>{
-        val result = object: ResultValue<T>(){
+        val result = object: ResultValue<T>{
             val name = NameCounter.getNext()
-            override fun toString() = name
+            override fun getReferenceString() = name
+            override fun parse(result: Iterator<Any?>): T {
+                return arr.type.parse(result)
+            }
         }
         commands.add(Unwind(arr, result))
         return result

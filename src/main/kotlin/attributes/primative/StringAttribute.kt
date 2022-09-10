@@ -11,20 +11,16 @@ import attributes.Attribute
  * @property parent
  * @constructor Create empty String attribute
  */
-class StringAttribute(override val name: String, override val parent: WithAttributes): Attribute<String>()
+class StringAttribute(override val name: String, override val parent: WithAttributes?): Attribute<String>(), StringResult
 {
-    init { parent.attributes.add(this) }
-
-    /**
-     * Eq
-     *
-     * @param literal
-     */
-    override fun parse(result: Iterator<Any>): String {
+    init {
+        parent?.attributes?.add(this)
+    }
+    override fun parse(result: Iterator<Any?>): String {
         return result.next() as String
     }
 
-    override fun getSetString(value: String): String {
+    override fun getLiteralString(value: String): String {
         return "$this = '$value'"
     }
 }

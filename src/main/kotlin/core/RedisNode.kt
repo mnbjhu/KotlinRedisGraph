@@ -1,6 +1,5 @@
 package core
 
-import results.ResultValue
 import attributes.Attribute
 import attributes.RelationAttribute
 import kotlin.reflect.KClass
@@ -26,17 +25,8 @@ abstract class RedisNode(override val typeName: String): WithAttributes(), Match
             T.relates(clazz: KClass<out V>) where V: RedisRelation<T, U> =
         RelationAttribute(clazz, this)
     override fun toString() = getMatchString()
-    override fun getMatchString(): String {
-        val attrs = attributes.mapNotNull {
-            if(it is ResultValue<*>){
-                when(it.value){
-                    null -> null
-                    is String -> "${it.name}: '${it.value}'"
-                    else -> "${it.name}: ${it.value}"
-                }
-            }
-            else throw Exception("Uh oh")
-        }.joinToString()
+    override fun getMatchString(attrs: List<ParameterPair<*>>): String {
+        val attrs = attributes.joinToString { it.getLiteralString() }
         return "($instanceName:$typeName{$attrs})"
     }
 }

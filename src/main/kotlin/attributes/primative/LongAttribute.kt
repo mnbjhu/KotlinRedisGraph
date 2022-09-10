@@ -11,16 +11,16 @@ import attributes.Attribute
  * @property parent
  * @constructor Create empty Long attribute
  */
-class LongAttribute(override val name: String, override val parent: WithAttributes): Attribute<Long>()
+class LongAttribute(override val name: String, override val parent: WithAttributes?): Attribute<Long>(), LongResult
 {
-    init { parent.attributes.add(this) }
+    init { parent?.attributes?.add(this) }
 
     /**
      * Eq
      *
      * @param literal
      */
-    override fun parse(result: Iterator<Any>): Long {
+    override fun parse(result: Iterator<Any?>): Long {
         return result.next() as Long
     }
 }

@@ -8,6 +8,6 @@ import results.primative.DoubleResult
  * @property attribute
  * @constructor Create empty Sum
  */
-class Sum(val attribute: DoubleResult): DoubleResult() {
-    override fun toString() = "sum($attribute)"
+class Sum(val attribute: DoubleResult): DoubleResult{
+    override fun getReferenceString() = "sum(${attribute.getReferenceString()})"
 }

@@ -12,7 +12,8 @@ class OpenPath3<
         >
     (val first: A, val firstToSecond: B,
      val second: C, val secondToThird: D,
-     val third: E, val thirdToForth: KClass<F>, val setArgs: F.() -> Unit, val isMultiple: Boolean){
+     val third: E, val thirdToForth: KClass<F>,
+     val setArgs: F.() -> Unit, val isMultiple: Boolean){
     operator fun minus(node: G) = Path4(
         first,
         firstToSecond,

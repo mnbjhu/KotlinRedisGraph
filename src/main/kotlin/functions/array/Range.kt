@@ -10,5 +10,5 @@ class Range(val first: Long, private val second: Long, private val step: Long?):
         fun range(first: Long, second: Long, step: Long? = null) = Range(first, second, step)
     }
 
-    override fun toString() = "range(${listOf(first, second, step).joinToString()})"
+    override fun getReferenceString() = "range(${listOf(first, second, step).joinToString()})"
 }

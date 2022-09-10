@@ -10,8 +10,8 @@ import results.primative.StringResult
  * @property literal
  * @constructor Create empty String equality
  */
-class StringEquality(private val attribute: StringResult, private val literal: String): BooleanResult(){
-    override fun toString() = "$attribute = '${literal.escapedQuotes()}'"
+class StringEquality(private val attribute: StringResult, private val literal: String): BooleanResult{
+    override fun getReferenceString() = "${attribute.getReferenceString()} = '${literal.escapedQuotes()}'"
     companion object{
         fun String.escapedQuotes() = this
             .replace("\\", "\\\\")

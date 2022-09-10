@@ -11,16 +11,16 @@ import attributes.Attribute
  * @property parent
  * @constructor Create empty Double attribute
  */
-class DoubleAttribute(override val name: String, override val parent: WithAttributes): Attribute<Double>()
+class DoubleAttribute(override val name: String, override val parent: WithAttributes?): Attribute<Double>(), DoubleResult
 {
-    init { parent.attributes.add(this) }
+    init { parent?.attributes?.add(this) }
 
     /**
      * Eq
      *
      * @param literal
      */
-    override fun parse(result: Iterator<Any>): Double {
+    override fun parse(result: Iterator<Any?>): Double {
         return result.next() as Double
     }
 }

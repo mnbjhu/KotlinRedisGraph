@@ -9,8 +9,8 @@ import conditions.logic.Or
  *
  * @constructor Create empty Boolean result
  */
-abstract class BooleanResult: ResultValue<Boolean>{
-    override fun parse(result: Iterator<Any>): Boolean {
+interface BooleanResult: ResultValue<Boolean>{
+    override fun parse(result: Iterator<Any?>): Boolean {
         return result.next() as Boolean
     }
     /**
