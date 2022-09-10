@@ -8,6 +8,6 @@ import results.ResultValue
  *
  * @constructor Create empty String result
  */
-abstract class StringResult: ResultValue<String>(){
+interface StringResult: ResultValue<String>{
     infix fun eq(literal: String) = StringEquality(this, literal)
 }

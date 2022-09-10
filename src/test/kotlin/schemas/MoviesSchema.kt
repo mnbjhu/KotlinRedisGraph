@@ -1,7 +1,7 @@
 package schemas
 
-import api.RedisNode
-import api.RedisRelation
+import core.RedisNode
+import core.RedisRelation
 
 class Actor: RedisNode("Actor"){
     val name = string("name")

@@ -2,6 +2,7 @@ package conditions.logic
 
 import results.primative.BooleanResult
 import attributes.primative.BooleanAttribute
+import results.ResultValue
 
 /**
  * Or
@@ -10,9 +11,9 @@ import attributes.primative.BooleanAttribute
  * @property second
  * @constructor Create empty Or
  */
-class Or(private val first: BooleanResult, private val second: BooleanResult): BooleanResult() {
-    override fun toString(): String{
-        fun BooleanResult.wrap() = if(this is Or || this is BooleanAttribute) toString() else "(${toString()})"
+class Or(private val first: ResultValue<Boolean>, private val second: ResultValue<Boolean>): ResultValue<Boolean>, BooleanResult {
+    override fun getReferenceString(): String{
+        fun ResultValue<Boolean>.wrap() = if(this is Or || this::class is BooleanResult) getReferenceString() else "(${getReferenceString()})"
         return "${first.wrap()} OR ${second.wrap()}"
     }
 }

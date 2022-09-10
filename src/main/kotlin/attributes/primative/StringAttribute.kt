@@ -1,9 +1,8 @@
 package attributes.primative
 
 import results.primative.StringResult
-import api.WithAttributes
+import core.WithAttributes
 import attributes.Attribute
-import conditions.equality.StringEquality
 
 /**
  * String attribute
@@ -12,15 +11,13 @@ import conditions.equality.StringEquality
  * @property parent
  * @constructor Create empty String attribute
  */
-class StringAttribute(override val name: String, override val parent: WithAttributes):
-    StringResult(), Attribute<String>
+class StringAttribute(
+    override val name: String,
+    override val parent: WithAttributes?
+    ): Attribute<String>(), StringResult
 {
-    init { parent.attributes.add(this) }
-
-    /**
-     * Eq
-     *
-     * @param literal
-     */
-    override fun toString() = getAttributeText()
+    init { parent?.attributes?.add(this) }
+    override fun getLiteralString(value: String): String {
+        return "'$value'"
+    }
 }

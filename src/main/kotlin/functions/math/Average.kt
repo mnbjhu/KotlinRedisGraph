@@ -8,6 +8,6 @@ import results.primative.DoubleResult
  * @property attribute
  * @constructor Create empty Average
  */
-class Average(val attribute: DoubleResult): DoubleResult() {
-    override fun toString() = "avg($attribute)"
+class Average(val attribute: DoubleResult): DoubleResult {
+    override fun getReferenceString() = "avg(${attribute.getReferenceString()})"
 }

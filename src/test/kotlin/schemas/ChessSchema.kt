@@ -1,6 +1,7 @@
+/*
 package schemas
 
-import api.RedisNode
+import core.RedisNode
 import scopes.QueryScope
 
 enum class PieceColour{
@@ -29,4 +30,4 @@ class Piece: RedisNode("Piece"){
     val type = serializable<PieceType>("type")
 
 
-}
+}*/

@@ -1,7 +1,7 @@
 package attributes.primative
 
 import results.primative.BooleanResult
-import api.WithAttributes
+import core.WithAttributes
 import attributes.Attribute
 
 /**
@@ -9,11 +9,8 @@ import attributes.Attribute
  *
  * @property name
  * @property parent
- * @constructor Create empty Boolean attribute
+ * @constructdor Create empty Boolean attribute
  */
-class BooleanAttribute(override val name: String, override val parent: WithAttributes): BooleanResult(),
-    Attribute<Boolean> {
-    init { parent.attributes.add(this) }
-    override fun toString() = getAttributeText()
-
+class BooleanAttribute(override val name: String, override val parent: WithAttributes?): Attribute<Boolean>(), BooleanResult {
+    init { parent?.attributes?.add(this) }
 }

@@ -1,4 +1,4 @@
-package api
+package core
 
 interface Creatable{
     fun getCreateString(): String

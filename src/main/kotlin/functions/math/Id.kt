@@ -1,7 +1,7 @@
 package functions.math
 
 import results.primative.LongResult
-import api.RedisNode
+import core.RedisNode
 
 /**
  * Id
@@ -9,6 +9,6 @@ import api.RedisNode
  * @property node
  * @constructor Create empty Id
  */
-class Id(private val node: RedisNode): LongResult() {
-    override fun toString() = "ID(${node.instanceName})"
+class Id(private val node: RedisNode): LongResult {
+    override fun getReferenceString() = "ID(${node.instanceName})"
 }

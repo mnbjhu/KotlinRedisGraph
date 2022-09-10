@@ -6,27 +6,16 @@ package results
  * @param T
  * @constructor Create empty Result value
  */
-abstract class ResultValue<T> {
-    var value: T? = null
-    abstract override fun toString(): String
-    open fun set(data: Any?) {
+interface ResultValue<out T> {
+    fun getReferenceString(): String
+    fun parse(result: Iterator<Any?>): T = result.next() as T
+}
 
-        value = data as T
+interface ArrayResult<T>: ResultValue<List<T>>{
+    val type: ResultValue<T>
+    override fun parse(result: Iterator<Any?>): List<T> {
+        val values = (result.next() as List<*>)
+        val innerIter = values.iterator()
+        return values.map { type.parse(innerIter) }
     }
-    /**
-     * Get
-     *
-     * @param newValue
-     */
-    open operator fun get(newValue: T){
-        value = newValue
-    }
-
-    /**
-     * Invoke
-     *
-     * @return
-     */
-    operator fun invoke(): T = if(value != null) value!! else throw Exception("attribute has not been returned")
-
 }

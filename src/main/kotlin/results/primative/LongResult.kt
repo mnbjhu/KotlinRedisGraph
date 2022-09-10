@@ -8,7 +8,6 @@ import results.ResultValue
  *
  * @constructor Create empty Long result
  */
-abstract class LongResult: ResultValue<Long>(){
-
+interface LongResult: ResultValue<Long>{
     infix fun eq(literal: Long) = LongEquality(this, literal)
 }

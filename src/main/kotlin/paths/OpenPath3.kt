@@ -1,7 +1,8 @@
 package paths
 
-import api.RedisNode
-import api.RedisRelation
+import core.ParamMap
+import core.RedisNode
+import core.RedisRelation
 import kotlin.reflect.KClass
 
 class OpenPath3<
@@ -12,7 +13,8 @@ class OpenPath3<
         >
     (val first: A, val firstToSecond: B,
      val second: C, val secondToThird: D,
-     val third: E, val thirdToForth: KClass<F>, val setArgs: F.() -> Unit, val isMultiple: Boolean){
+     val third: E, val thirdToForth: KClass<F>,
+     val setArgs: F.(ParamMap) -> Unit, val isMultiple: Boolean){
     operator fun minus(node: G) = Path4(
         first,
         firstToSecond,
@@ -20,7 +22,14 @@ class OpenPath3<
         secondToThird,
         third,
         thirdToForth.constructors.first().call()
-            .apply{ from = third; to = node; setArgs(); isMultipleRelation = isMultiple },
+            .apply{
+                from = third;
+                to = node;
+                val p = ParamMap()
+                setArgs(p)
+                params = p.getParams()
+                isMultipleRelation = isMultiple
+              },
         node
     )
 }

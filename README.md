@@ -41,7 +41,7 @@ dependencies {
 ### Connect To Redis
 To start using Redis Graph you need to create a new instance of the RedisGraph class with a graph name, host address and an option port (default is 6379).
 ```kotlin
-import api.RedisGraph
+import core.RedisGraph
 
 val moviesGraph = RedisGraph(
     name = "movies",
@@ -55,8 +55,8 @@ Node types and their relationships are defined by a schema. To create a node typ
 * Sets the **typeName** in the **RedisClass** constructor
 
 ```kotlin
-import api.RedisNode
-import api.RedisRelation
+import core.RedisNode
+import core.RedisRelation
 
 class Actor: RedisNode("Actor"){
     val name = string("name")

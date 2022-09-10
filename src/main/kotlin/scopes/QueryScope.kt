@@ -1,17 +1,12 @@
 package scopes
 
-import results.primative.BooleanResult
 import results.ResultValue
-import api.*
+import core.*
 import attributes.*
-import attributes.array.StringArrayAttribute
-import attributes.primative.StringAttribute
-import conditions.equality.StringEquality.Companion.escapedQuotes
 import paths.NameCounter
 import paths.Path
-import results.array.ArrayResult
+import results.ArrayResult
 import statements.*
-import kotlin.reflect.full.primaryConstructor
 
 /**
  * Query scope
@@ -20,11 +15,8 @@ import kotlin.reflect.full.primaryConstructor
  * @property graph
  * @constructor Create empty Query scope
  */
-class QueryScope<R>(private val graph: RedisGraph){
+class QueryScope{
     val commands = mutableListOf<Statement>()
-    var returnValues: MutableList<ResultValue<*>> = mutableListOf()
-    var transform: (() -> R)? = null
-
     /**
      * Invoke
      *
@@ -45,144 +37,35 @@ class QueryScope<R>(private val graph: RedisGraph){
      * @param relation
      */
 
-    override fun toString(): String {
+    fun getQueryString(result: ResultValue<*>): String {
         val first = commands.filter { it !is OrderBy }
         val last = commands.filterIsInstance<OrderBy>()
         return first.joinToString(" ") { it.getCommand() } + " " +
-                getResultString() + " " + last.joinToString(" ") { it.getCommand() }
+                getResultString(result) + " " + last.joinToString(" ") { it.getCommand() }
     }
-    private fun getResultString() = if(returnValues.isEmpty()) "" else "RETURN ${returnValues.joinToString()}"
-
-    fun <A: RedisNode>match(node: A) = node.also { it.matched = false; commands.add(Match(listOf(it))) }
+    private fun getResultString(result: ResultValue<*>) = if(result is EmptyResult) ""
+        else "RETURN ${result.getReferenceString()}"
+    fun <A: RedisNode>match(node: A) = node.also { commands.add(Match(listOf(it))) }
     fun <A: RedisNode, B: RedisNode>match(node1: A, node2: B): Pair<A, B>{
         commands.add(Match(listOf(node1, node2)))
         return node1 to node2
     }
     fun <T: Path>match(path: T) = path.also{ commands.add(Match(listOf(it))) }
-    fun set(scope: SetScope.() -> Unit) = emptyList<Unit>().also { SetScope().scope() }
-    inner class SetScope{
-        infix fun <T>Attribute<T>.setTo(newValue: T){
-
-            val wrapped = when(this) {
-                is StringAttribute -> "'${(newValue as String).escapedQuotes()}'"
-                is StringArrayAttribute -> (newValue as List<String>).joinToString(
-                    prefix = "[",
-                    postfix = "]"
-                ){ "'${it.escapedQuotes()}'" }
-                else -> newValue.toString()
-            }
-            commands.add(Update("$this = $wrapped"))
-        }
+    fun set(vararg params: ParameterPair<*>) = EmptyResult.also {
+        commands.addAll(params.map { Update(it) })
     }
     fun <T, U: ArrayResult<T>>unwind(arr: U): ResultValue<T>{
-        val result = object: ResultValue<T>(){
+        val result = object: ResultValue<T>{
             val name = NameCounter.getNext()
-            override fun toString() = name
+            override fun getReferenceString() = name
+            override fun parse(result: Iterator<Any?>): T {
+                return arr.type.parse(result)
+            }
         }
         commands.add(Unwind(arr, result))
         return result
     }
-
-    /**
-     * Create
-     *
-     * @param scope
-     * @receiver
-     */
-
-    fun create(vararg paths: Creatable): List<Unit> = listOf<Unit>()
-        .also{ commands.add(Create(paths.toList())) }
-
-    /**
-     * Delete
-     *
-     * @param items
-     * @return
-     */
-    fun delete(vararg items: WithAttributes): List<Unit>{
-        commands.add(Delete(items.toList()))
-        return emptyList()
-    }
-
-    /**
-     * Where
-     *
-     * @param whereScope
-     * @receiver
-     */
-    fun where(predicate: BooleanResult){
-        commands.add(Where(predicate))
-    }
-
-    /**
-     * Result
-     *
-     * @param results
-     * @param transform
-     * @receiver
-     * @return
-     */
-    fun result(vararg results: ResultValue<*>, transform: (() -> R)): List<R>{
-        returnValues.addAll(results)
-        this.transform = transform
-        return emptyList()
-    }
-
-    /**
-     * Order by
-     *
-     * @param result
-     */
-    fun orderBy(result: ResultValue<*>){
-        commands.add(OrderBy(result))
-    }
-
-    /**
-     * Evaluate
-     *
-     * @return
-     */
-    fun evaluate(): List<R>{
-        val r = mutableListOf<R>()
-        val records = graph.client.graphQuery(graph.name, this.toString())
-        records.forEach { record ->
-            val recordValues = record.values()
-            recordValues.mapIndexed{ index, value ->
-                returnValues[index].set(value)
-            }
-            r += transform!!()
-        }
-        return r.toList()
-    }
-
-    /**
-     * Result
-     *
-     * @param T
-     * @param result
-     * @return
-     */
-    fun <T>result(result: ResultValue<T>): List<T>{
-        returnValues.add(result)
-        transform = { result() as R }
-        return listOf()
-    }
-
-    /**
-     * Result
-     *
-     * @param T
-     * @param U
-     * @param results
-     * @return
-     */
-    fun <T, U: ResultValue<out T>>result(vararg results: U): List<List<T>>{
-        returnValues.addAll(results)
-        transform = { results.map { it() } as R }
-        return listOf()
-    }
-    fun <T>registerReturnValue(resultValue: ResultValue<T>){
-        this@QueryScope.returnValues.add(resultValue)
-    }
-
+}
+object EmptyResult: ResultValue<Unit> {
+    override fun getReferenceString() = throw Exception("Cannot access empty result")
 }

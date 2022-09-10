@@ -1,4 +1,4 @@
-import api.RedisGraph
+import core.RedisGraph
 import functions.math.Average
 import functions.math.Max
 import functions.math.Min
@@ -7,6 +7,7 @@ import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import schemas.MyNumber
+import statements.Delete.Companion.delete
 
 /**
  * Functions test
@@ -26,8 +27,8 @@ class FunctionsTest {
         setupList()
     }
     private fun setupList() {
-        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)) {
-            num[it]
+        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)) { attr, iter ->
+            attr[num] = iter
         }
     }
     /**
@@ -45,10 +46,10 @@ class FunctionsTest {
      */
     @Test
     fun `Test Averages`(){
-        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)){ num[it] }
+        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)){ attr, iter -> attr[num] = iter }
         numbersGraph.query {
             val number = match(MyNumber())
-            result(Average(number.num))
+            Average(number.num)
         }.first() `should be equal to` 8.0
     }
 
@@ -60,7 +61,7 @@ class FunctionsTest {
     fun `Test Max`(){
         numbersGraph.query {
             val number = match(MyNumber())
-            result(Max(number.num))
+            Max(number.num)
         }.first() `should be equal to` 13.0
     }
 
@@ -72,7 +73,7 @@ class FunctionsTest {
     fun `Test Min`(){
         numbersGraph.query {
             val number = match(MyNumber())
-            result(Min(number.num))
+            Min(number.num)
         }.first() `should be equal to` 1.0
     }
 
@@ -84,7 +85,7 @@ class FunctionsTest {
     fun `Test Sum`(){
         numbersGraph.query {
             val number = match(MyNumber())
-            result(Sum(number.num))
+            Sum(number.num)
         }.first() `should be equal to` 24.0
     }
 

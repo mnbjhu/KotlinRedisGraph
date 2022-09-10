@@ -10,6 +10,6 @@ import results.primative.LongResult
  * @property literal
  * @constructor Create empty Long equality
  */
-class LongEquality(private val attribute: LongResult, private val literal: Long): BooleanResult(){
-    override fun toString() = "$attribute = $literal"
+class LongEquality(private val attribute: LongResult, private val literal: Long): BooleanResult{
+    override fun getReferenceString() = "${attribute.getReferenceString()} = $literal"
 }

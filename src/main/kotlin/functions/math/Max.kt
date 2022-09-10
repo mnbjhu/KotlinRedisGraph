@@ -8,6 +8,6 @@ import results.primative.DoubleResult
  * @property attribute
  * @constructor Create empty Max
  */
-class Max(val attribute: DoubleResult): DoubleResult() {
-    override fun toString() = "max($attribute)"
+class Max(val attribute: DoubleResult): DoubleResult {
+    override fun getReferenceString() = "max(${attribute.getReferenceString()})"
 }

@@ -1,6 +1,6 @@
 package schemas
 
-import api.RedisNode
+import core.RedisNode
 
 class EnumSchema: RedisNode("MyEnum") {
     val enum = serializable<MyEnum>("enum")

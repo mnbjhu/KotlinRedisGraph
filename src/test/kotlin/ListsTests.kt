@@ -1,9 +1,12 @@
-import api.RedisGraph
+import core.RedisGraph
 import conditions.array.Contains.Companion.contains
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain same`
 import org.junit.jupiter.api.Test
+import results.ResultValue
 import schemas.ListNode
+import statements.Delete.Companion.delete
+import statements.Where.Companion.where
 
 
 class ListsTests {
@@ -24,7 +27,7 @@ class ListsTests {
     fun `Test Create`(){
         deleteAll()
         listGraph.create(ListNode::class){
-            myList[listOf("first", "second", "third")]
+            it[myList] = listOf("first", "second", "third")
         }
     }
     @Test
@@ -33,7 +36,7 @@ class ListsTests {
         `Test Create`()
         val result = listGraph.query {
             val myList = match(ListNode())
-            result(myList.myList)
+            myList.myList
         }
         result.size `should be equal to` 1
         val (first, second, third) = result.first()
@@ -45,14 +48,14 @@ class ListsTests {
     fun `Test Where`(){
         deleteAll()
         val currentList = mutableListOf(1)
-        listGraph.create(ListNode::class, 1..10){
-            myList[currentList.map { it.toString() }]
+        listGraph.create(ListNode::class, 1..10){attr, _ ->
+            attr[myList] = currentList.map { it.toString() }
             currentList += currentList.last() + 1
         }
         val lists = listGraph.query {
             val myList = match(ListNode())
             where ( myList.myList contains "5" )
-            result(myList.myList)
+            myList.myList
         }
         lists.size `should be equal to` 6
     }
@@ -60,14 +63,14 @@ class ListsTests {
     fun `Test Unwind`(){
         deleteAll()
         val currentList = mutableListOf(1)
-        listGraph.create(ListNode::class, 1..10){
-            myList[currentList.map { it.toString() }]
+        listGraph.create(ListNode::class, 1..10){attr, _ ->
+            attr[myList] = currentList.map { it.toString() }
             currentList += currentList.last() + 1
         }
         val lists = listGraph.query {
             val myList = match(ListNode())
             val element = unwind(myList.myList)
-            result(element)
+            element
         }
         lists `should contain same` listOf<Long>(
             1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
