@@ -1,22 +1,21 @@
 package schemas
 
-import core.RedisNode
-import core.RedisRelation
+import uk.gibby.redis.core.RedisNode
+import uk.gibby.redis.core.RedisRelation
 
-class User: RedisNode("User"){
-    val firstName = string("firstName")
-    val lastName = string("lastName")
-    val age = long("age")
+class User: RedisNode(){
+    val firstName by string()
+    val lastName by string()
+    val age by long()
     val friendsWith = relates(FriendsWith::class)
     val sharedPosts = relates(SharedPosts::class)
     val sharedPhotos = relates(SharedPhotos::class)
 }
-class FriendsWith:
-    RedisRelation<User, User>("FRIENDS_WITH"){
-    val isFamily = boolean("isFamily")
+class FriendsWith: RedisRelation<User, User>(){
+    val isFamily by boolean()
 }
-class SharedPosts: RedisRelation<User, Post>("SHARED_POSTS")
-class SharedPhotos: RedisRelation<User, Photo>("SHARED_PHOTOS")
+class SharedPosts: RedisRelation<User, Post>()
+class SharedPhotos: RedisRelation<User, Photo>()
 
 enum class MyEnum{
     A,
@@ -24,17 +23,17 @@ enum class MyEnum{
     C,
 }
 
-class Post: RedisNode("Post"){
-    val title = string("title")
-    val content = string("content")
-    val likes = string("likes")
+class Post: RedisNode(){
+    val title by string()
+    val content by string()
+    val likes by string()
     val linkedPhoto = relates(LinkedPhoto::class)
 }
-class LinkedPhoto: RedisRelation<Post, Photo>("LINKED_PHOTO")
+class LinkedPhoto: RedisRelation<Post, Photo>()
 
-class Photo: RedisNode("Photo"){
-    val imageName = string("imageName")
-    val likes = long("likes")
+class Photo: RedisNode(){
+    val imageName by string()
+    val likes by long()
     val tagged = relates(TaggedIn::class)
 }
-class TaggedIn: RedisRelation<Photo, User>("TAGGED_IN")
+class TaggedIn: RedisRelation<Photo, User>()

@@ -1,18 +1,18 @@
 package schemas
 
-import core.RedisNode
-import core.RedisRelation
+import uk.gibby.redis.core.RedisNode
+import uk.gibby.redis.core.RedisRelation
 
-class Actor: RedisNode("Actor"){
-    val name = string("name")
-    val actorId = long("actor_id")
+class Actor: RedisNode(){
+    val name by string()
+    val actorId by long()
     val actedIn = relates(ActedIn::class)
 }
-class Movie: RedisNode("Movie"){
-    val title = string("title")
-    val releaseYear = long("release_year")
-    val movieId = long("movie_id")
+class Movie: RedisNode(){
+    val title by string()
+    val releaseYear by long()
+    val movieId by long()
 }
-class ActedIn: RedisRelation<Actor, Movie>("ACTED_IN"){
-    val role = string("role")
+class ActedIn: RedisRelation<Actor, Movie>(){
+    val role by string()
 }

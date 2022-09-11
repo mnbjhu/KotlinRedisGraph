@@ -1,7 +1,10 @@
-import core.RedisGraph
+import uk.gibby.redis.core.RedisGraph
 import org.junit.jupiter.api.Test
-import paths.minus
-import results.result
+import uk.gibby.redis.paths.minus
+import uk.gibby.redis.results.result
+import uk.gibby.redis.statements.Match.Companion.match
+import uk.gibby.redis.paths.minus
+
 import schemas.*
 
 

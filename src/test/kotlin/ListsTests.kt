@@ -1,12 +1,12 @@
-import core.RedisGraph
-import conditions.array.Contains.Companion.contains
+import uk.gibby.redis.core.RedisGraph
+import uk.gibby.redis.conditions.array.Contains.Companion.contains
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain same`
 import org.junit.jupiter.api.Test
-import results.ResultValue
+import uk.gibby.redis.statements.Match.Companion.match
 import schemas.ListNode
-import statements.Delete.Companion.delete
-import statements.Where.Companion.where
+import uk.gibby.redis.statements.Delete.Companion.delete
+import uk.gibby.redis.statements.Where.Companion.where
 
 
 class ListsTests {
