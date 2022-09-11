@@ -73,11 +73,11 @@ class MoviesTest {
             where((actor.actorId eq 3) and (movie.movieId eq 1))
             create(actor - { actedIn { it[role] = "Princess Leia" } } - movie)
         }
-        val movies = moviesGraph.query {
+        val moviesTitles = moviesGraph.query {
             val movie = match(Movie())
             movie.title
         }
-        movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
+        moviesTitles `should contain` "Star Wars: Episode V - The Empire Strikes Back"
 
         val result = moviesGraph.query {
             val movie = match(Movie())

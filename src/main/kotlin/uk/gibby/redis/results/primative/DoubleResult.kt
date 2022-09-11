@@ -1,6 +1,6 @@
 package uk.gibby.redis.results.primative
 
-import uk.gibby.redis.conditions.equality.DoubleEquality
+import uk.gibby.redis.conditions.equality.DoubleLiteralEquality
 import uk.gibby.redis.results.ResultValue
 
 /**
@@ -13,5 +13,5 @@ interface DoubleResult : ResultValue<Double> {
         return result.next() as Double
     }
 
-    infix fun eq(literal: Double) = DoubleEquality(this, literal)
+    infix fun eq(literal: Double) = DoubleLiteralEquality(this, literal)
 }

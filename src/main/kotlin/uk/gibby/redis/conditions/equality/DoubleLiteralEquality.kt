@@ -10,6 +10,6 @@ import uk.gibby.redis.results.primative.DoubleResult
  * @property literal
  * @constructor Create empty Double equality
  */
-class DoubleEquality(private val attribute: DoubleResult, private val literal: Double) : BooleanResult {
+class DoubleLiteralEquality(private val attribute: DoubleResult, private val literal: Double) : BooleanResult {
     override fun getReferenceString() = "${attribute.getReferenceString()} = $literal"
 }
