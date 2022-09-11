@@ -1,13 +1,12 @@
 package results.array
 
-import uk.gibby.redis.results.ArrayResult
 import uk.gibby.redis.results.ResultValue
 import uk.gibby.redis.results.primative.LongResult
-
-abstract class LongArrayResult : ArrayResult<Long> {
-    abstract val name: String
-    override fun getReferenceString() = name
-    override val type: ResultValue<Long> = object : LongResult {
-        override fun getReferenceString(): String = ""
+interface ArrayResult<T> : ResultValue<List<T>> {
+    val type: ResultValue<T>
+    override fun parse(result: Iterator<Any?>): List<T> {
+        val values = (result.next() as List<*>)
+        val innerIter = values.iterator()
+        return values.map { type.parse(innerIter) }
     }
 }

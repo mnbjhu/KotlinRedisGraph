@@ -8,7 +8,6 @@ import kotlin.reflect.KClass
 
 interface SerializableResult<T : Any> : ResultValue<T> {
     val name: String
-    val parent: WithAttributes
     val clazz: KClass<T>
 
     @OptIn(InternalSerializationApi::class)

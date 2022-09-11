@@ -8,6 +8,9 @@ import uk.gibby.redis.results.ResultValue
  *
  * @constructor Create empty Long result
  */
-interface LongResult : ResultValue<Long> {
-    infix fun eq(literal: Long) = LongEquality(this, literal)
+interface LongResult: ResultValue<Long> {
+    companion object{
+        infix fun ResultValue<Long>.eq(literal: Long) = LongEquality(this, literal)
+
+    }
 }

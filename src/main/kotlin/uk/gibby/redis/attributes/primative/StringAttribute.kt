@@ -3,6 +3,8 @@ package uk.gibby.redis.attributes.primative
 import uk.gibby.redis.results.primative.StringResult
 import uk.gibby.redis.core.WithAttributes
 import uk.gibby.redis.attributes.Attribute
+import uk.gibby.redis.core.AttributeParent
+import kotlin.reflect.KProperty
 
 /**
  * String attribute
@@ -12,9 +14,9 @@ import uk.gibby.redis.attributes.Attribute
  * @constructor Create empty String attribute
  */
 class StringAttribute(
-    override val name: String,
-    override val parent: WithAttributes?
-) : uk.gibby.redis.attributes.Attribute<String>(), StringResult {
+    override var name: String,
+    override var parent: AttributeParent?
+) : Attribute<String>(), StringResult {
     init {
         parent?.attributes?.add(this)
     }
@@ -22,4 +24,5 @@ class StringAttribute(
     override fun getLiteralString(value: String): String {
         return "'$value'"
     }
+
 }

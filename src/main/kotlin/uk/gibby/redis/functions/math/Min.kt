@@ -1,5 +1,6 @@
 package uk.gibby.redis.functions.math
 
+import uk.gibby.redis.results.ResultValue
 import uk.gibby.redis.results.primative.DoubleResult
 
 /**
@@ -8,6 +9,6 @@ import uk.gibby.redis.results.primative.DoubleResult
  * @property attribute
  * @constructor Create empty Min
  */
-class Min(val attribute: DoubleResult) : DoubleResult {
+class Min(val attribute: ResultValue<Double>) : DoubleResult {
     override fun getReferenceString() = "min(${attribute.getReferenceString()})"
 }

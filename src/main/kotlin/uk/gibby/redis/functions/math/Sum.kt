@@ -1,5 +1,6 @@
 package uk.gibby.redis.functions.math
 
+import uk.gibby.redis.results.ResultValue
 import uk.gibby.redis.results.primative.DoubleResult
 
 /**
@@ -8,6 +9,6 @@ import uk.gibby.redis.results.primative.DoubleResult
  * @property attribute
  * @constructor Create empty Sum
  */
-class Sum(val attribute: DoubleResult) : DoubleResult {
+class Sum(val attribute: ResultValue<Double>): DoubleResult {
     override fun getReferenceString() = "sum(${attribute.getReferenceString()})"
 }

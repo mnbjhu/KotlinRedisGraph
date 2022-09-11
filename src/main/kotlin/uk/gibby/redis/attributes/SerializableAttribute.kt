@@ -5,13 +5,16 @@ import uk.gibby.redis.core.WithAttributes
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import uk.gibby.redis.core.AttributeParent
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 
 class SerializableAttribute<T : Any>(
-    override val name: String,
-    override val parent: WithAttributes,
+    override var name: String,
+    override var parent: AttributeParent?,
     override val clazz: KClass<T>
-) : uk.gibby.redis.attributes.Attribute<T>(), SerializableResult<T> {
+): Attribute<T>(), SerializableResult<T> {
+
     @OptIn(InternalSerializationApi::class)
     override fun parse(result: Iterator<Any?>): T {
         val strData = result.next() as String

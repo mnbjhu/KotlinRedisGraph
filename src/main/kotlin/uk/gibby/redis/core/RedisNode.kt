@@ -9,7 +9,8 @@ import kotlin.reflect.KClass
  * @property typeName
  * @constructor Create empty Redis node
  */
-abstract class RedisNode(override val typeName: String) : WithAttributes(), Matchable, Creatable {
+abstract class RedisNode : WithAttributes(), Matchable, Creatable {
+    override val typeName: String = this::class.java.simpleName
     override val attributes: MutableList<uk.gibby.redis.attributes.Attribute<*>> = mutableListOf()
     var matched = false
 

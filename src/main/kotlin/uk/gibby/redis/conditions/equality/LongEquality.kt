@@ -1,5 +1,6 @@
 package uk.gibby.redis.conditions.equality
 
+import uk.gibby.redis.results.ResultValue
 import uk.gibby.redis.results.primative.BooleanResult
 import uk.gibby.redis.results.primative.LongResult
 
@@ -10,6 +11,6 @@ import uk.gibby.redis.results.primative.LongResult
  * @property literal
  * @constructor Create empty Long equality
  */
-class LongEquality(private val attribute: LongResult, private val literal: Long) : BooleanResult {
+class LongEquality(private val attribute: ResultValue<Long>, private val literal: Long) : BooleanResult {
     override fun getReferenceString() = "${attribute.getReferenceString()} = $literal"
 }

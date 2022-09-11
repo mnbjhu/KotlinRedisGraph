@@ -7,7 +7,7 @@ import schemas.MyEnum
 import uk.gibby.redis.statements.Where.Companion.where
 
 class SerializableTest {
-    val enumGraph = RedisGraph("EnumGraph",
+    private val enumGraph = RedisGraph("EnumGraph",
         host = TestAuth.host,
         port = TestAuth.port,
         password = TestAuth.password
