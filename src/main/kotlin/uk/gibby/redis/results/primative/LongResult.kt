@@ -11,6 +11,5 @@ import uk.gibby.redis.results.ResultValue
 interface LongResult: ResultValue<Long> {
     companion object{
         infix fun ResultValue<Long>.eq(literal: Long) = LongEquality(this, literal)
-
     }
 }

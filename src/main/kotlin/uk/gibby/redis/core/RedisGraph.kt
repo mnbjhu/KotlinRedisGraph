@@ -4,11 +4,8 @@ import uk.gibby.redis.results.ResultValue
 import redis.clients.jedis.HostAndPort
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.UnifiedJedis
-import uk.gibby.redis.scopes.EmptyResult
 import uk.gibby.redis.scopes.QueryScope
 import kotlin.reflect.KClass
-
-typealias PairQueryScope<T, U> = QueryScope.() -> Pair<ResultValue<T>, ResultValue<U>>
 
 /**
  * Redis graph
@@ -20,10 +17,6 @@ typealias PairQueryScope<T, U> = QueryScope.() -> Pair<ResultValue<T>, ResultVal
  * @property port
  * @constructor Creates a connection to
  */
-
-fun interface QueryBuilder<T, out U : ResultValue<T>> {
-    fun QueryScope.action(): U
-}
 
 class RedisGraph(
     val name: String,
@@ -44,15 +37,10 @@ class RedisGraph(
     fun <T> query(builder: QueryScope.() -> ResultValue<T>): List<T> {
         val scope = QueryScope()
         val result = scope.builder()
-        val response = client.graphQuery(name, scope.getQueryString(result).also { println(it) })
+        val response = client.graphQuery(name, scope.getQueryString(result).also { println("GRAPH.QUERY $name \"${it}\"") })
         return response.map { result.parse(it.values().iterator()) }
     }
 
-    fun queryWithoutResult(action: QueryScope.() -> Unit) {
-        val scope = QueryScope()
-        scope.action()
-        client.graphQuery(name, scope.getQueryString(EmptyResult))
-    }
 
     /**
      * Create
@@ -69,7 +57,7 @@ class RedisGraph(
         instance.createScope(p)
         instance.params = p.getParams()
         instance.getCreateString()
-        client.graphQuery(name, "CREATE ${instance.getCreateString()}".also { println(it) })
+        client.graphQuery(name, "CREATE ${instance.getCreateString()}".also { println("GRAPH.QUERY $name \"${it}\"") })
     }
 
 
@@ -98,10 +86,7 @@ class RedisGraph(
         }
         client.graphQuery(
             name,
-            "CREATE $queryString".also {
-                println("GRAPH.QUERY $name \"$it\""
-                    .also { query -> println(query) })
-            }
+            "CREATE $queryString".also { println("GRAPH.QUERY $name \"$it\"") }
         )
     }
 }
