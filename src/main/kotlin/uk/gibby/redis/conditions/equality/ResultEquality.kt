@@ -5,4 +5,7 @@ import uk.gibby.redis.results.primative.BooleanResult
 
 class ResultEquality<T>(val result: ResultValue<T>, val other: ResultValue<T>): BooleanResult {
     override fun getReferenceString() = "${result.getReferenceString()} = ${other.getReferenceString()}"
+    companion object{
+        infix fun <T>ResultValue<T>.eq(other: ResultValue<T>) = ResultEquality(this, other)
+    }
 }
