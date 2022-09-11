@@ -13,10 +13,10 @@ abstract class StructAttribute<T>: Attribute<T>(),  StructResult<T>{
     }
     override fun getLiteralString(value: T): String{
         val params = ParamMap()
-            .apply { setResult(value, this) }
+            .apply { setResult(value) }
             .getParams()
         //if(attributes.size != params.size) throw Exception("All params are required when creating a literal string")
         return "[${params.joinToString { (it as ParameterPair<Any>).getLiteralString() }}]"
     }
-    abstract fun setResult(result: T, params: ParamMap)
+    abstract fun ParamMap.setResult(value: T)
 }

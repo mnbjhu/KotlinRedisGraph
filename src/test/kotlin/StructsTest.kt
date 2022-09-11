@@ -34,9 +34,9 @@ class Vector2Attribute: StructAttribute<Vector2>() {
     val x by long()
     val y by long()
     override fun ResultScope.getResult() = Vector2(!x, !y)
-    override fun setResult(value: Vector2, params: ParamMap) {
-        params[x] = value.x
-        params[y] = value.y
+    override fun ParamMap.setResult(value: Vector2) {
+        x[value.x]
+        y[value.y]
     }
 }
 class StructNode: RedisNode(){

@@ -1,11 +1,8 @@
 package uk.gibby.redis.attributes
 
-import uk.gibby.redis.core.WithAttributes
 import results.array.ArrayResult
 import uk.gibby.redis.core.AttributeParent
 import uk.gibby.redis.results.ResultValue
-import kotlin.reflect.KProperty
-
 
 /**
  * Attribute
