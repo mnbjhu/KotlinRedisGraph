@@ -1,6 +1,6 @@
 package uk.gibby.redis.attributes
 
-import results.array.ArrayResult
+import uk.gibby.redis.results.ArrayResult
 import uk.gibby.redis.core.AttributeParent
 import uk.gibby.redis.results.ResultValue
 
