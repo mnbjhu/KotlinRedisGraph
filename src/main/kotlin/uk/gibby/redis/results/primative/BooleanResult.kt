@@ -13,7 +13,6 @@ interface BooleanResult : ResultValue<Boolean> {
     override fun parse(result: Iterator<Any?>): Boolean {
         return result.next() as Boolean
     }
-
     /**
      * And
      *

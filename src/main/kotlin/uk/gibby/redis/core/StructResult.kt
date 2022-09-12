@@ -12,8 +12,11 @@ interface StructResult<T>: AttributeParent, ResultValue<T> {
         val innerResult = result.next() as List<Any?>
         return ResultScope(innerResult.iterator()).getResult()
     }
-
-    override fun getReferenceString(value: T) = attributes.joinToString { (it as Attribute<Any?>).getLiteral() }
+    fun ParamMap.setResult(value: T)
+    override fun getLiteral(value: T): String{
+        val p = ParamMap().apply { setResult(value) }.getParams()
+        return attributes.joinToString { p.first { it.first == attributes }; (it as Attribute<Any?>).getLiteral(it) }
+    }
 }
 class ResultScope(val result: Iterator<Any?>){
     operator fun <T, U: Attribute<T>>U.not() = parse(result)

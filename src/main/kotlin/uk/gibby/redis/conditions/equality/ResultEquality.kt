@@ -11,7 +11,7 @@ class ResultEquality<T>(val result: ResultValue<T>, val other: ResultValue<T>): 
     }
 }
 
-class ResultLiteralEquality<T>(val : ResultValue<T>, val other: T): BooleanResult {
-    override fun getReferenceString() = "${.getReferenceString()} = ${( to other)}"
+class ResultLiteralEquality<T>(val result: ResultValue<T>, val other: T): BooleanResult {
+    override fun getReferenceString() = "${result.getReferenceString()} = ${result.getLiteral(other)}"
 
 }

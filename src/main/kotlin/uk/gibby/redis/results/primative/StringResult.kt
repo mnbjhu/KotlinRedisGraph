@@ -10,4 +10,5 @@ import uk.gibby.redis.results.ResultValue
  */
 interface StringResult : ResultValue<String> {
     infix fun eq(literal: String) = StringEquality(this, literal)
+    override fun getLiteral(value: String) = "'$value'"
 }

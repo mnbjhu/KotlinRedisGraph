@@ -18,5 +18,4 @@ abstract class StructAttribute<T>: Attribute<T>(),  StructResult<T>{
         //if(attributes.size != params.size) throw Exception("All params are required when creating a literal string")
         return "[${params.joinToString { (it as ParameterPair<Any>).getLiteralString() }}]"
     }
-    abstract fun ParamMap.setResult(value: T)
 }

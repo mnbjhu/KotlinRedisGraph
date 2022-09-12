@@ -6,9 +6,9 @@ package uk.gibby.redis.results
  * @param T
  * @constructor Create empty Result value
  */
-interface ResultValue<out T> {
+interface ResultValue<T> {
     fun getReferenceString(): String
     fun parse(result: Iterator<Any?>): T = result.next() as T
-    fun getLiteral(value: T): String
+    fun getLiteral(value: T): String = "$value"
 }
 

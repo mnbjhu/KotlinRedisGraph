@@ -8,8 +8,8 @@ import uk.gibby.redis.statements.*
 class QueryScope {
     val commands = mutableListOf<Statement>()
     fun getQueryString(result: ResultValue<*>): String {
-        val first = commands.filter { it !is OrderBy }
-        val last = commands.filterIsInstance<OrderBy>()
+        val first = commands.filter { it !is OrderBy<*> }
+        val last = commands.filterIsInstance<OrderBy<*>>()
         return first.joinToString(" ") { it.getCommand() } + " " +
                 getResultString(result) + " " + last.joinToString(" ") { it.getCommand() }
     }
