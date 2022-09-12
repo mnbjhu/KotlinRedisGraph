@@ -10,8 +10,13 @@ class QueryScope {
     fun getQueryString(result: ResultValue<*>): String {
         val first = commands.filter { it !is OrderBy<*> }
         val last = commands.filterIsInstance<OrderBy<*>>()
-        return first.joinToString(" ") { it.getCommand() } + " " +
-                getResultString(result) + " " + last.joinToString(" ") { it.getCommand() }
+        return listOf(
+            first.joinToString(" ") { it.getCommand() },
+            getResultString(result),
+            last.joinToString(" ") { it.getCommand() }
+        )
+            .filter { it != "" }
+            .joinToString(" ")
     }
 
     private fun getResultString(result: ResultValue<*>) = if (result is EmptyResult) ""

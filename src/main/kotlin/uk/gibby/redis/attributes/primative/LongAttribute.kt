@@ -6,5 +6,4 @@ import uk.gibby.redis.attributes.Attribute
 import uk.gibby.redis.core.AttributeParent
 
 class LongAttribute(override var name: String, override var parent: AttributeParent?): Attribute<Long>(), LongResult {
-    init { parent?.attributes?.add(this) }
 }

@@ -7,7 +7,7 @@ import uk.gibby.redis.paths.minus
 import uk.gibby.redis.results.result
 import schemas.Actor
 import schemas.Movie
-import uk.gibby.redis.results.primative.LongResult.Companion.eq
+import uk.gibby.redis.conditions.equality.ResultEquality.Companion.eq
 import uk.gibby.redis.statements.Create.Companion.create
 import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.OrderBy.Companion.orderBy

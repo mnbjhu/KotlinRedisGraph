@@ -8,10 +8,17 @@ import uk.gibby.redis.attributes.primative.DoubleAttribute
 import uk.gibby.redis.attributes.primative.LongAttribute
 import uk.gibby.redis.attributes.primative.StringAttribute
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 
 sealed interface AttributeParent{
     val attributes: MutableList<Attribute<*>>
     var instanceName: String
+    operator fun <T, U: Attribute<T>>U.unaryPlus() =
+        this.also {
+            this@AttributeParent.attributes.add(it)
+            parent = this@AttributeParent
+        }
+
     fun string(name: String? = null) =
         StringAttribute("", null)
     fun long(name: String? = null) =
@@ -22,4 +29,13 @@ sealed interface AttributeParent{
         BooleanAttribute("", null)
     fun <T>array(type: Attribute<T>) = ArrayAttribute("", type, null)
     fun <T : Any>serializable(clazz: KClass<T>) = SerializableAttribute("", null, clazz)
+    operator fun <T, U: Attribute<T>>U.getValue(thisRef: Any?, property: KProperty<*>): U{
+        if(!initialized) {
+            name = property.name
+            parent = this@AttributeParent
+            attributes.add(this)
+            initialized = true
+        }
+        return this
+    }
 }

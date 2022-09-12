@@ -7,9 +7,9 @@ interface Matchable {
 }
 
 typealias ParameterPair<T> = Pair<Attribute<T>, T>
-fun <T> ParameterPair<T>.getLocalEqualityString() = "${first.name}:${first.getLiteralString(second)}"
-fun <T> ParameterPair<T>.getGlobalEqualityString() = "${first.getReferenceString()}=${first.getLiteralString(second)}"
-fun <T> ParameterPair<T>.getLiteralString() = first.getLiteralString(second)
+fun <T> ParameterPair<T>.getLocalEqualityString() = "${first.name}:${first.getLiteral(second)}"
+fun <T> ParameterPair<T>.getGlobalEqualityString() = "${first.getReferenceString()}=${first.getLiteral(second)}"
+fun <T> ParameterPair<T>.getLiteralString() = first.getLiteral(second)
 
 
 

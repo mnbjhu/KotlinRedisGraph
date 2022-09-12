@@ -15,7 +15,8 @@ interface StructResult<T>: AttributeParent, ResultValue<T> {
     fun ParamMap.setResult(value: T)
     override fun getLiteral(value: T): String{
         val p = ParamMap().apply { setResult(value) }.getParams()
-        return attributes.joinToString { p.first { it.first == attributes }; (it as Attribute<Any?>).getLiteral(it) }
+        if(p.size != attributes.size) throw Exception("Size mismatch: Attributes: ${attributes.size} Params: ${p.size}")
+        return "[${p.joinToString { (it as ParameterPair<Any>).getLiteralString() }}]"
     }
 }
 class ResultScope(val result: Iterator<Any?>){

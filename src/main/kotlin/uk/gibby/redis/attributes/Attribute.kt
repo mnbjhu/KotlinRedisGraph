@@ -10,11 +10,10 @@ import uk.gibby.redis.results.ResultValue
  * @param T
  */
 abstract class Attribute<T> : ResultValue<T> {
+    var initialized = false
     open var parent: AttributeParent? = null
     abstract var name: String
-    override fun getReferenceString(): String = "${parent!!.instanceName}.$name"
-    open fun getLiteralString(value: T) = "$value"
-
+    override fun getReferenceString(): String = if(parent is StructAttribute<*>) "${(parent as StructAttribute<*>).getReferenceString()}[${parent!!.attributes.indexOf(this)}]" else "${parent!!.instanceName}.$name"
 }
 
 class ArrayAttribute<T>(
@@ -27,6 +26,4 @@ class ArrayAttribute<T>(
         val innerIter = values.iterator()
         return values.map { type.parse(innerIter) }
     }
-    override fun getLiteralString(value: List<T>) =
-        "[${value.joinToString { type.getLiteralString(it) }}]"
 }

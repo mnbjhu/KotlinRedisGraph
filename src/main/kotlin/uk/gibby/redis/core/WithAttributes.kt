@@ -10,11 +10,7 @@ sealed class WithAttributes: AttributeParent {
     abstract override val attributes: MutableList<Attribute<*>>
     override var instanceName = NameCounter.getNext()
     protected inline fun <reified T : Any>serializable() = serializable(T::class)
-    operator fun <T, U: Attribute<T>>U.getValue(thisRef: Any?, property: KProperty<*>): U{
-        name = property.name
-        parent = thisRef as WithAttributes
-        return this
-    }
+
 }
 operator fun <T : WithAttributes> T.invoke(scope: T.(ParamMap) -> Unit) {
     val params = ParamMap()

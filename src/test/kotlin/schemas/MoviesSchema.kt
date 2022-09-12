@@ -4,8 +4,8 @@ import uk.gibby.redis.core.RedisNode
 import uk.gibby.redis.core.RedisRelation
 
 class Actor: RedisNode(){
-    val name by string()
-    val actorId by long()
+    val name by +string()
+    val actorId by +long()
     val actedIn = relates(ActedIn::class)
 }
 class Movie: RedisNode(){

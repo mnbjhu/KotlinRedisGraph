@@ -14,4 +14,9 @@ interface SerializableResult<T : Any> : ResultValue<T> {
     override fun parse(result: Iterator<Any?>): T {
         return Json.decodeFromString(clazz.serializer(), result.next() as String)
     }
+    @OptIn(InternalSerializationApi::class)
+    override fun getLiteral(value: T): String {
+        val strData = Json.encodeToString(clazz.serializer(), value)
+        return "'$strData'"
+    }
 }

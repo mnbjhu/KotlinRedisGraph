@@ -16,13 +16,4 @@ import kotlin.reflect.KProperty
 class StringAttribute(
     override var name: String,
     override var parent: AttributeParent?
-) : Attribute<String>(), StringResult {
-    init {
-        parent?.attributes?.add(this)
-    }
-
-    override fun getLiteralString(value: String): String {
-        return "'$value'"
-    }
-
-}
+) : Attribute<String>(), StringResult

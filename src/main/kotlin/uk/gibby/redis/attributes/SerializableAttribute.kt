@@ -21,9 +21,5 @@ class SerializableAttribute<T : Any>(
         return Json.decodeFromString(clazz.serializer(), strData)
     }
 
-    @OptIn(InternalSerializationApi::class)
-    override fun getLiteralString(value: T): String {
-        val strData = Json.encodeToString(clazz.serializer(), value)
-        return "'$strData'"
-    }
+
 }

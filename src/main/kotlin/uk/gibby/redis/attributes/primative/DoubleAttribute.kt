@@ -14,6 +14,5 @@ import uk.gibby.redis.core.WithAttributes
 class DoubleAttribute(override var name: String, override var parent: AttributeParent?) : uk.gibby.redis.attributes.Attribute<Double>(),
     DoubleResult {
     init {
-        parent?.attributes?.add(this)
     }
 }

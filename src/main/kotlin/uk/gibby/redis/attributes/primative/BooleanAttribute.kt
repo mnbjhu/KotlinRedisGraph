@@ -14,7 +14,5 @@ import uk.gibby.redis.core.WithAttributes
  */
 class BooleanAttribute(override var name: String, override var parent: AttributeParent?) : Attribute<Boolean>(),
     BooleanResult {
-    init {
-        parent?.attributes?.add(this)
-    }
+
 }
