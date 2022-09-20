@@ -15,5 +15,5 @@ interface StructResult<T>: AttributeParent, ResultValue<T> {
     }
 }
 class ResultScope(val result: Iterator<Any?>){
-    operator fun <T, U: Attribute<T>>U.not() = parse(result)
+    operator fun <T, U: ResultValue<T>>U.not() = parse(result)
 }
