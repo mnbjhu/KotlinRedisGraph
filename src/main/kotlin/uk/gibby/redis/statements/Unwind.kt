@@ -3,6 +3,6 @@ package uk.gibby.redis.statements
 import uk.gibby.redis.results.ArrayResult
 import uk.gibby.redis.results.ResultValue
 
-class Unwind<T, U : ArrayResult<T>, V : ResultValue<T>>(val array: U, private val alias: V) : Statement() {
-    override fun getCommand(): String = "UNWIND ${array.getReferenceString()} AS ${alias.getReferenceString()}"
+class Unwind<T, U: ResultValue<T>, V : ArrayResult<T, U>>(val array: V, private val alias: ResultValue<T>) : Statement() {
+    override fun getCommand(): String = "UNWIND ${array.getString()} AS ${alias.getString()}"
 }

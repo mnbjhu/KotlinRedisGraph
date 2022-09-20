@@ -1,7 +1,7 @@
 package uk.gibby.redis.functions.math
 
 import uk.gibby.redis.results.ResultValue
-import uk.gibby.redis.results.primative.DoubleResult
+import uk.gibby.redis.results.DoubleResult
 
 /**
  * Average
@@ -9,6 +9,16 @@ import uk.gibby.redis.results.primative.DoubleResult
  * @property attribute
  * @constructor Create empty Average
  */
-class Average(val attribute: ResultValue<Double>): DoubleResult {
-    override fun getReferenceString() = "avg(${attribute.getReferenceString()})"
+
+fun avg(value: ResultValue<Double>) = DoubleResult().apply{
+    reference = "avg(${value.getString()})"
+}
+fun min(value: ResultValue<Double>) = DoubleResult().apply{
+    reference = "min(${value.getString()})"
+}
+fun max(value: ResultValue<Double>) = DoubleResult().apply{
+    reference = "max(${value.getString()})"
+}
+fun sum(value: ResultValue<Double>) = DoubleResult().apply{
+    reference = "sum(${value.getString()})"
 }

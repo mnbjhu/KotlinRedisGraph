@@ -1,7 +1,8 @@
 package uk.gibby.redis.conditions.array
 
+import uk.gibby.redis.results.ArrayResult
 import uk.gibby.redis.results.ResultValue
-import uk.gibby.redis.results.primative.BooleanResult
+import uk.gibby.redis.results.BooleanResult
 
 /**
  * Contains
@@ -11,11 +12,9 @@ import uk.gibby.redis.results.primative.BooleanResult
  * @property element
  * @constructor Create empty Contains
  */
-class Contains<T>(val attribute: ResultValue<List<T>>, private val element: T) : BooleanResult {
-    override fun getReferenceString(): String =
-        "(${if (element is String) "'$element'" else "$element"} IN ${attribute.getReferenceString()})"
-
-    companion object {
-        infix fun <T> ResultValue<List<T>>.contains(element: T) = Contains(this, element)
-    }
+infix fun <T, U: ResultValue<T>> ArrayResult<T, U>.contains(element: U) = BooleanResult().also {
+    it.reference = "(${element.getString()} IN ${getString()})"
+}
+infix fun <T, U: ResultValue<T>> ArrayResult<T, U>.contains(element: T) = BooleanResult().also {
+    it.reference = "(${type.getLiteral(element)} IN ${getString()})"
 }

@@ -1,12 +1,6 @@
 package uk.gibby.redis.attributes
 
-import uk.gibby.redis.core.*
-import kotlin.reflect.KProperty
+import uk.gibby.redis.results.Attribute
+import uk.gibby.redis.results.StructResult
 
-abstract class StructAttribute<T>: Attribute<T>(),  StructResult<T>{
-    override var parent: AttributeParent? = null
-    override val attributes: MutableList<Attribute<*>> = mutableListOf()
-    override var name: String = ""
-    override var instanceName: String
-        get() = name; set(_) {}
-}
+abstract class StructAttribute<T>: StructResult<T>(), Attribute<T>

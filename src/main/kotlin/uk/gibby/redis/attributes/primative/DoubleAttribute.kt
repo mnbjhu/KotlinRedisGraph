@@ -1,8 +1,7 @@
 package uk.gibby.redis.attributes.primative
 
-import uk.gibby.redis.core.AttributeParent
-import uk.gibby.redis.results.primative.DoubleResult
-import uk.gibby.redis.core.WithAttributes
+import uk.gibby.redis.results.Attribute
+import uk.gibby.redis.results.DoubleResult
 
 /**
  * Double attribute
@@ -11,8 +10,4 @@ import uk.gibby.redis.core.WithAttributes
  * @property parent
  * @constructor Create empty Double attribute
  */
-class DoubleAttribute(override var name: String, override var parent: AttributeParent?) : uk.gibby.redis.attributes.Attribute<Double>(),
-    DoubleResult {
-    init {
-    }
-}
+class DoubleAttribute: DoubleResult(), Attribute<Double>

@@ -1,5 +1,6 @@
 package uk.gibby.redis.core
 
+import uk.gibby.redis.results.Attribute
 import uk.gibby.redis.attributes.RelationAttribute
 import kotlin.reflect.KClass
 
@@ -11,7 +12,7 @@ import kotlin.reflect.KClass
  */
 abstract class RedisNode : WithAttributes(), Matchable, Creatable {
     override val typeName: String = this::class.java.simpleName
-    override val attributes: MutableList<uk.gibby.redis.attributes.Attribute<*>> = mutableListOf()
+    override val attributes: MutableSet<Attribute<*>> = mutableSetOf()
     var matched = false
 
     /**

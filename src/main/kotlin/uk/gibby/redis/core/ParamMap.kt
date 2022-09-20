@@ -1,6 +1,6 @@
 package uk.gibby.redis.core
 
-import uk.gibby.redis.attributes.Attribute
+import uk.gibby.redis.results.Attribute
 
 class ParamMap {
     private val map = mutableListOf<ParameterPair<*>>()

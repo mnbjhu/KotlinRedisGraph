@@ -1,20 +1,20 @@
 package uk.gibby.redis.functions.math
 
-import uk.gibby.redis.results.primative.DoubleResult
-import uk.gibby.redis.results.primative.LongResult
+import uk.gibby.redis.results.DoubleResult
+import uk.gibby.redis.results.LongResult
 
-fun LongResult.pow(other: LongResult) = object : LongResult {
-    override fun getReferenceString() = "(${this@pow} ^ $other)"
+fun LongResult.pow(other: LongResult) = LongResult().also {
+    it.reference = "(${getString()} ^ ${other.getString()})"
 }
 
-fun LongResult.pow(literal: Long) = object : LongResult {
-    override fun getReferenceString() = "(${this@pow} ^ $literal)"
+fun LongResult.pow(literal: Long) = LongResult().also {
+    it.reference = "(${getString()} ^ $literal)"
 }
 
-fun DoubleResult.pow(other: DoubleResult) = object : DoubleResult {
-    override fun getReferenceString() = "(${this@pow} ^ $other)"
+fun DoubleResult.pow(other: DoubleResult) = LongResult().also {
+    it.reference = "(${getString()} ^ ${other.getString()})"
 }
 
-fun DoubleResult.pow(literal: Double) = object : DoubleResult {
-    override fun getReferenceString() = "(${this@pow} ^ $literal)"
+fun DoubleResult.pow(literal: Double) = LongResult().also {
+    it.reference = "(${getString()} ^ $literal)"
 }

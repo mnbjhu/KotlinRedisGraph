@@ -2,10 +2,12 @@ package schemas
 
 import uk.gibby.redis.core.RedisNode
 import uk.gibby.redis.core.RedisRelation
+import uk.gibby.redis.core.long
+import uk.gibby.redis.core.string
 
 class Actor: RedisNode(){
-    val name by +string()
-    val actorId by +long()
+    val name by string()
+    val actorId by long()
     val actedIn = relates(ActedIn::class)
 }
 class Movie: RedisNode(){

@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Test
 import uk.gibby.redis.statements.Match.Companion.match
 import schemas.EnumSchema
 import schemas.MyEnum
-import uk.gibby.redis.conditions.equality.ResultEquality.Companion.eq
+import uk.gibby.redis.conditions.equality.eq
 import uk.gibby.redis.statements.Where.Companion.where
 
 class SerializableTest {

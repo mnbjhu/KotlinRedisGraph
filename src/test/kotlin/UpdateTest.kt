@@ -2,7 +2,7 @@ import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 import schemas.Actor
 import schemas.Movie
-import uk.gibby.redis.conditions.equality.ResultEquality.Companion.eq
+import uk.gibby.redis.conditions.equality.eq
 import uk.gibby.redis.core.RedisGraph
 import uk.gibby.redis.paths.minus
 import uk.gibby.redis.statements.Create.Companion.create

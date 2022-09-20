@@ -20,12 +20,12 @@ class QueryScope {
     }
 
     private fun getResultString(result: ResultValue<*>) = if (result is EmptyResult) ""
-    else "RETURN ${result.getReferenceString()}"
+    else "RETURN ${result.getString()}"
 
-    fun <T, U : ArrayResult<T>> unwind(arr: U): ResultValue<T> {
+    fun <T, U: ResultValue<T>, V : ArrayResult<T, U>> QueryScope.unwind(arr: V): ResultValue<T> {
         val result = object : ResultValue<T> {
-            val name = NameCounter.getNext()
-            override fun getReferenceString() = name
+            override var value: T? = null
+            override var reference: String? = NameCounter.getNext()
             override fun parse(result: Iterator<Any?>): T {
                 return arr.type.parse(result)
             }
@@ -36,5 +36,6 @@ class QueryScope {
 }
 
 object EmptyResult : ResultValue<Unit> {
-    override fun getReferenceString() = throw Exception("Cannot access empty result")
+    override var value: Unit? = null
+    override var reference: String? = ""// throw Exception("Cannot access empty result")
 }

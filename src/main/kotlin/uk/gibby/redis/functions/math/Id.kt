@@ -1,6 +1,6 @@
 package uk.gibby.redis.functions.math
 
-import uk.gibby.redis.results.primative.LongResult
+import uk.gibby.redis.results.LongResult
 import uk.gibby.redis.core.RedisNode
 
 /**
@@ -9,6 +9,7 @@ import uk.gibby.redis.core.RedisNode
  * @property node
  * @constructor Create empty Id
  */
-class Id(private val node: RedisNode) : LongResult {
-    override fun getReferenceString() = "ID(${node.instanceName})"
+
+fun id(node: RedisNode) = LongResult().apply {
+    reference = "ID(${node.instanceName})"
 }
