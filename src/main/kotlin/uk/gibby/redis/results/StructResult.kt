@@ -5,6 +5,7 @@ import uk.gibby.redis.core.ParameterPair
 import uk.gibby.redis.core.getLiteralString
 import kotlin.reflect.KFunction0
 import kotlin.reflect.KProperty
+import kotlin.reflect.full.declaredMemberProperties
 
 abstract class StructResult<T>: ResultValue<T> {
     override var reference: String? = null
@@ -24,41 +25,22 @@ abstract class StructResult<T>: ResultValue<T> {
     }
 
     override fun getStructuredString(): String {
-
-        return "[${attributes.values.joinToString { it.getString() }}]"
+        return "[${this::class::declaredMemberProperties.get()
+            .joinToString { (it.call(this) as ResultValue<*>).getString() }}]"
     }
     operator fun <T, U: Attribute<T>>U.getValue(thisRef: Any?, property: KProperty<*>): U{
-        if(this@StructResult.reference != null) {
+        if(attributes[property.name] == null){
             val index = attributes.size
             reference = "${this@StructResult.reference}[$index]"
             attributes[property.name] = this
-            return this
-        } else{
-            TODO()
-            return this
         }
+        return this
     }
     protected operator fun <T, U: Attribute<T>>U.setValue(thisRef: Any?, property: KProperty<*>, value: U){
         this@StructResult.reference = null
         attributes[property.name] = value
     }
-    operator fun <T, U: Attribute<T>>U.get(newValue: T){
-        //params.values.indexOf()
-    }
-    inner class StructAttribute<T, U: ResultValue<T>>(val type: KFunction0<U>){
-        operator fun <T, U: Attribute<T>>U.getValue(thisRef: Any?, property: KProperty<*>): U{
-            if(this@StructResult.reference != null) {
-                val index = attributes.size
-                reference = "${this@StructResult.reference}[$index]"
-                attributes[property.name] = this
-                return this
-            } else{
-                TODO()
-                return this
-            }
-        }
-    }
 }
 class ResultScope(val result: Iterator<Any?>){
-    operator fun <T, U: Attribute<T>>U.not() = parse(result)
+    operator fun <T, U: ResultValue<T>>U.not() = parse(result)
 }
