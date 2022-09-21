@@ -5,4 +5,9 @@ package uk.gibby.redis.results
  *
  * @constructor Create empty Double result
  */
-open class DoubleResult : PrimitiveResult<Double>()
+open class DoubleResult : PrimitiveResult<Double>(){
+    companion object {
+        val Double.result
+            get() = DoubleResult().also { it.value = this }
+    }
+}

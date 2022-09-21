@@ -28,4 +28,8 @@ open class BooleanResult : PrimitiveResult<Boolean>() {
     infix fun or(other: BooleanResult) = BooleanResult().also{
         it.reference = "(${getString()}) OR (${other.getString()})"
     }
+    companion object {
+        val Boolean.result
+            get() = BooleanResult().also { it.value = this }
+    }
 }

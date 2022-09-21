@@ -1,6 +1,6 @@
 package uk.gibby.redis.results
 
-open class ArrayResult<T, U : ResultValue<T>>(val type: U) : PrimitiveResult<List<T>>() {
+open class ArrayResult<T>(val type: ResultValue<T>) : PrimitiveResult<List<T>>() {
     override fun parse(result: Iterator<Any?>): List<T> {
         val values = (result.next() as List<*>)
         val innerIter = values.iterator()
@@ -9,5 +9,9 @@ open class ArrayResult<T, U : ResultValue<T>>(val type: U) : PrimitiveResult<Lis
     override fun getLiteral(value: List<T>) = "[${value.joinToString { type.getLiteral(it) }}]"
     override fun getStructuredString(): String {
         return ""
+    }
+    companion object {
+        val <T>List<T>.result
+            get() = ArrayResult<T>().also { it.value = this }
     }
 }
