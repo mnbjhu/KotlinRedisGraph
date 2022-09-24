@@ -2,9 +2,9 @@ import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 import schemas.Actor
 import schemas.Movie
+import uk.gibby.redis.conditions.equality.eq
 import uk.gibby.redis.core.RedisGraph
 import uk.gibby.redis.paths.minus
-import uk.gibby.redis.results.primative.LongResult.Companion.eq
 import uk.gibby.redis.statements.Create.Companion.create
 import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Match.Companion.match

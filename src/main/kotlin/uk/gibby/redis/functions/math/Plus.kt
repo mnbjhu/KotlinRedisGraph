@@ -1,21 +1,20 @@
 package uk.gibby.redis.functions.math
 
-import uk.gibby.redis.results.primative.BooleanResult
-import uk.gibby.redis.results.primative.DoubleResult
-import uk.gibby.redis.results.primative.LongResult
+import uk.gibby.redis.results.DoubleResult
+import uk.gibby.redis.results.LongResult
 
-operator fun LongResult.plus(other: LongResult) = object : LongResult {
-    override fun getReferenceString() = "(${this@plus} + $other)"
+operator fun LongResult.plus(other: LongResult) = LongResult().also {
+    it.reference = "(${getString()} + ${other.getString()})"
 }
 
-operator fun LongResult.plus(literal: Long) = object : LongResult {
-    override fun getReferenceString() = "(${this@plus} + $literal)"
+operator fun LongResult.plus(literal: Long) = LongResult().also {
+    it.reference = "(${getString()} + $literal)"
 }
 
-operator fun DoubleResult.plus(other: DoubleResult) = object : DoubleResult {
-    override fun getReferenceString() = "(${this@plus} + $other)"
+operator fun DoubleResult.plus(other: DoubleResult) = DoubleResult().also {
+    it.reference = "(${getString()} + ${other.getString()})"
 }
 
-operator fun DoubleResult.plus(literal: Double) = object : DoubleResult {
-    override fun getReferenceString() = "(${this@plus} + $literal)"
+operator fun DoubleResult.plus(literal: Double) = DoubleResult().also {
+    it.reference = "(${getString()} + $literal)"
 }

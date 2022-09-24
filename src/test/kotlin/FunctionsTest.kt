@@ -1,12 +1,13 @@
 import uk.gibby.redis.core.RedisGraph
-import uk.gibby.redis.functions.math.Average
-import uk.gibby.redis.functions.math.Max
-import uk.gibby.redis.functions.math.Min
-import uk.gibby.redis.functions.math.Sum
+
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import schemas.MyNumber
+import uk.gibby.redis.functions.math.avg
+import uk.gibby.redis.functions.math.max
+import uk.gibby.redis.functions.math.min
+import uk.gibby.redis.functions.math.sum
 import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Match.Companion.match
 
@@ -50,7 +51,7 @@ class FunctionsTest {
         numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)){ attr, iter -> attr[num] = iter }
         numbersGraph.query {
             val number = match(MyNumber())
-            Average(number.num)
+            avg(number.num)
         }.first() `should be equal to` 8.0
     }
 
@@ -62,7 +63,7 @@ class FunctionsTest {
     fun `Test Max`(){
         numbersGraph.query {
             val number = match(MyNumber())
-            Max(number.num)
+            max(number.num)
         }.first() `should be equal to` 13.0
     }
 
@@ -74,7 +75,7 @@ class FunctionsTest {
     fun `Test Min`(){
         numbersGraph.query {
             val number = match(MyNumber())
-            Min(number.num)
+            min(number.num)
         }.first() `should be equal to` 1.0
     }
 
@@ -86,7 +87,7 @@ class FunctionsTest {
     fun `Test Sum`(){
         numbersGraph.query {
             val number = match(MyNumber())
-            Sum(number.num)
+            sum(number.num)
         }.first() `should be equal to` 24.0
     }
 

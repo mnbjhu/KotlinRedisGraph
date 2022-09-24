@@ -1,11 +1,16 @@
 import org.amshove.kluent.`should be equal to`
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import uk.gibby.redis.attributes.StructAttribute
-import uk.gibby.redis.core.ParamMap
-import uk.gibby.redis.core.RedisGraph
-import uk.gibby.redis.core.RedisNode
-import uk.gibby.redis.core.ResultScope
+import uk.gibby.redis.results.Attribute
+import uk.gibby.redis.conditions.equality.eq
+import uk.gibby.redis.core.*
+import uk.gibby.redis.functions.math.plus
+import uk.gibby.redis.results.LongResult
+import uk.gibby.redis.results.ResultScope
+import uk.gibby.redis.results.StructResult
+import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Match.Companion.match
+import kotlin.reflect.KFunction0
 
 class StructsTest {
     private val structsGraph = RedisGraph("structs",
@@ -13,32 +18,79 @@ class StructsTest {
         port = TestAuth.port,
         password = TestAuth.password
     )
+    @BeforeEach
+    fun deleteAll(){
+        structsGraph.query { delete(match(StructNode())) }
+    }
     @Test
     fun `Basic Test`(){
         structsGraph.create(StructNode::class){
-            it[myStruct] = Vector2(1, 2)
+            it[myVector] = Vector2(1, 2)
+            it[myLine] = Vector2(1, 2) to Vector2(2, 4)
         }
         structsGraph.query {
             val node = match(StructNode())
-            node.myStruct
+            node.myVector
         }.first() `should be equal to` Vector2(1, 2)
         structsGraph.query {
             val node = match(StructNode())
-            node.myStruct.x
+            node.myVector.x
+        }.first() `should be equal to` 1L
+        structsGraph.query {
+            val v = match(StructNode())
+            v.myVector eq Vector2(1, 2)
+        }.first() `should be equal to` true
+        structsGraph.query {
+            val v = match(StructNode())
+           v.myVector + v.myVector
+        }.first() `should be equal to` Vector2(2, 4)
+        structsGraph.query {
+            val v = match(StructNode())
+            v.myLine
+        }.first() `should be equal to` (Vector2(1, 2) to Vector2(2, 4))
+        structsGraph.query {
+            val v = match(StructNode())
+            v.myLine.a
+        }.first() `should be equal to` Vector2(1, 2)
+        structsGraph.query {
+            val v = match(StructNode())
+            v.myLine.a.x
         }.first() `should be equal to` 1L
     }
 }
+operator fun <U: StructResult<*>>KFunction0<U>.invoke(builder: U.() -> Unit): U = invoke().apply { builder() }
+
 data class Vector2(val x: Long, val y: Long)
 
-class Vector2Attribute: StructAttribute<Vector2>() {
-    val x by long()
-    val y by long()
+class Vector2Attribute: Vector2Result(), Attribute<Vector2>
+open class Vector2Result: StructResult<Vector2>() {
+    open val x: LongResult by long()
+    open val y: LongResult by long()
     override fun ResultScope.getResult() = Vector2(!x, !y)
     override fun ParamMap.setResult(value: Vector2) {
         x[value.x]
         y[value.y]
     }
+    operator fun plus(other: Vector2Result) = object: Vector2Result(){
+        override val x = this@Vector2Result.x + other.x
+        override val y = this@Vector2Result.y + other.y
+    }
+
 }
+open class LineResult: StructResult<Line>(){
+    val a: Vector2Result by Vector2Attribute()
+    val b: Vector2Result by Vector2Attribute()
+    override fun ResultScope.getResult(): Line = !a to !b
+
+    override fun ParamMap.setResult(value: Line) {
+        a[value.first]
+        b[value.second]
+    }
+}
+typealias Line = Pair<Vector2, Vector2>
+
+class LineAttribute: LineResult(), Attribute<Line>
 class StructNode: RedisNode(){
-    val myStruct by Vector2Attribute()
+    val myVector by Vector2Attribute()
+    val myLine by LineAttribute()
 }

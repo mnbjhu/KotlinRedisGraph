@@ -1,11 +1,11 @@
 package uk.gibby.redis.conditions.equality
 
 import uk.gibby.redis.results.ResultValue
-import uk.gibby.redis.results.primative.BooleanResult
+import uk.gibby.redis.results.BooleanResult
 
-class ResultEquality<T>(val result: ResultValue<T>, val other: ResultValue<T>): BooleanResult {
-    override fun getReferenceString() = "${result.getReferenceString()} = ${other.getReferenceString()}"
-    companion object{
-        infix fun <T>ResultValue<T>.eq(other: ResultValue<T>) = ResultEquality(this, other)
-    }
+infix fun <T>ResultValue<T>.eq(other: ResultValue<T>) = BooleanResult().also {
+    it.reference = "${getString()} = ${other.getString()}"
+}
+infix fun <T>ResultValue<T>.eq(other: T) = BooleanResult().also {
+    it.reference = "${getString()} = ${getLiteral(other)}"
 }

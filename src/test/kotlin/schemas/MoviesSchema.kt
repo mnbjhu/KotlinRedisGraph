@@ -2,6 +2,8 @@ package schemas
 
 import uk.gibby.redis.core.RedisNode
 import uk.gibby.redis.core.RedisRelation
+import uk.gibby.redis.core.long
+import uk.gibby.redis.core.string
 
 class Actor: RedisNode(){
     val name by string()

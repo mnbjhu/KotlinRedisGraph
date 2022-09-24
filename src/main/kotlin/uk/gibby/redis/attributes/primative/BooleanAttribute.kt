@@ -1,9 +1,7 @@
 package uk.gibby.redis.attributes.primative
 
-import uk.gibby.redis.attributes.Attribute
-import uk.gibby.redis.core.AttributeParent
-import uk.gibby.redis.results.primative.BooleanResult
-import uk.gibby.redis.core.WithAttributes
+import uk.gibby.redis.results.Attribute
+import uk.gibby.redis.results.BooleanResult
 
 /**
  * Boolean attribute
@@ -12,9 +10,4 @@ import uk.gibby.redis.core.WithAttributes
  * @property parent
  * @constructdor Create empty Boolean attribute
  */
-class BooleanAttribute(override var name: String, override var parent: AttributeParent?) : Attribute<Boolean>(),
-    BooleanResult {
-    init {
-        parent?.attributes?.add(this)
-    }
-}
+class BooleanAttribute : BooleanResult(), Attribute<Boolean>

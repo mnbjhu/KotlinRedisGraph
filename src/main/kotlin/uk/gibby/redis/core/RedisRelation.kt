@@ -1,5 +1,7 @@
 package uk.gibby.redis.core
 
+import uk.gibby.redis.results.Attribute
+
 /**
  * Redis relation
  *
@@ -16,7 +18,7 @@ abstract class RedisRelation<T : RedisNode, U : RedisNode>(
     lateinit var to: U
     override val typeName = this::class.java.simpleName
     var isMultipleRelation = false
-    override val attributes: MutableList<uk.gibby.redis.attributes.Attribute<*>> = mutableListOf()
+    override val attributes: MutableSet<Attribute<*>> = mutableSetOf()
     fun getMatchString(): String {
         return "[$instanceName:$typeName${if (isMultipleRelation) "*" else ""}{${params?.joinToString { (it as ParameterPair<Any?>).getLocalEqualityString() } ?: ""}}]"
     }

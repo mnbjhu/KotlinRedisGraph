@@ -1,7 +1,6 @@
 package schemas
 
-import uk.gibby.redis.core.RedisNode
-import uk.gibby.redis.core.RedisRelation
+import uk.gibby.redis.core.*
 
 class User: RedisNode(){
     val firstName by string()
