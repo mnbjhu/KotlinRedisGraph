@@ -7,7 +7,4 @@ open class ArrayResult<T, U : ResultValue<T>>(val type: U) : PrimitiveResult<Lis
         return values.map { type.parse(innerIter) }
     }
     override fun getLiteral(value: List<T>) = "[${value.joinToString { type.getLiteral(it) }}]"
-    override fun getStructuredString(): String {
-        return ""
-    }
 }

@@ -25,8 +25,9 @@ abstract class StructResult<T>: ResultValue<T> {
     }
 
     override fun getStructuredString(): String {
-        return "[${this::class::declaredMemberProperties.get()
+        return if(value == null) "[${this::class::declaredMemberProperties.get()
             .joinToString { (it.call(this) as ResultValue<*>).getString() }}]"
+        else getLiteral(value!!)
     }
     operator fun <T, U: Attribute<T>>U.getValue(thisRef: Any?, property: KProperty<*>): U{
         if(attributes[property.name] == null){

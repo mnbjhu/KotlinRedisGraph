@@ -1,5 +1,7 @@
 package uk.gibby.redis.results
 
+import kotlin.reflect.KFunction0
+
 /**
  * Result value
  *
@@ -12,16 +14,11 @@ interface ResultValue<T> {
     fun parse(result: Iterator<Any?>): T = result.next() as T
     fun getLiteral(value: T): String = "$value"
     fun getString() = reference ?: getStructuredString()
-    fun getStructuredString() = value!!.toString()
+    fun getStructuredString() = getLiteral(value!!)
 }
-fun <T, U: ResultValue<T>>literalOf(result: U): U{
-    when(result){
-        is PrimitiveResult<*> -> {
-            TODO()
-
-        }
-        is StructResult<*> -> TODO()
+ fun <T, U: ResultValue<T>>literalOf(result: U, value: T): U{
+    return result.apply {
+        this.value = value
     }
-    TODO()
 }
 
