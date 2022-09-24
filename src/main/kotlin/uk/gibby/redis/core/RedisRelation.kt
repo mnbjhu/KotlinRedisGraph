@@ -12,11 +12,10 @@ import uk.gibby.redis.results.Attribute
  * @property typeName
  * @constructor Create empty Redis relation
  */
-abstract class RedisRelation<T : RedisNode, U : RedisNode>(
-) : WithAttributes() {
+abstract class RedisRelation<T : RedisNode, U : RedisNode>: WithAttributes() {
     lateinit var from: T
     lateinit var to: U
-    override val typeName = this::class.java.simpleName
+    override val typeName: String = this::class.java.simpleName
     var isMultipleRelation = false
     override val attributes: MutableSet<Attribute<*>> = mutableSetOf()
     fun getMatchString(): String {

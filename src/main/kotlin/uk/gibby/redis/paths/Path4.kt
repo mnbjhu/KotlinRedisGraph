@@ -10,10 +10,10 @@ class Path4<
         G : RedisNode
         >
     (
-    val first: A, val firstToSecond: B,
-    val second: C, val secondToThird: D,
-    val third: E, val thirdToForth: F,
-    val forth: G
+    val first: A, private val firstToSecond: B,
+    val second: C, private val secondToThird: D,
+    private val third: E, private val thirdToForth: F,
+    private val forth: G
 ) : Path {
     operator fun component1() = first
     operator fun component2() = firstToSecond

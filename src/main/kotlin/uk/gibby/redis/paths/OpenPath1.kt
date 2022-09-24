@@ -6,7 +6,7 @@ import uk.gibby.redis.core.RedisRelation
 import kotlin.reflect.KClass
 
 class OpenPath1<A : RedisNode, B : RedisRelation<A, C>, C : RedisNode>
-    (val first: A, val firstToSecond: KClass<B>, val setArgs: B.(ParamMap) -> Unit, val isMultiple: Boolean) {
+    (val first: A, private val firstToSecond: KClass<B>, val setArgs: B.(ParamMap) -> Unit, private val isMultiple: Boolean) {
     operator fun minus(node: C) = Path2(
         first,
         firstToSecond.constructors.first().call()

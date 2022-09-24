@@ -3,7 +3,6 @@ package uk.gibby.redis.results
 import uk.gibby.redis.core.ParamMap
 import uk.gibby.redis.core.ParameterPair
 import uk.gibby.redis.core.getLiteralString
-import kotlin.reflect.KFunction0
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberProperties
 

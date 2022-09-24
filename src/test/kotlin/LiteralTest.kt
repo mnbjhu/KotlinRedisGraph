@@ -2,9 +2,6 @@ import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import uk.gibby.redis.core.RedisGraph
-import uk.gibby.redis.core.array
-import uk.gibby.redis.core.long
-import uk.gibby.redis.core.string
 import uk.gibby.redis.results.*
 import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Match.Companion.match

@@ -12,10 +12,10 @@ class OpenPath3<
         G : RedisNode
         >
     (
-    val first: A, val firstToSecond: B,
-    val second: C, val secondToThird: D,
-    val third: E, val thirdToForth: KClass<F>,
-    val setArgs: F.(ParamMap) -> Unit, val isMultiple: Boolean
+    val first: A, private val firstToSecond: B,
+    val second: C, private val secondToThird: D,
+    val third: E, private val thirdToForth: KClass<F>,
+    val setArgs: F.(ParamMap) -> Unit, private val isMultiple: Boolean
 ) {
     operator fun minus(node: G) = Path4(
         first,
@@ -25,8 +25,8 @@ class OpenPath3<
         third,
         thirdToForth.constructors.first().call()
             .apply {
-                from = third;
-                to = node;
+                from = third
+                to = node
                 val p = ParamMap()
                 setArgs(p)
                 params = p.getParams()

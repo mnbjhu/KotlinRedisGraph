@@ -9,4 +9,4 @@ import uk.gibby.redis.attributes.primative.StringAttribute
  * @property needle
  * @constructor Create empty Contains
  */
-class Contains(val hayStack: StringAttribute, val needle: String)
+class Contains(private val hayStack: StringAttribute, private val needle: String)

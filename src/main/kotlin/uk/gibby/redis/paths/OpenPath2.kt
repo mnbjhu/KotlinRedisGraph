@@ -8,11 +8,11 @@ import kotlin.reflect.KClass
 class OpenPath2<A : RedisNode, B : RedisRelation<A, C>, C : RedisNode, D : RedisRelation<C, E>, E : RedisNode>
     (
     val first: A,
-    val firstToSecond: B,
+    private val firstToSecond: B,
     val second: C,
-    val secondToThird: KClass<D>,
+    private val secondToThird: KClass<D>,
     val setArgs: D.(ParamMap) -> Unit,
-    val isMultiple: Boolean
+    private val isMultiple: Boolean
 ) {
     operator fun minus(node: E) = Path3(
         first,
