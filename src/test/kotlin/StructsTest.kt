@@ -64,7 +64,7 @@ data class Vector2(val x: Long, val y: Long)
 
 class Vector2Attribute: Vector2Result(), Attribute<Vector2>
 open class Vector2Result: StructResult<Vector2>() {
-    open val x  by long()
+    open val x by long()
     open val y by long()
     override fun ResultScope.getResult() = Vector2(!x, !y)
     override fun ParamMap.setResult(value: Vector2) {
