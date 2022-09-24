@@ -17,7 +17,7 @@ import kotlin.reflect.KClass
  */
 class RelationAttribute<T : RedisNode, U : RedisNode, V : RedisRelation<T, U>>(
     val relation: KClass<out V>,
-    val parent: T
+    private val parent: T
 ) {
     var setArgs: V.(ParamMap) -> Unit = {}
     var isMultiple = false

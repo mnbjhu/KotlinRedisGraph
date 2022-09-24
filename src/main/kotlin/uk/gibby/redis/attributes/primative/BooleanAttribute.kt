@@ -8,6 +8,6 @@ import uk.gibby.redis.results.BooleanResult
  *
  * @property name
  * @property parent
- * @constructdor Create empty Boolean attribute
+ * @constructor Create empty Boolean attribute
  */
 class BooleanAttribute : BooleanResult(), Attribute<Boolean>

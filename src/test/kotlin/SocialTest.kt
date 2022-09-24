@@ -3,7 +3,6 @@ import org.junit.jupiter.api.Test
 import uk.gibby.redis.paths.minus
 import uk.gibby.redis.results.result
 import uk.gibby.redis.statements.Match.Companion.match
-import uk.gibby.redis.paths.minus
 
 import schemas.*
 

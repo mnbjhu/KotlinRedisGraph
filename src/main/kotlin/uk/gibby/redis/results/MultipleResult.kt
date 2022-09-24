@@ -1,3 +1,5 @@
+@file:Suppress("UnusedReceiverParameter", "UnusedReceiverParameter")
+
 package uk.gibby.redis.results
 
 import uk.gibby.redis.scopes.QueryScope

@@ -24,7 +24,7 @@ class RedisGraph(
     port: Int = 6379,
     password: String? = null
 ) {
-    val client: UnifiedJedis
+    private val client: UnifiedJedis
 
     init {
         val hostAndPort = HostAndPort(host, port)

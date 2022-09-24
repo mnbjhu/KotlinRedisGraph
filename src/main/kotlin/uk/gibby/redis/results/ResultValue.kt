@@ -1,7 +1,6 @@
 package uk.gibby.redis.results
 
 import uk.gibby.redis.core.*
-import kotlin.reflect.KFunction0
 
 /**
  * Result value
