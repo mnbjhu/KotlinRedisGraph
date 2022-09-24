@@ -1,5 +1,6 @@
 package uk.gibby.redis.results
 
+import uk.gibby.redis.core.*
 import kotlin.reflect.KFunction0
 
 /**
@@ -21,4 +22,23 @@ interface ResultValue<T> {
         this.value = value
     }
 }
+fun Int.literal() = literalOf(long(), toLong())
+fun Long.literal() = literalOf(long(), this)
+fun Double.literal() = literalOf(double(), this)
+fun Float.literal() = literalOf(double(), toDouble())
+fun Boolean.literal() = literalOf(boolean(), this)
+fun String.literal() = literalOf(string(), this)
+@JvmName("literalInt")
+fun List<Int>.literal() = literalOf(array(long()), map { it.toLong() })
+@JvmName("literalLong")
+fun List<Long>.literal() = literalOf(array(long()), this)
+@JvmName("literalDouble")
+fun List<Double>.literal() = literalOf(array(double()), this)
+@JvmName("literalFloat")
+fun List<Float>.literal() = literalOf(array(double()), map{ it.toDouble() })
+@JvmName("literalBoolean")
+fun List<Boolean>.literal() = literalOf(array(boolean()), this)
+@JvmName("literalString")
+fun List<String>.literal() = literalOf(array(string()), this)
+
 
