@@ -16,5 +16,5 @@ infix fun <T, U: ResultValue<T>> ArrayResult<T, U>.contains(element: U) = Boolea
     it.reference = "(${element.getString()} IN ${getString()})"
 }
 infix fun <T, U: ResultValue<T>> ArrayResult<T, U>.contains(element: T) = BooleanResult().also {
-    it.reference = "(${type.getLiteral(element)} IN ${getString()})"
+    it.reference = "(${newElement.getLiteral(element)} IN ${getString()})"
 }

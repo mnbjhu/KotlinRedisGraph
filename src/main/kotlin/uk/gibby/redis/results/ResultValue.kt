@@ -1,5 +1,6 @@
 package uk.gibby.redis.results
 
+import uk.gibby.redis.attributes.primative.LongAttribute
 import uk.gibby.redis.core.*
 
 /**
@@ -16,8 +17,13 @@ interface ResultValue<T> {
     fun getString() = reference ?: getStructuredString()
     fun getStructuredString() = getLiteral(value!!)
 }
- fun <T, U: ResultValue<T>>literalOf(result: U, value: T): U{
+fun <T, U: ResultValue<T>>literalOf(result: U, value: T): U{
     return result.apply {
+        this.value = value
+    }
+}
+fun <T, U: ResultValue<T>>literalOf(resultBuilder: ResultBuilder<T, U>, value: T): U{
+    return resultBuilder.action().apply {
         this.value = value
     }
 }
@@ -28,16 +34,16 @@ fun Float.literal() = literalOf(double(), toDouble())
 fun Boolean.literal() = literalOf(boolean(), this)
 fun String.literal() = literalOf(string(), this)
 @JvmName("literalInt")
-fun List<Int>.literal() = literalOf(array(long()), map { it.toLong() })
+fun List<Int>.literal() = literalOf(array(::LongResult), map { it.toLong() })
 @JvmName("literalLong")
-fun List<Long>.literal() = literalOf(array(long()), this)
+fun List<Long>.literal() = literalOf(array(::LongResult), this)
 @JvmName("literalDouble")
-fun List<Double>.literal() = literalOf(array(double()), this)
+fun List<Double>.literal() = literalOf(array(::DoubleResult), this)
 @JvmName("literalFloat")
-fun List<Float>.literal() = literalOf(array(double()), map{ it.toDouble() })
+fun List<Float>.literal() = literalOf(array(::DoubleResult), map{ it.toDouble() })
 @JvmName("literalBoolean")
-fun List<Boolean>.literal() = literalOf(array(boolean()), this)
+fun List<Boolean>.literal() = literalOf(array(::BooleanResult), this)
 @JvmName("literalString")
-fun List<String>.literal() = literalOf(array(string()), this)
+fun List<String>.literal() = literalOf(array(::StringResult), this)
 
 
