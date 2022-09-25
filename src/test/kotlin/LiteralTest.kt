@@ -2,7 +2,6 @@ import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import uk.gibby.redis.core.RedisGraph
-import uk.gibby.redis.core.array
 import uk.gibby.redis.results.*
 import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Match.Companion.match
@@ -71,7 +70,7 @@ class LiteralTest {
         }
         structsGraph.query {
             val node = match(StructNode())
-            literalOf(array(Vector2Result()), listOf(Vector2(1,2)))
+            literalOf(array(::Vector2Result), listOf(Vector2(1,2)))
         }.first() `should be equal to` listOf(Vector2(1, 2))
     }
 }

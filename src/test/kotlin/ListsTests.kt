@@ -7,6 +7,7 @@ import schemas.ListNode
 import uk.gibby.redis.conditions.array.contains
 import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Where.Companion.where
+import uk.gibby.redis.functions.string.Contains.Companion.contains
 
 
 class ListsTests {
@@ -84,5 +85,59 @@ class ListsTests {
             1, 2,
             1
         ).map { it.toString() }
+    }
+    @Test
+    fun `Test map`(){
+        deleteAll()
+        `Test Create`()
+        listGraph.query {
+            val node = match(ListNode())
+            node.myList.map { it contains "r" }
+        }.first() `should be equal to` listOf(true, false, true)
+    }
+    @Test
+    fun `Test any`(){
+        deleteAll()
+        `Test Create`()
+        listGraph.query {
+            val node = match(ListNode())
+            node.myList.any { it contains "r" }
+        }.first() `should be equal to` true
+    }
+    @Test
+    fun `Test all`(){
+        deleteAll()
+        `Test Create`()
+        listGraph.query {
+            val node = match(ListNode())
+            node.myList.all { it contains "r" }
+        }.first() `should be equal to` false
+    }
+    @Test
+    fun `Test none`(){
+        deleteAll()
+        `Test Create`()
+        listGraph.query {
+            val node = match(ListNode())
+            node.myList.none { it contains "r" }
+        }.first() `should be equal to` false
+    }
+    @Test
+    fun `Test single Ex 1`(){
+        deleteAll()
+        `Test Create`()
+        listGraph.query {
+            val node = match(ListNode())
+            node.myList.single { !(it contains "r") }
+        }.first() `should be equal to` true
+    }
+    @Test
+    fun `Test single Ex 2`(){
+        deleteAll()
+        `Test Create`()
+        listGraph.query {
+            val node = match(ListNode())
+            node.myList.single { it contains "r" }
+        }.first() `should be equal to` false
     }
 }

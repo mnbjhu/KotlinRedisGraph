@@ -28,4 +28,7 @@ open class BooleanResult : PrimitiveResult<Boolean>() {
     infix fun or(other: BooleanResult) = BooleanResult().also{
         it.reference = "(${getString()}) OR (${other.getString()})"
     }
+    operator fun not() = BooleanResult().also{
+        it.reference = "NOT(${getString()})"
+    }
 }

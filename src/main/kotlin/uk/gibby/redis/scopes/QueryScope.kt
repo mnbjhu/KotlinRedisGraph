@@ -27,7 +27,7 @@ class QueryScope {
             override var value: T? = null
             override var reference: String? = NameCounter.getNext()
             override fun parse(result: Iterator<Any?>): T {
-                return arr.type.parse(result)
+                return arr.newElement.parse(result)
             }
         }
         commands.add(Unwind(arr, result))
