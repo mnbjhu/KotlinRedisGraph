@@ -5,11 +5,11 @@ import uk.gibby.redis.core.RedisNode
 import uk.gibby.redis.core.RedisRelation
 import kotlin.reflect.KClass
 
-class OpenPath3<
-        A : RedisNode, B : RedisRelation<A, C>,
-        C : RedisNode, D : RedisRelation<C, E>,
-        E : RedisNode, F : RedisRelation<E, G>,
-        G : RedisNode
+class OpenPath3<a, c, e, g,
+        A : RedisNode<a>, B : RedisRelation<a, c, A, C>,
+        C : RedisNode<c>, D : RedisRelation<c, e, C, E>,
+        E : RedisNode<e>, F : RedisRelation<e, g, E, G>,
+        G : RedisNode<g>
         >
     (
     val first: A, private val firstToSecond: B,

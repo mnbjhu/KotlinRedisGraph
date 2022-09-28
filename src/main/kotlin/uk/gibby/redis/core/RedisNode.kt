@@ -2,6 +2,7 @@ package uk.gibby.redis.core
 
 import uk.gibby.redis.results.Attribute
 import uk.gibby.redis.attributes.RelationAttribute
+import uk.gibby.redis.results.ResultValue
 import kotlin.reflect.KClass
 
 /**
@@ -10,7 +11,7 @@ import kotlin.reflect.KClass
  * @property typeName
  * @constructor Create empty Redis node
  */
-abstract class RedisNode : WithAttributes(), Matchable, Creatable {
+abstract class RedisNode<T>: WithAttributes(), ResultValue<T>, Matchable, Creatable {
     override val typeName: String = this::class.java.simpleName
     override val attributes: MutableSet<Attribute<*>> = mutableSetOf()
     var matched = false
@@ -23,8 +24,8 @@ abstract class RedisNode : WithAttributes(), Matchable, Creatable {
      * @param V
      * @param clazz
      */
-    protected inline fun <reified T : RedisNode, reified U : RedisNode, reified V>
-            T.relates(clazz: KClass<out V>) where V : RedisRelation<T, U> =
+    protected inline fun <t, reified T : RedisNode<t>, u, reified U : RedisNode<u>, reified V>
+            T.relates(clazz: KClass<out V>) where V : RedisRelation<t, u, T, U> =
         RelationAttribute(clazz, this)
 
     override fun getMatchString(): String {
@@ -35,8 +36,8 @@ abstract class RedisNode : WithAttributes(), Matchable, Creatable {
     override fun getCreateString(): String {
         if (matched) return "($instanceName)"/*
         if((params?.size ?: 0) != attributes.size)
-            throw Exception("Node ($instanceName:$typeName) should be created with all parameters (${attributes.size} attributes) found ${params?.size ?: 0}")
-        */
+            throw Exception("Node ($instanceName:$typeName) should be created with all parameters (${attributes.size} attributes) found ${params?.size ?: 0}")*/
+
         return "(:$typeName{${params?.joinToString { (it as ParameterPair<Any?>).getLocalEqualityString() } ?: ""}})"
     }
 }

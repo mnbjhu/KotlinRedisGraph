@@ -15,7 +15,7 @@ import kotlin.reflect.KClass
  * @property parent
  * @constructor Create empty Relation attribute
  */
-class RelationAttribute<T : RedisNode, U : RedisNode, V : RedisRelation<T, U>>(
+class RelationAttribute<t, u, T : RedisNode<t>, U : RedisNode<u>, V : RedisRelation<t, u, T, U>>(
     val relation: KClass<out V>,
     private val parent: T
 ) {

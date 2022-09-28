@@ -12,7 +12,7 @@ import uk.gibby.redis.results.Attribute
  * @property typeName
  * @constructor Create empty Redis relation
  */
-abstract class RedisRelation<T : RedisNode, U : RedisNode>: WithAttributes() {
+abstract class RedisRelation<t, u, T : RedisNode<t>, U : RedisNode<u>>: WithAttributes() {
     lateinit var from: T
     lateinit var to: U
     override val typeName: String = this::class.java.simpleName
