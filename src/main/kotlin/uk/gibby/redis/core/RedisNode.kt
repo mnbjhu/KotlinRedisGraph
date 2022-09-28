@@ -1,7 +1,10 @@
 package uk.gibby.redis.core
 
+import redis.clients.jedis.graph.entities.Node
 import uk.gibby.redis.results.Attribute
 import uk.gibby.redis.attributes.RelationAttribute
+import uk.gibby.redis.results.ResultScope
+import uk.gibby.redis.results.ResultValue
 import kotlin.reflect.KClass
 
 /**
@@ -10,11 +13,17 @@ import kotlin.reflect.KClass
  * @property typeName
  * @constructor Create empty Redis node
  */
-abstract class RedisNode : WithAttributes(), Matchable, Creatable {
+abstract class RedisNode<T> : WithAttributes(), ResultValue<T>, Matchable, Creatable {
+    abstract fun NodeScope.getResult(): T
+    override fun parse(result: Iterator<Any?>): T = NodeScope(result.next() as Node).getResult()
+
+    override var value: T? = null
+    override var reference: String?
+        get() = instanceName
+        set(_){}
     override val typeName: String = this::class.java.simpleName
     override val attributes: MutableSet<Attribute<*>> = mutableSetOf()
     var matched = false
-
     /**
      * Relates
      *
@@ -23,7 +32,7 @@ abstract class RedisNode : WithAttributes(), Matchable, Creatable {
      * @param V
      * @param clazz
      */
-    protected inline fun <reified T : RedisNode, reified U : RedisNode, reified V>
+    protected inline fun <reified T : RedisNode<*>, reified U : RedisNode<*>, reified V>
             T.relates(clazz: KClass<out V>) where V : RedisRelation<T, U> =
         RelationAttribute(clazz, this)
 
@@ -39,4 +48,8 @@ abstract class RedisNode : WithAttributes(), Matchable, Creatable {
         */
         return "(:$typeName{${params?.joinToString { (it as ParameterPair<Any?>).getLocalEqualityString() } ?: ""}})"
     }
+}
+class NodeScope(val node: Node){
+    operator fun <T>Attribute<T>.not(): T =
+        node.getProperty(name).value as T
 }

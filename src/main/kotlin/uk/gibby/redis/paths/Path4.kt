@@ -4,10 +4,10 @@ import uk.gibby.redis.core.RedisNode
 import uk.gibby.redis.core.RedisRelation
 
 class Path4<
-        A : RedisNode, B : RedisRelation<A, C>,
-        C : RedisNode, D : RedisRelation<C, E>,
-        E : RedisNode, F : RedisRelation<E, G>,
-        G : RedisNode
+        A : RedisNode<*>, B : RedisRelation<A, C>,
+        C : RedisNode<*>, D : RedisRelation<C, E>,
+        E : RedisNode<*>, F : RedisRelation<E, G>,
+        G : RedisNode<*>
         >
     (
     val first: A, private val firstToSecond: B,

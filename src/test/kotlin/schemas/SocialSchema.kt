@@ -2,7 +2,7 @@ package schemas
 
 import uk.gibby.redis.core.*
 
-class User: RedisNode(){
+class User: UnitNode(){
     val firstName by string()
     val lastName by string()
     val age by long()
@@ -22,7 +22,7 @@ enum class MyEnum{
     C,
 }
 
-class Post: RedisNode(){
+class Post: UnitNode(){
     val title by string()
     val content by string()
     val likes by string()
@@ -30,7 +30,7 @@ class Post: RedisNode(){
 }
 class LinkedPhoto: RedisRelation<Post, Photo>()
 
-class Photo: RedisNode(){
+class Photo: UnitNode(){
     val imageName by string()
     val likes by long()
     val tagged = relates(TaggedIn::class)

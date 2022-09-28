@@ -90,7 +90,7 @@ open class LineResult: StructResult<Line>(){
 typealias Line = Pair<Vector2, Vector2>
 
 class LineAttribute: LineResult(), Attribute<Line>
-class StructNode: RedisNode(){
+class StructNode: UnitNode(){
     val myVector by Vector2Attribute()
     val myLine by LineAttribute()
 }
