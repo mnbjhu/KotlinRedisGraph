@@ -1,6 +1,7 @@
 package uk.gibby.redis.core
 
 import uk.gibby.redis.results.Attribute
+import uk.gibby.redis.results.ResultValue
 
 /**
  * Redis relation
@@ -19,12 +20,12 @@ abstract class RedisRelation<T : RedisNode<*>, U : RedisNode<*>>: WithAttributes
     var isMultipleRelation = false
     override val attributes: MutableSet<Attribute<*>> = mutableSetOf()
     fun getMatchString(): String {
-        return "[$instanceName:$typeName${if (isMultipleRelation) "*" else ""}{${params?.joinToString { (it as ParameterPair<Any?>).getLocalEqualityString() } ?: ""}}]"
+        return "[$instanceName:$typeName${if (isMultipleRelation) "*" else ""}{${params?.joinToString { (it as ParameterPair<Any?, ResultValue<Any?>>).getLocalEqualityString() } ?: ""}}]"
     }
     fun getCreateString(): String {
         if ((params?.size ?: 0) != attributes.size)
             throw Exception("Relations should be created with all parameters (${attributes.size} attributes) found ${params?.size ?: 0}")
-        return "[:$typeName{${params?.joinToString { (it as ParameterPair<Any?>).getLocalEqualityString() } ?: ""}}]"
+        return "[:$typeName{${params?.joinToString { (it as ParameterPair<Any?, ResultValue<Any?>>).getLocalEqualityString() } ?: ""}}]"
 
     }
 }

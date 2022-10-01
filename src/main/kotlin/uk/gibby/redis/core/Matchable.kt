@@ -7,10 +7,10 @@ interface Matchable {
     fun getMatchString(): String
 }
 
-typealias ParameterPair<T> = Pair<ResultValue<T>, T>
-fun <T> ParameterPair<T>.getLocalEqualityString() = "${(first as Attribute<*>).name}:${first.getLiteral(second)}"
-fun <T> ParameterPair<T>.getGlobalEqualityString() = "${first.reference}=${first.getLiteral(second)}"
-fun <T> ParameterPair<T>.getLiteralString() = first.getLiteral(second)
+class ParameterPair<out T, out U: ResultValue<out T>>(val attribute: U, val value: U)
+fun <T, U: ResultValue<T>> ParameterPair<T, U>.getLocalEqualityString() = "${(attribute as Attribute<*>).name}:${value.getString()}"
+fun <T, U: ResultValue<T>> ParameterPair<T, U>.getGlobalEqualityString() = "${attribute.reference}=${value.getString()}"
+fun <T, U: ResultValue<T>> ParameterPair<T, U>.getLiteralString() = value.getString()
 
 
 

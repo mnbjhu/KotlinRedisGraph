@@ -51,7 +51,7 @@ class RedisGraph(
      * @param createScope
      * @receiver
      */
-    fun <T : RedisNode<*>, U : KClass<out T>> create(clazz: U, createScope: T.(ParamMap) -> Unit) {
+    fun <T : RedisNode<*>, U : KClass<out T>> create(clazz: U, createScope: T.(ParamMap) -> Unit = {}) {
         val instance = clazz.constructors.first().call()
         val p = ParamMap()
         instance.createScope(p)

@@ -20,7 +20,7 @@ abstract class StructResult<T>: ResultValue<T> {
     override fun getLiteral(value: T): String{
         val p = ParamMap().apply { setResult(value) }.getParams()
         if(p.size != attributes.size) throw Exception("Size mismatch: Attributes: ${attributes.size} Params: ${p.size}")
-        return "[${p.joinToString { (it as ParameterPair<Any>).getLiteralString() }}]"
+        return "[${p.joinToString { (it as ParameterPair<Any?, ResultValue<Any?>>).getLiteralString() }}]"
     }
 
     override fun getStructuredString(): String {
@@ -35,6 +35,16 @@ abstract class StructResult<T>: ResultValue<T> {
             attributes[property.name] = this
         }
         return this
+    }
+    operator fun <T, U: ResultValue<T>, V: ResultBuilder<T, U>>V.getValue(thisRef: Any?, property: KProperty<*>): U{
+        val setValue = attributes[property.name]
+        return if(setValue == null){
+            val index = attributes.size
+            reference = "${this@StructResult.reference}[$index]"
+            val result = action()
+            attributes[property.name] = result
+            result
+        } else setValue as U
     }
     protected operator fun <T, U: ResultValue<T>>U.setValue(thisRef: Any?, property: KProperty<*>, value: U){
         this@StructResult.reference = null

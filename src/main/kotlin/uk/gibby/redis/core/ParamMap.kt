@@ -4,8 +4,20 @@ import uk.gibby.redis.results.Attribute
 import uk.gibby.redis.results.ResultValue
 
 class ParamMap {
-    private val map = mutableListOf<ParameterPair<*>>()
+    val map = mutableListOf<ParameterPair<*, ResultValue<*>>>()
     fun getParams() = map.toList()
-    operator fun <T : Any?> set(attribute: Attribute<T>, value: T) { map.add(attribute to value) }
-    operator fun <T: Any?, U: ResultValue<T>>U.get(value: T) = map.add(this to value)
+    inline operator fun <reified T : Any?> set(attribute: Attribute<T>, value: T) {
+        map.add(
+            ParameterPair(
+                attribute,
+                attribute.resultType.call().also { it.value = value }
+            )
+        )
+    }
+    operator fun <T: Any?, U: ResultValue<T>>U.get(value: T) = map.add(
+        ParameterPair(
+            this,
+            this.resultType.call().also { it.value = value }
+        )
+    )
 }

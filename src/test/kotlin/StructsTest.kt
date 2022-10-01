@@ -60,7 +60,9 @@ class StructsTest {
 }
 operator fun <U: StructResult<*>>KFunction0<U>.invoke(builder: U.() -> Unit): U = invoke().apply { builder() }
 
-data class Vector2(val x: Long, val y: Long)
+data class Vector2(val x: Long, val y: Long) {
+    operator fun plus(other: Vector2): Vector2 = Vector2(x + other.x, y + other.y)
+}
 
 class Vector2Attribute: Vector2Result(), Attribute<Vector2>
 open class Vector2Result: StructResult<Vector2>() {
