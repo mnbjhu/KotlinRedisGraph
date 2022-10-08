@@ -1,3 +1,4 @@
+
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -15,16 +16,29 @@ version = "0.3.3"
 repositories {
     mavenCentral()
 }
-
-dependencies {
-    implementation("redis.clients:jedis:4.2.3")
-    implementation(kotlin("reflect"))
-    implementation("com.natpryce:konfig:1.6.10.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
-    testImplementation("org.amshove.kluent:kluent:1.68")
-    testImplementation(kotlin("test"))
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50")
+    }
 }
 
+subprojects {
+    apply(plugin = "kotlin")
+    apply(plugin = "kotlin-kapt")
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        "implementation"(kotlin("stdlib"))
+        "implementation"(kotlin("reflect"))
+    }
+}
 tasks.test {
     useJUnitPlatform()
 }
@@ -44,4 +58,15 @@ afterEvaluate {
             }
         }
     }
+}
+dependencies {
+    implementation(kotlin("stdlib-jdk8"))
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
 }
