@@ -1,7 +1,7 @@
 import org.amshove.kluent.`should be equal to`
 import org.junit.Test
-import schemas.ActorNode
-import schemas.MovieNode
+import schemas.Actor
+import schemas.Movie
 import uk.gibby.redis.conditions.equality.eq
 import uk.gibby.redis.core.RedisGraph
 import uk.gibby.redis.paths.minus
@@ -20,7 +20,7 @@ class UpdateTest {
     )
 
     private fun deleteAll() = moviesGraph.query {
-        val (movie, actor) = match(MovieNode(), ActorNode())
+        val (movie, actor) = match(Movie(), Actor())
         delete(movie, actor)
     }
 
@@ -42,34 +42,34 @@ class UpdateTest {
             "Harrison Ford",
             "Carrie Fisher"
         )
-        moviesGraph.create(ActorNode::class, actors) { attr, iter ->
+        moviesGraph.create(Actor::class, actors) { attr, iter ->
             attr[name] = iter
             attr[actorId] = index++
         }
-        moviesGraph.create(MovieNode::class) {
+        moviesGraph.create(Movie::class) {
             it[title] = "Star Wars: Episode V - The Empire Strikes Back"
             it[releaseYear] = 1980
             it[movieId] = 1
         }
 
         moviesGraph.query {
-            val (actor, movie) = match(ActorNode(), MovieNode())
+            val (actor, movie) = match(Actor(), Movie())
             where((actor.actorId eq 1) and (movie.movieId eq 1))
             create(actor - { actedIn { it[role] = "Luke Skywalker" } } - movie)
         }
         moviesGraph.query {
-            val (actor, movie) = match(ActorNode(), MovieNode())
+            val (actor, movie) = match(Actor(), Movie())
             where((actor.actorId eq 2) and (movie.movieId eq 1))
             create(actor - { actedIn { it[role] = "Han Solo" } } - movie)
         }
         moviesGraph.query {
-            val (actor, movie) = match(ActorNode(), MovieNode())
+            val (actor, movie) = match(Actor(), Movie())
             where((actor.actorId eq 3) and (movie.movieId eq 1))
             create(actor - { actedIn { it[role] = "Princess Leia" } } - movie)
         }
 
         moviesGraph.query {
-            val movie = match(MovieNode())
+            val movie = match(Movie())
             set(movie.title to "New Title")
             movie.title
         }.first() `should be equal to` "New Title"

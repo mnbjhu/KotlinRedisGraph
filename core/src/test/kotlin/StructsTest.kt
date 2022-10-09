@@ -9,7 +9,7 @@ import uk.gibby.redis.results.ResultScope
 import uk.gibby.redis.results.StructResult
 import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Match.Companion.match
-import uk.gibby.annotation.Node
+import uk.gibby.redis.core.ResultParent.Companion.long
 import kotlin.reflect.KFunction0
 
 class StructsTest {

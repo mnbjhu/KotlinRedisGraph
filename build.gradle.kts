@@ -1,32 +1,30 @@
 
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
+//import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+/*
 plugins {
     kotlin("jvm") version "1.7.0"
     kotlin("plugin.serialization") version "1.7.10"
     id("org.jetbrains.dokka") version "1.7.10"
     `java-library`
     `maven-publish`
-}
+}*/
 
 group = "uk.gibby"
 version = "0.3.3"
 
 
-repositories {
-    mavenCentral()
-}
 buildscript {
     repositories {
         mavenCentral()
     }
     
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10")
     }
 }
 
 subprojects {
+
     apply(plugin = "kotlin")
     apply(plugin = "kotlin-kapt")
 
@@ -35,10 +33,11 @@ subprojects {
     }
 
     dependencies {
-        "implementation"(kotlin("stdlib"))
-        "implementation"(kotlin("reflect"))
+        "implementation"(kotlin("stdlib", version = "1.7.10"))
+        //"implementation"(kotlin("test", version = "1.7.10"))
+        "implementation"(kotlin("reflect", version = "1.7.10"))
     }
-}
+}/*
 tasks.test {
     useJUnitPlatform()
 }
@@ -46,6 +45,7 @@ tasks.test {
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
+
 afterEvaluate {
     publishing {
         publications {
@@ -69,4 +69,4 @@ compileKotlin.kotlinOptions {
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
-}
+}*/

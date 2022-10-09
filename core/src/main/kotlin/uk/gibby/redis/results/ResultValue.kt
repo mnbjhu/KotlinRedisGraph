@@ -1,6 +1,10 @@
 package uk.gibby.redis.results
 
 import uk.gibby.redis.core.*
+import uk.gibby.redis.core.ResultParent.Companion.boolean
+import uk.gibby.redis.core.ResultParent.Companion.double
+import uk.gibby.redis.core.ResultParent.Companion.long
+import uk.gibby.redis.core.ResultParent.Companion.string
 
 /**
  * Result value

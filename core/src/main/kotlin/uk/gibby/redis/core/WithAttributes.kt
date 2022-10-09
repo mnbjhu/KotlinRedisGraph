@@ -1,5 +1,6 @@
 package uk.gibby.redis.core
 
+import uk.gibby.redis.attributes.SerializableAttribute
 import uk.gibby.redis.attributes.primative.BooleanAttribute
 import uk.gibby.redis.attributes.primative.DoubleAttribute
 import uk.gibby.redis.attributes.primative.LongAttribute
@@ -7,6 +8,7 @@ import uk.gibby.redis.attributes.primative.StringAttribute
 import uk.gibby.redis.paths.NameCounter
 import uk.gibby.redis.results.AttributeBuilder
 import uk.gibby.redis.results.Attribute
+import uk.gibby.redis.results.SerializableResult
 import kotlin.reflect.KProperty
 
 sealed class WithAttributes {
@@ -33,7 +35,7 @@ sealed class WithAttributes {
     protected fun long() = LongAttribute()
     protected fun double() = DoubleAttribute()
     protected fun boolean() = BooleanAttribute()
-    protected inline fun <reified T : Any>serializable() = serializable(T::class)
+    protected inline fun <reified T : Any>serializable(): SerializableAttribute<T> = SerializableAttribute(T::class)
 
 
 }

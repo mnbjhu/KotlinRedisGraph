@@ -7,7 +7,7 @@ import javax.annotation.processing.RoundEnvironment
 import javax.annotation.processing.SupportedOptions
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
-
+/*
 @AutoService(Processor::class)
 @SupportedOptions("kapt.kotlin.generated")
 class NodeProcessor: AbstractProcessor() {
@@ -28,7 +28,7 @@ class NodeProcessor: AbstractProcessor() {
             return true
         }
 
-        val operations = roundEnv
+        roundEnv
             .getElementsAnnotatedWith(Node::class.java)
             .filter { it.kind.isClass }
             .map { node ->
@@ -40,4 +40,4 @@ class NodeProcessor: AbstractProcessor() {
         return true
     }
 
-}
+}*/
