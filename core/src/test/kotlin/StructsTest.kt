@@ -1,6 +1,7 @@
 import org.amshove.kluent.`should be equal to`
 import org.junit.Before
 import org.junit.Test
+import uk.gibby.annotation.RedisType
 import uk.gibby.redis.results.Attribute
 import uk.gibby.redis.conditions.equality.eq
 import uk.gibby.redis.core.*

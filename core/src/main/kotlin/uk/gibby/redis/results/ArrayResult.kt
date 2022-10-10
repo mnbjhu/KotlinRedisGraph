@@ -3,9 +3,10 @@ package uk.gibby.redis.results
 import uk.gibby.redis.attributes.ArrayAttribute
 import uk.gibby.redis.paths.NameCounter
 import kotlin.reflect.KFunction0
+import kotlin.reflect.KProperty
 
-open class ArrayResult<T, U : ResultValue<T>>(val type: ResultBuilder<T, U>) : PrimitiveResult<List<T>>() {
-    constructor(type: KFunction0<U>): this(ResultBuilder { type() })
+open class ArrayResult<T, U : ResultValue<T>>(private val type: ResultBuilder<T, U>) : PrimitiveResult<List<T>>() {
+    constructor(type: () -> U): this(ResultBuilder { type() })
     val newElement: U
         get() = type.action()
     override fun parse(result: Iterator<Any?>): List<T> {
@@ -50,10 +51,14 @@ fun <T, U: ResultValue<T>>arrayAttribute(type: KFunction0<U>) =
     AttributeBuilder{ ArrayAttribute(type) }
 fun <T, U: ResultValue<T>>arrayAttribute(type: ResultBuilder<T, U>) =
     AttributeBuilder{ ArrayAttribute(type) }
-fun <T, U: ResultValue<T>>array(type: KFunction0<U>) =
+fun <T, U: ResultValue<T>>array(type: () -> U) =
     ResultBuilder{ ArrayResult(type) }
 fun <T, U: Attribute<T>>array(type: ResultBuilder<T, U>) =
     AttributeBuilder{ ArrayAttribute(type) }
 
 class AttributeBuilder<out T, out U: Attribute<out T>>(val action: () -> U)
-class ResultBuilder<out T, out U: ResultValue<out T>>(val action: () -> U)
+class ResultBuilder<out T, out U: ResultValue<out T>>(val action: () -> U) {
+    operator fun getValue(thisRef: StructResult<*>, property: KProperty<*>): U {
+        return this.action()
+    }
+}
