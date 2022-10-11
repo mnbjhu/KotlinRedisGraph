@@ -1,6 +1,8 @@
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
+import com.squareup.kotlinpoet.metadata.toKmClass
 import uk.gibby.annotation.RedisType
 import uk.gibby.redis.core.ParamMap
 import uk.gibby.redis.results.*
@@ -14,7 +16,6 @@ import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.DeclaredType
-import javax.lang.model.type.TypeKind
 import javax.lang.model.type.TypeMirror
 import kotlin.reflect.*
 
@@ -31,7 +32,7 @@ fun processType(
     val members = clazz.enclosedElements
         .filter { it.kind.isField }
         .filterNotNull()
-    members.forEach { resultClassBuilder.addProperty(getPropertySpec(it)) }
+    members.forEach { resultClassBuilder.addProperty(getPropertySpec(it, elements)) }
     resultClassBuilder.addFunction(buildGetResult(clazz.asType().asTypeName(), members))
     resultClassBuilder.addFunction(buildSetResult(clazz.asType().asTypeName(), members))
     val resultClass = resultClassBuilder.build()
@@ -50,7 +51,7 @@ fun getPropertySpec(member: Element): PropertySpec{
     return PropertySpec
         .builder(
             member.simpleName.toString(),
-            getType(member.asType()),
+            getType(member),
 
         )
         .addModifiers(KModifier.OPEN)
@@ -84,7 +85,11 @@ fun buildSetResult(type: TypeName, members: List<Element>) =
         .build()
 val javaLong = ClassName("java.lang", "Long")
 val javaList = LIST
-fun getType(type: TypeMirror): TypeName{
+fun getType(member: Element): TypeName {
+    return if(member.getAnnotation(RedisType::class.java) != null) ClassName("uk.gibby.redis.generated", "${member.asType().asTypeName()}Result")
+    else getDefaultType(member.asType())
+}
+fun getDefaultType(type: TypeMirror): TypeName{
     when (type.asTypeName()) {
         String::class.asClassName() -> return StringResult::class.asClassName()
         Double::class.asClassName() -> return DoubleResult::class.asClassName()
@@ -93,20 +98,20 @@ fun getType(type: TypeMirror): TypeName{
         else -> {}
     }
     return when{
-        try{ type.getAnnotation(RedisType::class.java) != null } catch (e:Exception){ false } -> ClassName("uk.gibby.redis.generated", "${type.asTypeName()}Result")
+        //try{ type.getAnnotation(RedisType::class.java) != null } catch (e:Exception){ false } -> ClassName("uk.gibby.redis.generated", "${type.asTypeName()}Result")
         //"^java.util.List<.*>$".toRegex().matches(type.asTypeName().toString())
         "^java.util.List<.*>$".toRegex().matches(type.asTypeName().toString()) -> {
             val innerType = (type as DeclaredType).typeArguments[0]
-            var innerResult = getType(innerType)
-            when(innerResult){
-                javaLong -> innerType =
-            }
+            val innerResult = getDefaultType(innerType)
             println(innerType.asTypeName())
+            val innerTypeName = when(val it = innerType.asTypeName()){
+                javaLong -> Long::class.asClassName()
+                else -> it
+            }
             ArrayResult::class.asClassName()
-                .parameterizedBy(innerType.asTypeName(), innerResult)//.also { println(it) }
+                .parameterizedBy(innerTypeName, innerResult)//.also { println(it) }
         }
-
-        else -> throw Exception("Type should be primitive, array or annotated with @RedisType. Found: '${type.asTypeName()}'")
+        else -> throw Exception("Type should be primitive, array or annotated with @RedisType. Found: '${type.asTypeName()}: ${elements}'")
     }
 }
 fun guessClassName(type: TypeMirror): ClassName {
@@ -122,7 +127,7 @@ fun getBaseTypeFunction(type: TypeMirror): MemberName {
         else -> {}
     }
     return when {
-        try{ type.getAnnotation(RedisType::class.java) != null } catch (e:Exception){false} -> MemberName(
+        type.getAnnotation(RedisType::class.java) != null -> MemberName(
             "uk.gibby.redis.generated",
             "${type.asTypeName()}Result"
         )
@@ -161,15 +166,13 @@ class RedisTypeProcessor: AbstractProcessor() {
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
         if (annotations.isEmpty()) return false
         if (roundEnv.processingOver()) return true
-        roundEnv
-            .getElementsAnnotatedWith(RedisType::class.java)
+        val elements = roundEnv.getElementsAnnotatedWith(RedisType::class.java)
             .filter { it.kind.isClass }
-            .forEach {
-                it.enclosedElements
-                    .filter { field -> field.kind.isField }
-                    //.forEach { field -> field }
-                processType(it!!).writeTo(File(targetDirectory))
-            }
+        elements.forEach {
+            it.enclosedElements
+                .filter { field -> field.kind.isField }
+            processType(it!!).writeTo(File(targetDirectory))
+        }
         return true
     }
 

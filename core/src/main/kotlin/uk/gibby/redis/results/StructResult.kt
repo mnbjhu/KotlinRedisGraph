@@ -19,7 +19,7 @@ abstract class StructResult<T>: ResultValue<T> {
     abstract fun ParamMap.setResult(value: T)
     override fun getLiteral(value: T): String{
         val p = ParamMap().apply { setResult(value) }.getParams()
-        if(p.size != attributes.size) throw Exception("Size mismatch: Attributes: ${attributes.size} Params: ${p.size}")
+        //if(p.size != attributes.size) throw Exception("Size mismatch: Attributes: ${attributes.size} Params: ${p.size}")
         return "[${p.joinToString { (it as ParameterPair<Any>).getLiteralString() }}]"
     }
 

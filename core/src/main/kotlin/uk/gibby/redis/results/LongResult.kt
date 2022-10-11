@@ -5,4 +5,4 @@ package uk.gibby.redis.results
  *
  * @constructor Create empty Long result
  */
-open class LongResult: PrimitiveResult<Long>()
+open class LongResult: PrimitiveResult<kotlin.Long>()
