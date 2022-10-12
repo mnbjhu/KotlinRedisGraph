@@ -51,10 +51,9 @@ fun <T, U: ResultValue<T>>arrayAttribute(type: KFunction0<U>) =
     AttributeBuilder{ ArrayAttribute(type) }
 fun <T, U: ResultValue<T>>arrayAttribute(type: ResultBuilder<T, U>) =
     AttributeBuilder{ ArrayAttribute(type) }
-fun <T, U: ResultValue<T>>array(type: () -> U) =
+fun <T, U: ResultValue<T>>array(type: () -> U) = ResultBuilder{ ArrayResult(type) }
+fun <T, U: ResultValue<T>>array(type: ResultBuilder<T, U>) =
     ResultBuilder{ ArrayResult(type) }
-fun <T, U: Attribute<T>>array(type: ResultBuilder<T, U>) =
-    AttributeBuilder{ ArrayAttribute(type) }
 
 class AttributeBuilder<out T, out U: Attribute<out T>>(val action: () -> U)
 class ResultBuilder<out T, out U: ResultValue<out T>>(val action: () -> U) {

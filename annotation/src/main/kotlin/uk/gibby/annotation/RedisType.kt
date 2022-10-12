@@ -1,4 +1,6 @@
 package uk.gibby.annotation
-@Retention(AnnotationRetention.SOURCE)
+
+
 @Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class RedisType
