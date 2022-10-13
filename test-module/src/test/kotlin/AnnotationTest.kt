@@ -29,14 +29,8 @@ data class ListStruct(val data: List<Long>)
 data class NestedListStruct(val struct: ListStruct)
 
 @RedisType
-data class Array2DStruct(val values: List<List<Long>>)
-
-@RedisType
 data class ArrayRedisStruct(val data: List<List<Vector3>>)
 
-@Node
-@Relates(to = TestUser::class, by = "friendsWith", data = LongStruct::class)
-class TestUser(val name: String)
 
 
 
