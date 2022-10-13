@@ -2,6 +2,7 @@ package uk.gibby.redis.core
 
 import uk.gibby.redis.results.Attribute
 import uk.gibby.redis.attributes.RelationAttribute
+import uk.gibby.redis.results.ResultValue
 import kotlin.reflect.KClass
 
 /**
@@ -10,11 +11,10 @@ import kotlin.reflect.KClass
  * @property typeName
  * @constructor Create empty Redis node
  */
-abstract class RedisNode : WithAttributes(), Matchable, Creatable {
+abstract class RedisNode<T>: WithAttributes<T>(), Matchable, Creatable {
     override val typeName: String = this::class.java.simpleName
     override val attributes: MutableSet<Attribute<*>> = mutableSetOf()
     var matched = false
-
     /**
      * Relates
      *
@@ -23,8 +23,8 @@ abstract class RedisNode : WithAttributes(), Matchable, Creatable {
      * @param V
      * @param clazz
      */
-    protected inline fun <reified T : RedisNode, reified U : RedisNode, reified V>
-            T.relates(clazz: KClass<out V>) where V : RedisRelation<T, U> =
+    protected inline fun <reified T : RedisNode<*>, reified U : RedisNode<*>, reified V>
+            T.relates(clazz: KClass<out V>) where V : RedisRelation<*, T, U> =
         RelationAttribute(clazz, this)
 
     override fun getMatchString(): String {

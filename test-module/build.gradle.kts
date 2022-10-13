@@ -7,5 +7,4 @@ dependencies{
     implementation("com.natpryce:konfig:1.6.10.0")
     testImplementation(kotlin("test"))
     testImplementation("org.amshove.kluent:kluent:1.68")
-
 }
