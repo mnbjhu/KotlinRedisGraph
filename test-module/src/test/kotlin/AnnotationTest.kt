@@ -1,6 +1,8 @@
 import org.amshove.kluent.`should be equal to`
 import org.junit.Test
+import uk.gibby.annotation.Node
 import uk.gibby.annotation.RedisType
+import uk.gibby.annotation.Relates
 import uk.gibby.redis.core.RedisGraph
 import uk.gibby.redis.core.RedisNode
 import uk.gibby.redis.generated.ArrayRedisStructAttribute
@@ -32,16 +34,21 @@ data class Array2DStruct(val values: List<List<Long>>)
 @RedisType
 data class ArrayRedisStruct(val data: List<List<Vector3>>)
 
+@Node
+@Relates(to = TestUser::class, by = "friendsWith", data = LongStruct::class)
+class TestUser(val name: String)
 
-class VectorNode: RedisNode() {
+
+
+class VectorNode: UnitNode() {
    val vector by Vector3Attribute()
 }
 
-class ListNode: RedisNode() {
+class ListNode: UnitNode() {
    val struct by ListStructAttribute()
 }
 
-class ComplexNode: RedisNode(){
+class ComplexNode: UnitNode(){
     val data by ArrayRedisStructAttribute()
 }
 class AnnotationTest{

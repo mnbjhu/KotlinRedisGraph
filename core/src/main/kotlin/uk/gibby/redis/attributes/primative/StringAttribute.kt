@@ -6,7 +6,7 @@ import uk.gibby.redis.results.Attribute
 /**
  * String attribute
  *
- * @property name
+ * @property _name
  * @property parent
  * @constructor Create empty String attribute
  */

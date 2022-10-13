@@ -28,5 +28,9 @@ abstract class RedisRelation<A, T : RedisNode<*>, U : RedisNode<*>>: WithAttribu
 
     }
 }
+abstract class UnitRelation<T : RedisNode<*>, U : RedisNode<*>>: RedisRelation<Unit, T, U>() {
+    override fun NodeResult.getResult() {}
+
+}
 
 

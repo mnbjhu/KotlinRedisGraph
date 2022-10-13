@@ -6,7 +6,7 @@ import uk.gibby.redis.results.BooleanResult
 /**
  * Boolean attribute
  *
- * @property name
+ * @property _name
  * @property parent
  * @constructor Create empty Boolean attribute
  */

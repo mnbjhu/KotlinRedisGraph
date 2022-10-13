@@ -8,7 +8,7 @@ interface Matchable {
 }
 
 typealias ParameterPair<T> = Pair<ResultValue<T>, T>
-fun <T> ParameterPair<T>.getLocalEqualityString() = "${(first as Attribute<*>).name}:${first.getLiteral(second)}"
+fun <T> ParameterPair<T>.getLocalEqualityString() = "${(first as Attribute<*>)._name}:${first.getLiteral(second)}"
 fun <T> ParameterPair<T>.getGlobalEqualityString() = "${first.reference}=${first.getLiteral(second)}"
 fun <T> ParameterPair<T>.getLiteralString() = first.getLiteral(second)
 

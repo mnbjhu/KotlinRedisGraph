@@ -1,7 +1,7 @@
 package schemas
 
-import uk.gibby.redis.core.RedisNode
+import UnitNode
 
-class EnumSchema: RedisNode() {
+class EnumSchema: UnitNode() {
     val enum by serializable<MyEnum>()
 }

@@ -1,8 +1,9 @@
 package schemas
 
+import UnitNode
 import uk.gibby.redis.core.*
 
-class User: RedisNode(){
+class User: UnitNode(){
     val firstName by string()
     val lastName by string()
     val age by long()
@@ -10,11 +11,11 @@ class User: RedisNode(){
     val sharedPosts = relates(SharedPosts::class)
     val sharedPhotos = relates(SharedPhotos::class)
 }
-class FriendsWith: RedisRelation<User, User>(){
+class FriendsWith: UnitRelation<User, User>(){
     val isFamily by boolean()
 }
-class SharedPosts: RedisRelation<User, Post>()
-class SharedPhotos: RedisRelation<User, Photo>()
+class SharedPosts: UnitRelation<User, Post>()
+class SharedPhotos: UnitRelation<User, Photo>()
 
 enum class MyEnum{
     A,
@@ -22,17 +23,17 @@ enum class MyEnum{
     C,
 }
 
-class Post: RedisNode(){
+class Post: UnitNode(){
     val title by string()
     val content by string()
     val likes by string()
     val linkedPhoto = relates(LinkedPhoto::class)
 }
-class LinkedPhoto: RedisRelation<Post, Photo>()
+class LinkedPhoto: UnitRelation<Post, Photo>()
 
-class Photo: RedisNode(){
+class Photo: UnitNode(){
     val imageName by string()
     val likes by long()
     val tagged = relates(TaggedIn::class)
 }
-class TaggedIn: RedisRelation<Photo, User>()
+class TaggedIn: UnitRelation<Photo, User>()

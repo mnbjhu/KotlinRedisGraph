@@ -6,7 +6,7 @@ import uk.gibby.redis.results.DoubleResult
 /**
  * Double attribute
  *
- * @property name
+ * @property _name
  * @property parent
  * @constructor Create empty Double attribute
  */

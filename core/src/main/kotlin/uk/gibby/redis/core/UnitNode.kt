@@ -1,6 +1,9 @@
+import uk.gibby.redis.core.NodeResult
+import uk.gibby.redis.core.ParamMap
 import uk.gibby.redis.core.RedisNode
 
-class UnitNode: RedisNode<Unit>() {
-    
+abstract class UnitNode: RedisNode<Unit>(){
+    override fun NodeResult.getResult() {}
+
 
 }

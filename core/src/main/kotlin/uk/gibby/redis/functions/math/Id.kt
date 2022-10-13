@@ -10,6 +10,6 @@ import uk.gibby.redis.core.RedisNode
  * @constructor Create empty Id
  */
 
-fun id(node: RedisNode) = LongResult().apply {
+fun id(node: RedisNode<*>) = LongResult().apply {
     reference = "ID(${node.instanceName})"
 }

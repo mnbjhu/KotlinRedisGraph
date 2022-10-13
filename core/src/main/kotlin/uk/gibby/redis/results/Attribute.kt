@@ -6,6 +6,6 @@ package uk.gibby.redis.results
  * @param T
  */
 interface Attribute<T> : ResultValue<T>{
-    val name
+    val _name
         get() = reference!!.split(".")[1]
 }

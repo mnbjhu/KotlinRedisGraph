@@ -13,7 +13,7 @@ fun getType(member: Element, classElements: List<Element>): TypeName {
 
 fun getBaseTypeFunction(type: TypeMirror, classElements: List<Element>): MemberName {
     return when (type.asTypeName()) {
-        ClassName("java.lang", "String") -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "string")
+        ClassName("java.lang", "String"), javaString -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "string")
         Long::class.asClassName(), javaLong -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "long")
         ClassName("kotlin", "Double") -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "double")
         ClassName("java.lang", "Boolean") -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "boolean")
@@ -46,7 +46,7 @@ fun getDefaultType(type: TypeMirror, classElements: List<Element>, isOuter: Bool
     if(classElements.any{ (it.asType().asTypeName().toString() == type.asTypeName().toString()) })
         return ClassName("uk.gibby.redis.generated", "${type.asTypeName()}Result")
     when (type.asTypeName()) {
-        String::class.asClassName() -> return StringResult::class.asClassName()
+        String::class.asClassName(), javaString -> return StringResult::class.asClassName()
         Double::class.asClassName() -> return DoubleResult::class.asClassName()
         Long::class.asClassName(), javaLong -> return LongResult::class.asClassName()
         Boolean::class.asClassName() -> return BooleanResult::class.asClassName()
@@ -72,6 +72,7 @@ fun toKotlin(type: TypeMirror): TypeName {
     }
     val bottomClass = when(typeIter.asTypeName()){
         javaLong -> Long::class.asClassName()
+        javaString -> String::class.asClassName()
         else -> typeIter.asTypeName()
     }
     var name = bottomClass

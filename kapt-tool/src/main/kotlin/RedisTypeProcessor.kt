@@ -15,7 +15,6 @@ import javax.lang.model.element.TypeElement
 import kotlin.reflect.*
 
 
-val notOperator = MemberName("uk.gibby.redis.results.ResultScope", KOperator.NOT)
 fun processRedisTypeClass(
     classElement: Element,
     classElements: List<Element>
@@ -60,25 +59,7 @@ private fun buildResultClass(
     return resultClassBuilder.build()
 }
 
-
+val javaString = ClassName("java.lang", "String")
 val javaLong = ClassName("java.lang", "Long")
 
-@AutoService(Processor::class)
-@SupportedOptions("kapt.kotlin.generated")
-class RedisTypeProcessor: AbstractProcessor() {
-    private val targetDirectory: String
-        get() = processingEnv.options["kapt.kotlin.generated"]
-            ?: throw IllegalStateException("Unable to get target directory")
-    override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latestSupported()
-    override fun getSupportedAnnotationTypes() = mutableSetOf(RedisType::class.java.canonicalName)
-    override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
-        if (annotations.isEmpty()) return false
-        if (roundEnv.processingOver()) return true
-        val classElements = roundEnv.getElementsAnnotatedWith(RedisType::class.java).filter { it.kind.isClass }
-        classElements.forEach {
-            processRedisTypeClass(it!!, classElements).writeTo(File(targetDirectory))
-        }
-        return true
-    }
 
-}
