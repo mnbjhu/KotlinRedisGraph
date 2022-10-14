@@ -1,13 +1,7 @@
 
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-plugins {
-    //kotlin("jvm") version "1.7.0"
-    //kotlin("plugin.serialization") version "1.7.10"
-    id("org.jetbrains.dokka") version "1.7.10"
-    `java-library`
-    `maven-publish`
-}
+
 
 group = "uk.gibby"
 version = "0.3.3"
@@ -35,21 +29,7 @@ subprojects {
         "implementation"(kotlin("reflect", version = "1.7.10"))
     }
 }
-tasks.test {
-    useJUnitPlatform()
-}
 
 
 
-afterEvaluate {
-    publishing {
-        publications {
-            create<MavenPublication>("maven") {
-                from(components["java"])
-                groupId = "com.github.mnbjhu"
-                artifactId = "redis-kotlin"
-                version = "0.7.0"
-            }
-        }
-    }
-}
+
