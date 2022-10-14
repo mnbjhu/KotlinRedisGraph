@@ -84,8 +84,8 @@ Attributes can be defined on both **RedisClass** and **RedisRelation**. While in
 ### Create Nodes
 After a node type has been defined as a **RedisClass**, you can create a single instance like so:
 ```kotlin
-import schemas.Actor
-import schemas.Movie
+import Actor
+import Movie
 
 moviesGraph.create(Movie::class) {
     title["Star Wars: Episode V - The Empire Strikes Back"]
