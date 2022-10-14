@@ -1,6 +1,6 @@
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import uk.gibby.annotation.Relates
+import uk.gibby.redis.annotation.Relates
 import uk.gibby.redis.attributes.ArrayAttribute
 import uk.gibby.redis.attributes.RelationAttribute
 import uk.gibby.redis.attributes.primative.BooleanAttribute

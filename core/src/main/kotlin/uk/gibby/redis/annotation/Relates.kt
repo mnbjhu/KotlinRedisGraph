@@ -1,4 +1,4 @@
-package uk.gibby.annotation
+package uk.gibby.redis.annotation
 
 import kotlin.reflect.KClass
 
@@ -7,5 +7,5 @@ import kotlin.reflect.KClass
 annotation class Relates(
     val to: KClass<*>,
     val by: String,
-    val data: KClass<*> = EmptyRelation::class
+    val data: KClass<*>
 )

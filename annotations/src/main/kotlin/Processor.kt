@@ -1,17 +1,15 @@
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asTypeName
-import uk.gibby.annotation.Node
-import uk.gibby.annotation.RedisType
-import uk.gibby.annotation.Relates
+import uk.gibby.redis.annotation.Node
+import uk.gibby.redis.annotation.RedisType
+import uk.gibby.redis.annotation.Relates
 import java.io.File
 import javax.annotation.processing.*
 import javax.annotation.processing.Processor
 import javax.lang.model.SourceVersion
-import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.MirroredTypeException
-import javax.lang.model.type.TypeMirror
 
 
 @AutoService(Processor::class)

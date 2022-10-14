@@ -1,4 +1,4 @@
-package uk.gibby.annotation
+package uk.gibby.redis.annotation
 
 
 @Target(AnnotationTarget.CLASS)

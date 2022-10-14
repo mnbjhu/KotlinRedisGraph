@@ -9,10 +9,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/annotation" />
+            <option value="$PROJECT_DIR$/annotations" />
             <option value="$PROJECT_DIR$/core" />
-            <option value="$PROJECT_DIR$/kapt-tool" />
-            <option value="$PROJECT_DIR$/test-module" />
           </set>
         </option>
       </GradleProjectSettings>

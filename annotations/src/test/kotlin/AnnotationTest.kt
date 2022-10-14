@@ -1,10 +1,7 @@
 import org.amshove.kluent.`should be equal to`
 import org.junit.Test
-import uk.gibby.annotation.Node
-import uk.gibby.annotation.RedisType
-import uk.gibby.annotation.Relates
+import uk.gibby.redis.annotation.RedisType
 import uk.gibby.redis.core.RedisGraph
-import uk.gibby.redis.core.RedisNode
 import uk.gibby.redis.generated.ArrayRedisStructAttribute
 import uk.gibby.redis.generated.ListStructAttribute
 //import uk.gibby.redis.generated.ListStructAttribute
@@ -77,9 +74,9 @@ class AnnotationTest{
         graph.create(ComplexNode::class){
             it[data] = ArrayRedisStruct(
                 listOf(
-                    listOf( Vector3(1.2, 3.4, 5.6), Vector3(1.0, 2.0, 4.0) ),
+                    listOf(Vector3(1.2, 3.4, 5.6), Vector3(1.0, 2.0, 4.0)),
                     listOf(),
-                    listOf( Vector3(9.9, 9.9, 9.9) )
+                    listOf(Vector3(9.9, 9.9, 9.9))
                 )
             )
         }
@@ -88,9 +85,9 @@ class AnnotationTest{
             node.data
         }.first() `should be equal to` ArrayRedisStruct(
             listOf(
-                listOf( Vector3(1.2, 3.4, 5.6), Vector3(1.0, 2.0, 4.0) ),
+                listOf(Vector3(1.2, 3.4, 5.6), Vector3(1.0, 2.0, 4.0)),
                 listOf(),
-                listOf( Vector3(9.9, 9.9, 9.9) )
+                listOf(Vector3(9.9, 9.9, 9.9))
             )
         )
     }

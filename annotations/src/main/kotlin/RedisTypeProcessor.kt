@@ -1,18 +1,7 @@
-import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import uk.gibby.annotation.RedisType
 import uk.gibby.redis.results.*
-
-import java.io.File
-import javax.annotation.processing.AbstractProcessor
-import javax.annotation.processing.Processor
-import javax.annotation.processing.RoundEnvironment
-import javax.annotation.processing.SupportedOptions
-import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
-import javax.lang.model.element.TypeElement
-import kotlin.reflect.*
 
 
 fun processRedisTypeClass(

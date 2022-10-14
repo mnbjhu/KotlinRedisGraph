@@ -2,9 +2,9 @@ import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain same`
 import org.junit.Before
 import org.junit.Test
-import uk.gibby.annotation.Node
-import uk.gibby.annotation.RedisType
-import uk.gibby.annotation.Relates
+import uk.gibby.redis.annotation.Node
+import uk.gibby.redis.annotation.RedisType
+import uk.gibby.redis.annotation.Relates
 import uk.gibby.redis.conditions.equality.eq
 import uk.gibby.redis.core.RedisGraph
 import uk.gibby.redis.generated.ActorNode

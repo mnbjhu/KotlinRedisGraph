@@ -2,7 +2,6 @@ import com.natpryce.konfig.ConfigurationProperties
 import com.natpryce.konfig.Key
 import com.natpryce.konfig.intType
 import com.natpryce.konfig.stringType
-import java.io.File
 
 object TestAuth {
     private val config = ConfigurationProperties.fromResource("local.properties")
