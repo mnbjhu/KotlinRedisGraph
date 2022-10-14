@@ -1,5 +1,6 @@
 package uk.gibby.redis.core
 
+import redis.clients.jedis.graph.entities.GraphEntity
 import uk.gibby.redis.attributes.SerializableAttribute
 import uk.gibby.redis.attributes.primative.BooleanAttribute
 import uk.gibby.redis.attributes.primative.DoubleAttribute
@@ -50,6 +51,6 @@ operator fun <T : WithAttributes<*>> T.invoke(scope: T.(ParamMap) -> Unit) {
     this.params = params.getParams()
 }
 class NodeResult(result: Iterator<Any?>){
-    val node = result.next() as Node
+    val node = result.next() as GraphEntity
     inline operator fun <reified T, U: Attribute<T>>U.not() = (node.getProperty(_name) as Property<T>).value
 }

@@ -1,4 +1,5 @@
 import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.`should contain same`
 import org.junit.Before
 import org.junit.Test
 import uk.gibby.annotation.Node
@@ -33,12 +34,13 @@ class MoviesTest {
     @Before
     fun deleteAll() {
         graph.query {
-            val node = match(MovieNode())
-            delete(node)
+            val (actor, movie) = match(ActorNode(), MovieNode())
+            delete(actor, movie)
         }
     }
     @Test
     fun `Test movies with annotation`(){
+
         val actors = listOf(
             "Mark Hamill",
             "Harrison Ford",
@@ -59,17 +61,23 @@ class MoviesTest {
         graph.query {
             val (actor, movie) = match(ActorNode(), MovieNode())
             where(actor.name eq "Harrison Ford")
-            create(actor - { actedIn{ it[role] = "Luke Skywalker" } } - movie)
+            create(actor - { actedIn{ it[role] = "Han Solo" } } - movie)
         }
         graph.query {
             val (actor, movie) = match(ActorNode(), MovieNode())
             where(actor.name eq "Carrie Fisher")
-            create(actor - { actedIn{ it[role] = "Princess Leia" } } - movie)
+            create(actor - { actedIn { it[role] = "Princess Leia" } } - movie)
         }
         graph.query {
             val (actor, movie) = match(ActorNode() - { actedIn } - MovieNode()).nodes()
             where(movie.releaseYear eq 1980)
             actor.name
-        } `should be equal to` actors
+        } `should contain same` actors
+        graph.query {
+            val (actor, actedIn, movie) = match(ActorNode() - { actedIn } -MovieNode())
+            where((actor.name eq "Harrison Ford") and
+                        (movie.title eq "Star Wars: Episode V - The Empire Strikes Back"))
+            actedIn
+        }.first().role `should be equal to` "Han Solo"
     }
 }
