@@ -1,8 +1,4 @@
-@file:Suppress("unused", "unused", "unused", "unused", "unused", "unused", "unused", "unused", "unused", "unused",
-    "unused", "unused", "unused", "unused", "unused", "unused", "unused", "unused", "unused", "unused", "unused",
-    "unused", "unused", "unused", "unused", "unused", "unused", "unused", "unused", "unused", "unused", "unused",
-    "unused", "unused"
-)
+@file:Suppress("unused")
 
 package uk.gibby.redis.functions.math
 
