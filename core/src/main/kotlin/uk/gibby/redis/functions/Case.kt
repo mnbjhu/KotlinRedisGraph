@@ -39,7 +39,7 @@ class TargetedCase<T, V>(private val target: ResultValue<T>, private val cases: 
 abstract class CaseBranch<T, V>{
     abstract fun getString(): String
 
-    class LiteralToReference<T, V>(private val from: T, private val to: ResultValue<in V>, private val target: ResultValue<T>): CaseBranch<T, V>() {
+    class LiteralToReference<T, V>(private val from: T, private val to: ResultValue<V>, private val target: ResultValue<T>): CaseBranch<T, V>() {
         override fun getString(): String =
             "WHEN ${target.getLiteral(from)} THEN ${to.getString()}"
     }

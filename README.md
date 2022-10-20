@@ -1,10 +1,10 @@
-# Redis For Kotlin [![](https://jitpack.io/v/mnbjhu/KotlinRedisGraph.svg)](https://jitpack.io/#mnbjhu/KotlinRedisGraph)
+# Redis For Kotlin 
+[![](https://jitpack.io/v/mnbjhu/KotlinRedisGraph.svg)](https://jitpack.io/#mnbjhu/KotlinRedisGraph)
 ## Overview
-Inspired by Kotlin Exposed, this library aims to provide a type-safe DSL for interacting with Redis to Kotlin.
-#### Redis Graph
+Inspired by Kotlin Exposed, this library aims to provide a type-safe DSL for interacting with Redis Graph to Kotlin.
+#### Kotlin Redis Graph
 * Construct schemas for nodes
-* Create and delete nodes
-* Create and delete relationships between nodes
+* Create, read, update and delete nodes and relationships
 * Perform path queries
 ## Setup
 ### Gradle
@@ -20,7 +20,10 @@ allprojects {
 **Step 2.** Add the dependency
 ```groovy
 dependencies {
-    implementation "com.github.mnbjhu:KotlinRedisGraph:$kotlinRedisVersion"
+  // Core DSL
+    implementation "com.github.mnbjhu.KotlinRedisGraph:core:$kotlinRedisVersion"
+  // Annotations
+    kapt "com.github.mnbjhu.KotlinRedisGraph:annotations:$kotlinRedisVersion"
 }
 ```
 ### Gradle Kotlin DSL
@@ -34,14 +37,17 @@ repositories {
 **Step 2.** Add the dependency
 ```kotlin
 dependencies {
-    implementation("com.github.mnbjhu:KotlinRedisGraph:$kotlinRedisVersion")
+  // Core DSL
+  implementation("com.github.mnbjhu.KotlinRedisGraph:core:$kotlinRedisVersion")
+  // Annotations
+  implementation("com.github.mnbjhu.KotlinRedisGraph:annotations:$kotlinRedisVersion")
 }
 ```
 ## Basic Usage
 ### Connect To Redis
 To start using Redis Graph you need to create a new instance of the RedisGraph class with a graph name, host address and an option port (default is 6379).
 ```kotlin
-import core.RedisGraph
+import uk.gibby.redis.core.RedisGraph
 
 val moviesGraph = RedisGraph(
     name = "movies",
@@ -50,44 +56,93 @@ val moviesGraph = RedisGraph(
 ```
 ### Define A Schema
 Node types and their relationships are defined by a schema. To create a node type, create a class which:
-* Extends **RedisClass**
-* Overrides **instanceName** as a single constructor parameter
-* Sets the **typeName** in the **RedisClass** constructor
 
 ```kotlin
-import core.RedisNode
-import core.RedisRelation
+import uk.gibby.redis.core.UnitNode
+import uk.gibby.redis.core.UnitRelation
 
-class Actor: RedisNode("Actor"){
-    val name = string("name")
-    val actorId = long("actor_id")
-    val actedIn = relates(ActedIn::class)
+class ActorNode: UnitNode(){
+    val name by string()
+    val actorId by long()
+    val actedIn = relates(ActedInRelation::class)
 }
-class Movie: RedisNode("Movie"){
-    val title = string("title")
-    val releaseYear = long("release_year")
-    val movieId = long("movie_id")
+class MovieNode : UnitNode(){
+    val title by string()
+    val releaseYear by long()
+    val movieId by long()
 }
-class ActedIn: RedisRelation<Actor, Movie>("ACTED_IN"){
-    val role = string("role")
+class ActedInRelation: UnitRelation<ActorNode, MovieNode>(){
+    val role by string()
 }
 ```
-Attributes can be defined on both **RedisClass** and **RedisRelation**. While in either scope, you'll have access to functions for creating instances of **Attribute\<T\>**.
 
-**Current Supported Types Are:**
-  Type | Function
-  --- | ---
-  String | string()
-  Long | int()
-  Double | double()
-  Boolean | boolean()
+#### Experimental Code Gen
+This will generate the same as the above but will instead create instances of RedisRelation&lt;ActedIn&gt;, RedisNode&lt;Movie &gt; and RedisNode&lt;Actor&gt; respectively (as appose to UnitNode). This will allow you to return the nodes them self as the defined data classes.
+```kotlin
+import uk.gibby.redis.annotation.RedisType
+import uk.gibby.redis.annotation.Node
+import uk.gibby.redis.annotation.RelatesTo
+
+@RedisType
+data class ActedIn(val role: String)
+
+@Node
+data class Movie(val title: String, val releaseYear: Long)
+
+@Node
+@Relates(to = Movie::class, by = "actedIn", data = ActedIn::class)
+data class Actor(val name: String)
+```
+Attributes can be defined on both **RedisClass** and **RedisRelation**. While in either scope, you'll have access to functions for setting the values of the attributes.
+
+**Currently Supported Types Are:**
+
+<ins>Primitives</ins>
+
+| Type    | Function  |
+|---------|-----------|
+| String  | string()  |
+| Long    | long()    |
+| Double  | double()  |
+| Boolean | boolean() |
+
+<ins>Arrays</ins>
+```kotlin
+class MyNode: UnitNode(){
+    /* ND arrays of any result type are supported */
+    val myArray by array(string())
+    val my2DArray by array(array(string()))
+}
+```
+<ins>Structured Types</ins>
+```kotlin
+import ...
+/* Defines a type which can be returned */
+class Vector3Result : StructResult<Vector3>() {
+    val x: DoubleResult by double()
+    val y: DoubleResult by double()
+    val z: DoubleResult by double()
+    
+    fun ResultScope.getResult(): Vector3 = Vector3(!x, !y, !z)
+    
+    fun ParamMap.setResult(value: Vector3){
+        x[value.x]
+        y[value.y]
+        z[value.z]
+    }
+}
+/* Defining the attribute will allow you to store the type on a node or relation */
+class Vector3Attribute : Vector3Result(), Attribute<Vector3>
+
+class MyNode: UnitNode(){
+    val myVector by ::Vector3Attribute
+}
+```
+
 ### Create Nodes
 After a node type has been defined as a **RedisClass**, you can create a single instance like so:
 ```kotlin
-import Actor
-import Movie
-
-moviesGraph.create(Movie::class) {
+moviesGraph.create(MovieNode::class) {
     title["Star Wars: Episode V - The Empire Strikes Back"]
     releaseYear[1980]
     movieId[1]
@@ -95,7 +150,7 @@ moviesGraph.create(Movie::class) {
 ```
 ##### Generated Cypher
 ```cypher
-CREATE (:Movie{title:'Star Wars: Episode V - The Empire Strikes Back', release_year:1980, movie_id:1})
+CREATE (:MovieNode{title:'Star Wars: Episode V - The Empire Strikes Back', release_year:1980, movie_id:1})
 ```
 (If an attribute is defined in the type but not set on creation, and exception will be thrown)
   
@@ -107,102 +162,84 @@ val actors = listOf(
     "Harrison Ford",
     "Carrie Fisher"
 )
-moviesGraph.create(Actor::class, actors) {
+moviesGraph.create(ActorNode::class, actors) {
     name[it]
     actorId[index++]
 }
 ```
 ##### Generated Cypher
 ```cypher
-CREATE (:Actor{name:'Mark Hamill', actor_id:1}), (:Actor{name:'Harrison Ford', actor_id:2}), (:Actor{name:'Carrie Fisher', actor_id:3})
+CREATE (:ActorNode{name:'Mark Hamill', actor_id:1}), (:ActorNode{name:'Harrison Ford', actor_id:2}), (:ActorNode{name:'Carrie Fisher', actor_id:3})
 ```
 ### Query Scope
-Currently all other functionality is performed with the **query** function which has the general structure of:
+Currently, all other functionality is performed with the **query** function which takes a lambda returning a result value.
+#### Example:
 ```kotlin
 moviesGraph.query {
 
-    create ( /* Create path or nodes */ )
-    //Optional
-    where {
-        // Filter queries
-    }
-    
-    // Optional
-    delete( /* vararg of nodes/relationships */ )
-    
-    // Optional
-    create ( /* Create path */ )
-    
-    // Required (Can be placed in the create block)
-    result( /* vararg of attribute */ ){
-        // Transform from attribute to some generic class
-    }
+    match (MovieNode())
     
 }
 ```
 ### Create Relationships
-References to nodes can be created using the **variableOf** function. These refences can be used to filter the data in the where block and relationships between matching nodes can then be made using the create block.
+References to nodes can be created using the **variableOf** function. These references can be used to filter the data in the where block and relationships between matching nodes can then be made using the create block.
 ```kotlin
 moviesGraph.query {
-    val (actor, movie) = match(Actor(), Movie())
+    val (actor, movie) = match(ActorNode(), MovieNode())
     where ( (actor.actorId eq 1) and (movie.movieId eq 1) )
     create(actor - { actedIn { role["Luke Skywalker"] } } - movie)
 }
 moviesGraph.query {
-    val (actor, movie) = match(Actor(), Movie())
+    val (actor, movie) = match(ActorNode(), MovieNode())
     where ( (actor.actorId eq 2) and (movie.movieId eq 1) )
     create(actor - { actedIn{role["Han Solo"]} } - movie)
 }
 moviesGraph.query {
-    val (actor, movie) = match(Actor(), Movie())
+    val (actor, movie) = match(ActorNode(), MovieNode())
     where ( (actor.actorId eq 3) and (movie.movieId eq 1) )
     create( actor - { actedIn{role["Princess Leia"]} } - movie )
 }
 ```
 ##### Generated Cypher
 ```cypher
-MATCH (actor:Actor), (movie:Movie)
+MATCH (actor:ActorNode), (movie:MovieNode)
 WHERE (actor.actor_id = 1) AND (movie.movie_id = 1)
 CREATE (actor)-[r:ACTED_IN {role:'Luke Skywalker'}]->(movie)
 ```
-### Make Queries
+### Constructing Queries
 In this example we search for all movies and return the movie 'title'.
+
+The same however we also return the 'releaseYear' and the 'movieId':
 ```kotlin
 val movies = moviesGraph.query{
-    val movie = match(Movie())
-    result(movie.title)
+    val movie = match(MovieNode())
+    movie.title
 }
 movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
 ```
 ##### Generated Cypher
 ```cypher
-MATCH (movie:Movie)
+MATCH (movie:MovieNode)
 RETURN movie.title
 ```
-The same however we also return the 'releaseYear' and the 'movieId'. We can also map our return type to a data class to preserve the types.
+
+When using the @Node annotation we can return the movie node itself
 ```kotlin
-data class MovieData(val title: String, val releaseYear: Long, val movieId: Long)
+@Node
+data class Movie(val title: String, val releaseYear: Long, val movieId: Long)
 
 val (title, releaseYear, id) = moviesGraph.query {
-    val movie = match( Movie())
-    result(movie.title, movie.releaseYear, movie.movieId){
-        MovieData(
-          movie.title(),
-          movie.releaseYear(),
-          movie.movieId()
-        )
-    }
+    val movie = match(MovieNode())
+    movie
 }.first()
 
 title as String `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
 releaseYear as Long `should be equal to` 1980
 id as Long `should be equal to` 1
-
-
 ```
 ##### Generated Cypher
 ```cypher
-MATCH (movie:Movie)
+MATCH (movie:MovieNode)
 RETURN movie.title, movie.release_year, movie.movie_id
 ```
 Here we:
@@ -211,7 +248,7 @@ Here we:
 * And return the actor name and movie title
 ```kotlin
 val actedInMovies = moviesGraph.query {
-    val (actor, _, movie) = match(Actor() - { actedIn }  - Movie())
+    val (actor, _, movie) = match(ActorNode() - { actedIn }  - MovieNode())
     where ( movie.movieId eq 1 )
     orderBy(actor.actorId)
     result(actor.name, movie.title)
@@ -219,14 +256,14 @@ val actedInMovies = moviesGraph.query {
 
 actedInMovies.size `should be equal to` 3
 
-val (actorName, movieName) = actedInMovies.last()
+val (actorName, movieName) = actedInMovieNodes.last()
 
 actorName `should be equal to` "Carrie Fisher"
 movieName `should be equal to` "Star Wars: Episode V - The Empire Strikes Back"
 ```
 ##### Generated Cypher
 ```cypher
-MATCH (actor:Actor)-[movieRelation:ACTED_IN]-(movie:Movie)
+MATCH (actor:ActorNode)-[movieRelation:ACTED_IN]-(movie:MovieNode)
 WHERE movie.movie_id = 1
 RETURN actor.name, movie.title
 ORDER BY actor.actor_id
@@ -235,7 +272,7 @@ ORDER BY actor.actor_id
 Any nodes or relationships referenced in the Query block can be deleted calling them in the (vararg) delete function:
 ```kotlin
 val removedActor = moviesGraph.query {
-    val (actor, relationship) = match(Actor() - { actedIn }  - Movie())
+    val (actor, relationship) = match(ActorNode() - { actedIn }  - MovieNode())
     where ( actor.actorId eq 1 )
     delete(relationship)
     result(actor.name)
@@ -245,7 +282,7 @@ removedActor.first() `should be equal to` "Mark Hamill"
 ```
 ##### Generated Cypher
 ```cypher
-MATCH (actor:Actor)-[movieRelation:ACTED_IN]-(movie:Movie)
+MATCH (actor:ActorNode)-[movieRelation:ACTED_IN]-(movie:MovieNode)
 WHERE actor.actor_id = 1
 RETURN movieRelation.role
 ```
