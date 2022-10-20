@@ -76,7 +76,7 @@ class ActedInRelation: UnitRelation<ActorNode, MovieNode>(){
 }
 ```
 
-#### Experimental Code Gen
+#### Experimental CodeGen
 This will generate the same as the above but will instead create instances of RedisRelation&lt;ActedIn&gt;, RedisNode&lt;Movie &gt; and RedisNode&lt;Actor&gt; respectively (as appose to UnitNode). This will allow you to return the nodes them self as the defined data classes.
 ```kotlin
 import uk.gibby.redis.annotation.RedisType
@@ -139,6 +139,11 @@ class MyNode: UnitNode(){
 }
 ```
 
+#### Experimental CodeGen Annotation
+```kotlin
+@RedisType
+data class Vector(val x: Double, val y: Double, val z: Double)
+```
 ### Create Nodes
 After a node type has been defined as a **RedisClass**, you can create a single instance like so:
 ```kotlin
@@ -174,15 +179,14 @@ CREATE (:ActorNode{name:'Mark Hamill', actor_id:1}), (:ActorNode{name:'Harrison 
 ### Query Scope
 Currently, all other functionality is performed with the **query** function which takes a lambda returning a result value.
 #### Example:
+Returns a list of all the movie names in the graph.
 ```kotlin
 moviesGraph.query {
-
     match (MovieNode())
-    
+    movie.title
 }
 ```
 ### Create Relationships
-References to nodes can be created using the **variableOf** function. These references can be used to filter the data in the where block and relationships between matching nodes can then be made using the create block.
 ```kotlin
 moviesGraph.query {
     val (actor, movie) = match(ActorNode(), MovieNode())
