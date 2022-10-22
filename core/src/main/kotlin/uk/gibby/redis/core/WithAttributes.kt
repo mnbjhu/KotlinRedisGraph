@@ -9,28 +9,30 @@ import uk.gibby.redis.attributes.primative.StringAttribute
 import uk.gibby.redis.paths.NameCounter
 import uk.gibby.redis.results.*
 import kotlin.reflect.KProperty
-import redis.clients.jedis.graph.entities.Node
 import redis.clients.jedis.graph.entities.Property
 
-sealed class WithAttributes<T>: ResultValue<T> {
+sealed class WithAttributes<T>: ResultValue<T>() {
     var params: List<ParameterPair<*>>? = null
     abstract val typeName: String
     abstract val attributes: MutableSet<Attribute<*>>
     var instanceName = NameCounter.getNext()
-    override var value: T? = null
-    override var reference: String? = instanceName
+    private var _value: T? = null
+    override var ValueSetter.value: T?
+        get() = _value
+        set(value){_value = value}
+    override var _reference: String? = instanceName
 
     protected operator fun <T, U: Attribute<T>>U.getValue(thisRef: Any?, property: KProperty<*>): U{
         attributes.add(this)
         val name = property.name
-        reference = "$instanceName.$name"
+        _reference = "$instanceName.$name"
         return this
     }
     operator fun <T, U: Attribute<T>, V: AttributeBuilder<T, U>>V.getValue(thisRef: Any?, property: KProperty<*>): U{
         val attr = action()
         attributes.add(attr)
         val name = property.name
-        attr.reference = "$instanceName.$name"
+        attr._reference = "$instanceName.$name"
         return attr
     }
 
@@ -43,7 +45,9 @@ sealed class WithAttributes<T>: ResultValue<T> {
     protected fun boolean() = BooleanAttribute()
     protected inline fun <reified T : Any>serializable(): SerializableAttribute<T> = SerializableAttribute(T::class)
     abstract fun NodeResult.getResult(): T
-
+    override fun copyType(): ResultValue<T> {
+        return this::class.objectInstance!!
+    }
 }
 operator fun <T : WithAttributes<*>> T.invoke(scope: T.(ParamMap) -> Unit) {
     val params = ParamMap()

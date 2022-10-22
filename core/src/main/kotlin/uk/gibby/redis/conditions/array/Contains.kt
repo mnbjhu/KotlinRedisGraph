@@ -13,8 +13,8 @@ import uk.gibby.redis.results.BooleanResult
  * @constructor Create empty Contains
  */
 infix fun <T, U: ResultValue<T>> ArrayResult<T, U>.contains(element: U) = BooleanResult().also {
-    it.reference = "(${element.getString()} IN ${getString()})"
+    it._reference = "(${element.getString()} IN ${getString()})"
 }
 infix fun <T, U: ResultValue<T>> ArrayResult<T, U>.contains(element: T) = BooleanResult().also {
-    it.reference = "(${newElement.getLiteral(element)} IN ${getString()})"
+    it._reference = "(${newElement.getLiteral(element)} IN ${getString()})"
 }

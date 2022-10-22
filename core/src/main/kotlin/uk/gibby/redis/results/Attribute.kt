@@ -5,7 +5,7 @@ package uk.gibby.redis.results
  *
  * @param T
  */
-interface Attribute<T> : ResultValue<T>{
+interface Attribute<T>: Referencable<T>{
     val _name
-        get() = reference!!.split(".")[1]
+        get() = _reference!!.split(".")[1]
 }

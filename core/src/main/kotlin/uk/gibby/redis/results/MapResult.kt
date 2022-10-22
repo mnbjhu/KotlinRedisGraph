@@ -1,7 +1,5 @@
 package uk.gibby.redis.results
 
-import kotlin.reflect.KFunction0
-
 open class MapResult<T, U : ResultValue<T>>(private val toTypeProducer: ResultBuilder<T, U>) : PrimitiveResult<Map<String, T>>() {
     constructor(from: () -> U): this(ResultBuilder { from() } )
     private val toElementType: U
@@ -19,25 +17,20 @@ open class MapResult<T, U : ResultValue<T>>(private val toTypeProducer: ResultBu
     ) { with(it){ "${key}: ${toElementType.getLiteral(value)}" } }
     operator fun get(key: StringResult): U{
         return toTypeProducer.action().also {
-            it.reference = "${getString()}[${key.getString()}]"
+            it._reference = "${getString()}[${key.getString()}]"
         }
     }
     operator fun get(key: String): U {
         return toTypeProducer.action().also {
-            it.reference = "${getString()}['$key']"
+            it._reference = "${getString()}['$key']"
         }
     }
-    fun keys() = array(toTypeProducer).action().also { it.reference = "keys(${getString()})" }
+    override fun copyType(): ResultValue<Map<String, T>> {
+        return map(toElementType::copyType).action()
+    }
+    fun keys() = array(toTypeProducer).action().also { it._reference = "keys(${getString()})" }
 }
 
-class MapAttribute<T, U: ResultValue<T>>(toTypeProducer: ResultBuilder<T, U>):
-    MapResult<T, U>(toTypeProducer), Attribute<Map<String, T>>{
-    constructor(from: () -> U): this(ResultBuilder { from() } )
-}
-fun <T, U: ResultValue<T>>mapAttribute(type: KFunction0<U>) =
-    AttributeBuilder{ MapAttribute(type) }
-fun <T, U: ResultValue<T>>mapAttribute(type: ResultBuilder<T, U>) =
-    AttributeBuilder{ MapAttribute(type) }
 fun <T, U: ResultValue<T>>map(type: () -> U) = ResultBuilder{ MapResult(type) }
 fun <T, U: ResultValue<T>>map(type: ResultBuilder<T, U>) =
     ResultBuilder{ MapResult(type) }

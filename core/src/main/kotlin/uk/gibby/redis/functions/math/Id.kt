@@ -11,5 +11,5 @@ import uk.gibby.redis.core.RedisNode
  */
 
 fun id(node: RedisNode<*>) = LongResult().apply {
-    reference = "ID(${node.instanceName})"
+    _reference = "ID(${node.instanceName})"
 }

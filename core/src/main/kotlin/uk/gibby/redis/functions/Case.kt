@@ -2,7 +2,6 @@ package uk.gibby.redis.functions
 
 import uk.gibby.redis.results.ResultValue
 import kotlin.reflect.KClass
-import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.primaryConstructor
 
 inline fun <T, U: ResultValue<T>, V, reified R: ResultValue<V>>switch(target: U, type: KClass<R>? = null, scope: CaseBuilder<T, V>.() -> CaseBranch<T, V>): ResultValue<V>{
@@ -25,7 +24,7 @@ class CaseBuilder<T, V>(private val target: ResultValue<T>, private val clazz: K
     fun build(): ResultValue<V> {
         val switch = TargetedCase(target, cases.toList() as List<CaseBranch<T, V>>)
         val instance = clazz.primaryConstructor?.call() ?: throw Exception("Class should have a primary constructor with 1 argument. (${clazz.simpleName})")
-        instance.reference = switch.getString()
+        instance._reference = switch.getString()
         return instance
     }
 }

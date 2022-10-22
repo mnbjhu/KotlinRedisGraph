@@ -17,7 +17,7 @@ open class BooleanResult : PrimitiveResult<Boolean>() {
      * @param other
      */
     infix fun and(other: BooleanResult) = BooleanResult().also{
-        it.reference = "(${getString()}) AND (${other.getString()})"
+        it._reference = "(${getString()}) AND (${other.getString()})"
     }
 
     /**
@@ -26,9 +26,9 @@ open class BooleanResult : PrimitiveResult<Boolean>() {
      * @param other
      */
     infix fun or(other: BooleanResult) = BooleanResult().also{
-        it.reference = "(${getString()}) OR (${other.getString()})"
+        it._reference = "(${getString()}) OR (${other.getString()})"
     }
     operator fun not() = BooleanResult().also{
-        it.reference = "NOT(${getString()})"
+        it._reference = "NOT(${getString()})"
     }
 }

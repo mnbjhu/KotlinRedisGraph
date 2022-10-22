@@ -1,6 +1,14 @@
 package uk.gibby.redis.results
 
-sealed class PrimitiveResult<T>: ResultValue<T> {
-    override var value: T? = null
-    override var reference: String? = null
+import kotlin.reflect.full.primaryConstructor
+
+sealed class PrimitiveResult<T>: ResultValue<T>() {
+    private var _value: T? = null
+    override var ValueSetter.value: T?
+        get() = _value
+        set(value){_value = value}
+    override var _reference: String? = null
+    override fun copyType(): ResultValue<T> =
+        this::class.primaryConstructor!!.call()
+
 }

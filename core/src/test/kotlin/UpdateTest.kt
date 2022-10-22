@@ -4,6 +4,7 @@ import schemas.Actor
 import schemas.Movie
 import uk.gibby.redis.conditions.equality.eq
 import uk.gibby.redis.core.RedisGraph
+import uk.gibby.redis.core.toValue
 import uk.gibby.redis.paths.minus
 import uk.gibby.redis.statements.Create.Companion.create
 import uk.gibby.redis.statements.Delete.Companion.delete
@@ -70,7 +71,7 @@ class UpdateTest {
 
         moviesGraph.query {
             val movie = match(Movie())
-            set(movie.title to "New Title")
+            set(movie.title toValue "New Title")
             movie.title
         }.first() `should be equal to` "New Title"
     }

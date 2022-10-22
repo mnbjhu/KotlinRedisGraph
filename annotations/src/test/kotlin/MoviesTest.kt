@@ -17,6 +17,7 @@ import uk.gibby.redis.statements.Create.Companion.create
 import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Match.Companion.match
 import uk.gibby.redis.statements.Where.Companion.where
+import uk.gibby.redis.statements.WithAs.Companion.using
 
 @RedisType
 data class ActedIn(val role: String)
@@ -82,12 +83,13 @@ class MoviesTest {
                         (movie.title eq "Star Wars: Episode V - The Empire Strikes Back"))
             actedIn
         }.first().role `should be equal to` "Han Solo"
-    }/*
+    }
+    @Test
     fun `Test movies #2`(){
         val actors = mapOf(
-            "Mark Hamill" to "Luke Skywalker",
-            "Harrison Ford" to "Han Solo",
-            "Carrie Fisher" to "Princess Leia"
+            "Mark_Hamill" to "Luke Skywalker",
+            "Harrison_Ford" to "Han Solo",
+            "Carrie_Fisher" to "Princess Leia"
         )
         graph.create(ActorNode::class, actors.keys) { attr, iter ->
             attr[name] = iter
@@ -98,13 +100,13 @@ class MoviesTest {
         }
         graph.query {
             val (actor, movie) = match(ActorNode(), MovieNode())
-            val actorData = map(::string) of actors
+            val actorData = using(map(::string) of actors)
             where(
                 (movie.title eq "Star Wars: Episode V - The Empire Strikes Back") and
                     (actorData.keys() contains actor.name)
             )
+
             create(actor - { actedIn{ it[role] = actorData[actor.name] } } - movie)
         }
     }
-    */
 }
