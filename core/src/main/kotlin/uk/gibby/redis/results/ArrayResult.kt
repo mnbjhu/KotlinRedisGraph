@@ -55,8 +55,8 @@ fun <T, U: ResultValue<T>>array(type: () -> U) = ResultBuilder{ ArrayResult(type
 fun <T, U: ResultValue<T>>array(type: ResultBuilder<T, U>) =
     ResultBuilder{ ArrayResult(type) }
 
-class AttributeBuilder<out T, out U: Attribute<out T>>(val action: () -> U)
-class ResultBuilder<out T, out U: ResultValue<out T>>(val action: () -> U) {
+class AttributeBuilder< T, U: Attribute<T>>(val action: () -> U)
+class ResultBuilder<T, U: ResultValue<T>>(val action: () -> U) {
     operator fun getValue(thisRef: StructResult<*>, property: KProperty<*>): U {
         return this.action()
     }

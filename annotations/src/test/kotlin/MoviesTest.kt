@@ -5,11 +5,14 @@ import org.junit.Test
 import uk.gibby.redis.annotation.Node
 import uk.gibby.redis.annotation.RedisType
 import uk.gibby.redis.annotation.Relates
+import uk.gibby.redis.conditions.array.contains
 import uk.gibby.redis.conditions.equality.eq
 import uk.gibby.redis.core.RedisGraph
+import uk.gibby.redis.core.ResultParent.Companion.string
 import uk.gibby.redis.generated.ActorNode
 import uk.gibby.redis.generated.MovieNode
 import uk.gibby.redis.paths.minus
+import uk.gibby.redis.results.*
 import uk.gibby.redis.statements.Create.Companion.create
 import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Match.Companion.match
@@ -74,10 +77,34 @@ class MoviesTest {
             actor.name
         } `should contain same` actors
         graph.query {
-            val (actor, actedIn, movie) = match(ActorNode() - { actedIn } -MovieNode())
+            val (actor, actedIn, movie) = match(ActorNode() - { actedIn } - MovieNode())
             where((actor.name eq "Harrison Ford") and
                         (movie.title eq "Star Wars: Episode V - The Empire Strikes Back"))
             actedIn
         }.first().role `should be equal to` "Han Solo"
+    }/*
+    fun `Test movies #2`(){
+        val actors = mapOf(
+            "Mark Hamill" to "Luke Skywalker",
+            "Harrison Ford" to "Han Solo",
+            "Carrie Fisher" to "Princess Leia"
+        )
+        graph.create(ActorNode::class, actors.keys) { attr, iter ->
+            attr[name] = iter
+        }
+        graph.create(MovieNode::class){
+            it[title] = "Star Wars: Episode V - The Empire Strikes Back"
+            it[releaseYear] = 1980
+        }
+        graph.query {
+            val (actor, movie) = match(ActorNode(), MovieNode())
+            val actorData = map(::string) of actors
+            where(
+                (movie.title eq "Star Wars: Episode V - The Empire Strikes Back") and
+                    (actorData.keys() contains actor.name)
+            )
+            create(actor - { actedIn{ it[role] = actorData[actor.name] } } - movie)
+        }
     }
+    */
 }
