@@ -10,18 +10,26 @@ import uk.gibby.redis.paths.NameCounter
 import uk.gibby.redis.results.*
 import kotlin.reflect.KProperty
 import redis.clients.jedis.graph.entities.Property
-
+object NameSetter
+object ParamSetter
 sealed class WithAttributes<T>: ResultValue<T>() {
-    var params: List<ParameterPair<*>>? = null
-    abstract val typeName: String
-    abstract val attributes: MutableSet<Attribute<*>>
-    var instanceName = NameCounter.getNext()
+    val NameSetter.current
+        get() = instanceName
+    var ParamSetter.current
+        get() = params
+        set(value){params = value}
+    internal var params: List<ParameterPair<*>>? = null
+    internal abstract val typeName: String
+    internal abstract val attributes: MutableSet<Attribute<*>>
+    internal var instanceName = NameCounter.getNext()
     private var _value: T? = null
+    fun NameSetter.set(name: String){
+        instanceName = name
+    }
     override var ValueSetter.value: T?
         get() = _value
         set(value){_value = value}
     override var _reference: String? = instanceName
-
     protected operator fun <T, U: Attribute<T>>U.getValue(thisRef: Any?, property: KProperty<*>): U{
         attributes.add(this)
         val name = property.name

@@ -55,7 +55,9 @@ class RedisGraph(
         val instance = clazz.constructors.first().call()
         val p = ParamMap()
         instance.createScope(p)
-        instance.params = p.getParams()
+        with(instance){
+            ParamSetter.current = p.getParams()
+        }
         instance.getCreateString()
         client.graphQuery(name, "CREATE ${instance.getCreateString()}".also { println("GRAPH.QUERY $name \"${it}\"") })
     }

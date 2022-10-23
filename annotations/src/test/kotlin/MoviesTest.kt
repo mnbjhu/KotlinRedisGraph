@@ -105,7 +105,6 @@ class MoviesTest {
                 (movie.title eq "Star Wars: Episode V - The Empire Strikes Back") and
                     (actorData.keys() contains actor.name)
             )
-
             create(actor - { actedIn{ it[role] = actorData[actor.name] } } - movie)
         }
     }
