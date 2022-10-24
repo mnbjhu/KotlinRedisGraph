@@ -1,6 +1,5 @@
 package uk.gibby.redis.core
 
-import UnitNode
 import uk.gibby.redis.results.ResultValue
 import redis.clients.jedis.HostAndPort
 import redis.clients.jedis.Jedis
@@ -57,12 +56,12 @@ class RedisGraph(
         client.graphQuery(name, "CREATE ${instance.getCreateString()}".also { println("GRAPH.QUERY $name \"${it}\"") })
     }
 
-    fun <T : RedisNode<*>, U : KFunction0<T>>create(clazz: U, createScope: T.(ParamMap) -> Unit) = query {
+    fun <t, T : RedisNode<t>, U : KFunction0<T>>create(clazz: U, createScope: T.(ParamMap) -> Unit) = query {
         with(clazz()){
             val paramMap = ParamMap()
             createScope(paramMap)
             val typeProducer = { clazz().apply { params = paramMap.getParams() } }
-            this@query.create(typeProducer)
+            this@query.create(node = typeProducer)
             EmptyResult
         }
 
@@ -88,7 +87,7 @@ class RedisGraph(
             "CREATE $queryString".also { println("GRAPH.QUERY $name \"$it\"") }
         )
     }
-    fun <T : RedisNode<*>, U : KFunction0<T>, V>create(
+    fun <t, T : RedisNode<t>, U : KFunction0<T>, V>create(
         clazz: U,
         values: Iterable<V>,
         createScope: T.(ParamMap, V) -> Unit

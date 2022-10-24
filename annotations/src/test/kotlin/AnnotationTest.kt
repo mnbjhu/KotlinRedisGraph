@@ -4,7 +4,6 @@ import uk.gibby.redis.annotation.RedisType
 import uk.gibby.redis.core.RedisGraph
 import uk.gibby.redis.generated.ArrayRedisStructAttribute
 import uk.gibby.redis.generated.ListStructAttribute
-//import uk.gibby.redis.generated.ListStructAttribute
 import uk.gibby.redis.generated.Vector3Attribute
 import uk.gibby.redis.statements.Match.Companion.match
 

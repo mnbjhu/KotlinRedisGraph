@@ -147,7 +147,7 @@ data class Vector(val x: Double, val y: Double, val z: Double)
 ### Create Nodes
 After a node type has been defined as a **RedisClass**, you can create a single instance like so:
 ```kotlin
-moviesGraph.create(MovieNode::class) {
+moviesGraph.create(::MovieNode) {
     title["Star Wars: Episode V - The Empire Strikes Back"]
     releaseYear[1980]
     movieId[1]
@@ -167,7 +167,21 @@ val actors = listOf(
     "Harrison Ford",
     "Carrie Fisher"
 )
-moviesGraph.create(ActorNode::class, actors) {
+moviesGraph.create(::ActorNode, actors) {
+    name[it]
+    actorId[index++]
+}
+```
+
+Alternatively you can create the node and edges as part of a single query:
+```kotlin
+var index = 1L
+val actors = listOf(
+    "Mark Hamill",
+    "Harrison Ford",
+    "Carrie Fisher"
+)
+moviesGraph.create(::ActorNode, actors) {
     name[it]
     actorId[index++]
 }
