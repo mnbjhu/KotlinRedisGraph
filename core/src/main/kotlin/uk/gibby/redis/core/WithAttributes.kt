@@ -10,6 +10,8 @@ import uk.gibby.redis.paths.NameCounter
 import uk.gibby.redis.results.*
 import kotlin.reflect.KProperty
 import redis.clients.jedis.graph.entities.Property
+import kotlin.reflect.full.primaryConstructor
+
 object NameSetter
 object ParamSetter
 sealed class WithAttributes<T>: ResultValue<T>() {
@@ -25,6 +27,7 @@ sealed class WithAttributes<T>: ResultValue<T>() {
     private var _value: T? = null
     fun NameSetter.set(name: String){
         instanceName = name
+        _reference = name
     }
     override var ValueSetter.value: T?
         get() = _value
@@ -54,7 +57,7 @@ sealed class WithAttributes<T>: ResultValue<T>() {
     protected inline fun <reified T : Any>serializable(): SerializableAttribute<T> = SerializableAttribute(T::class)
     abstract fun NodeResult.getResult(): T
     override fun copyType(): ResultValue<T> {
-        return this::class.objectInstance!!
+        return this::class.primaryConstructor!!.call()
     }
 }
 operator fun <T : WithAttributes<*>> T.invoke(scope: T.(ParamMap) -> Unit) {
@@ -64,5 +67,5 @@ operator fun <T : WithAttributes<*>> T.invoke(scope: T.(ParamMap) -> Unit) {
 }
 class NodeResult(result: Iterator<Any?>){
     val node = result.next() as GraphEntity
-    inline operator fun <reified T, U: Attribute<T>>U.not() = (node.getProperty(_name) as Property<T>).value
+    inline fun <reified T, U: Attribute<T>>U.result(): T = (node.getProperty(_name) as Property<T>).value
 }

@@ -2,7 +2,10 @@ import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import uk.gibby.redis.results.*
 import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
+import javax.lang.model.element.TypeElement
 import javax.lang.model.type.DeclaredType
+import javax.lang.model.type.TypeKind
 import javax.lang.model.type.TypeMirror
 
 
@@ -12,11 +15,12 @@ fun getType(member: Element, classElements: List<Element>): TypeName {
 }
 
 fun getBaseTypeFunction(type: TypeMirror, classElements: List<Element>): MemberName {
+    //if(type.isEnum()) return MemberName("uk.gibby.redis.core.ResultParent.Companion", "serializable")
     return when (type.asTypeName()) {
         ClassName("java.lang", "String"), javaString -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "string")
         Long::class.asClassName(), javaLong -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "long")
         ClassName("kotlin", "Double") -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "double")
-        ClassName("java.lang", "Boolean") -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "boolean")
+        Boolean::class.asClassName(), javaBool -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "boolean")
         in classElements.map { it.asType().asTypeName() } -> MemberName(
             "uk.gibby.redis.generated",
             "${type.asTypeName()}Result"
@@ -42,14 +46,16 @@ fun getArrayTypeFunction(startType: TypeMirror, classElements: List<Element>): C
     return builder.build()
 }
 
+fun TypeMirror.isEnum() = kind == TypeKind.DECLARED && ((this as DeclaredType).asElement() as TypeElement).kind == ElementKind.ENUM
 fun getDefaultType(type: TypeMirror, classElements: List<Element>, isOuter: Boolean = true): TypeName {
     if(classElements.any{ (it.asType().asTypeName().toString() == type.asTypeName().toString()) })
         return ClassName("uk.gibby.redis.generated", "${type.asTypeName()}Result")
+    //if(type.isEnum()) return SerializableResult::class.asClassName().parameterizedBy(type.asTypeName())
     when (type.asTypeName()) {
         String::class.asClassName(), javaString -> return StringResult::class.asClassName()
         Double::class.asClassName() -> return DoubleResult::class.asClassName()
         Long::class.asClassName(), javaLong -> return LongResult::class.asClassName()
-        Boolean::class.asClassName() -> return BooleanResult::class.asClassName()
+        Boolean::class.asClassName(), javaBool -> return BooleanResult::class.asClassName()
         else -> {}
     }
     return when{
@@ -58,7 +64,7 @@ fun getDefaultType(type: TypeMirror, classElements: List<Element>, isOuter: Bool
             val innerResult = getDefaultType(innerType, classElements)
             println(innerType.asTypeName())
             ArrayResult::class.asClassName()
-                .parameterizedBy(toKotlin(innerType), innerResult)//.also { println(it) }
+                .parameterizedBy(toKotlin(innerType), innerResult)
         }
         else -> throw Exception("Type should be primitive, array or annotated with @RedisType. Found: '${type.asTypeName()}'")
     }
@@ -73,6 +79,8 @@ fun toKotlin(type: TypeMirror): TypeName {
     val bottomClass = when(typeIter.asTypeName()){
         javaLong -> Long::class.asClassName()
         javaString -> String::class.asClassName()
+        javaBool -> Boolean::class.asClassName()
+
         else -> typeIter.asTypeName()
     }
     var name = bottomClass

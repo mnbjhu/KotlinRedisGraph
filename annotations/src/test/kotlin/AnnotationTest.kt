@@ -8,6 +8,11 @@ import uk.gibby.redis.generated.ListStructAttribute
 import uk.gibby.redis.generated.Vector3Attribute
 import uk.gibby.redis.statements.Match.Companion.match
 
+enum class MyEnum{
+    GoodEnum,
+    BadEnum
+}
+
 @RedisType
 data class Vector3(
     val x: Double,
@@ -27,6 +32,23 @@ data class NestedListStruct(val struct: ListStruct)
 
 @RedisType
 data class ArrayRedisStruct(val data: List<List<Vector3>>)
+
+@RedisType
+data class DoubleTest(val myDouble: Double)
+
+@RedisType
+data class StringTest(val data: String)
+
+@RedisType
+data class BooleanTest(val data: Boolean)
+@RedisType
+data class StringArrayTest(val data: List<String>)
+
+@RedisType
+data class BooleanArrayTest(val data: List<Boolean>)
+
+// @RedisType
+data class EnumTest(val data: MyEnum)
 
 
 
@@ -51,27 +73,27 @@ class AnnotationTest{
     )
     @Test
     fun testStruct(){
-        graph.create(VectorNode::class){
+        graph.create(::VectorNode){
             it[vector] = Vector3(1.0, 2.0, 3.0)
         }
         graph.query {
-            val node = match(VectorNode())
+            val node = match(::VectorNode)
             node.vector
         }.first() `should be equal to` Vector3(1.0, 2.0, 3.0)
     }
     @Test
     fun testList(){
-        graph.create(ListNode::class){
+        graph.create(::ListNode){
             it[struct] = ListStruct(listOf(-1L, 0L, 1L))
         }
         graph.query {
-            val node = match(ListNode())
+            val node = match(::ListNode)
             node.struct
         }.first() `should be equal to` ListStruct(listOf(-1L, 0L, 1L))
     }
     @Test
     fun complexTest(){
-        graph.create(ComplexNode::class){
+        graph.create(::ComplexNode){
             it[data] = ArrayRedisStruct(
                 listOf(
                     listOf(Vector3(1.2, 3.4, 5.6), Vector3(1.0, 2.0, 4.0)),
@@ -81,7 +103,7 @@ class AnnotationTest{
             )
         }
         graph.query {
-            val node = match(ComplexNode())
+            val node = match(::ComplexNode)
             node.data
         }.first() `should be equal to` ArrayRedisStruct(
             listOf(

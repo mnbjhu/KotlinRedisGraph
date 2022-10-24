@@ -118,7 +118,7 @@ fun buildNodeGetResult(type: TypeName, members: List<Element>) =
     FunSpec.builder("getResult")
         .receiver(NodeResult::class)
         .addModifiers(KModifier.OVERRIDE)
-        .addStatement("return %T(${members.joinToString { "!${it.simpleName}" }})", type)
+        .addStatement("return %T(${members.joinToString { "${it.simpleName}.result()" }})", type)
         .returns(type)
         .build()
 

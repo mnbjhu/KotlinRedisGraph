@@ -49,5 +49,5 @@ abstract class StructResult<T>: ResultValue<T>() {
     }
 }
 class ResultScope(val result: Iterator<Any?>){
-    operator fun <T, U: ResultValue<T>>U.not() = parse(result)
+    fun <T, U: ResultValue<T>>U.result() = parse(result)
 }

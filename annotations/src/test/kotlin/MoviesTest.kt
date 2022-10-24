@@ -18,6 +18,10 @@ import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Match.Companion.match
 import uk.gibby.redis.statements.Where.Companion.where
 import uk.gibby.redis.statements.WithAs.Companion.using
+import uk.gibby.redis.core.invoke
+import uk.gibby.redis.scopes.EmptyResult
+import java.util.EmptyStackException
+
 
 @RedisType
 data class ActedIn(val role: String)
@@ -50,15 +54,15 @@ class MoviesTest {
             "Harrison Ford",
             "Carrie Fisher"
         )
-        graph.create(ActorNode::class, actors) { attr, iter ->
+        graph.create(::ActorNode, actors) { attr, iter ->
             attr[name] = iter
         }
-        graph.create(MovieNode::class){
+        graph.create(::MovieNode){
             it[title] = "Star Wars: Episode V - The Empire Strikes Back"
             it[releaseYear] = 1980
         }
         graph.query {
-            val (actor, movie) = match(ActorNode(), MovieNode())
+            val (actor, movie) = match(::ActorNode, ::MovieNode)
             where(actor.name eq "Mark Hamill")
             create(actor - { actedIn{ it[role] = "Luke Skywalker" } } - movie)
         }
@@ -91,15 +95,15 @@ class MoviesTest {
             "Harrison_Ford" to "Han Solo",
             "Carrie_Fisher" to "Princess Leia"
         )
-        graph.create(ActorNode::class, actors.keys) { attr, iter ->
+        graph.create(::ActorNode, actors.keys) { attr, iter ->
             attr[name] = iter
         }
-        graph.create(MovieNode::class){
+        graph.create(::MovieNode){
             it[title] = "Star Wars: Episode V - The Empire Strikes Back"
             it[releaseYear] = 1980
         }
         graph.query {
-            val (actor, movie) = match(ActorNode(), MovieNode())
+            val (actor, movie) = match(::ActorNode, ::MovieNode)
             val actorData = using(map(::string) of actors)
             where(
                 (movie.title eq "Star Wars: Episode V - The Empire Strikes Back") and
@@ -107,5 +111,33 @@ class MoviesTest {
             )
             create(actor - { actedIn{ it[role] = actorData[actor.name] } } - movie)
         }
+    }
+
+    @Test
+    fun `Test Create Movie New`(){
+        graph.query {
+            create(
+                ::MovieNode{
+                    it[title] = "Star Wars: Episode V - The Empire Strikes Back"
+                    it[releaseYear] = 1980
+                }
+            )
+        }
+    }
+    @Test
+    fun `Test movies #3`(){
+        val response = graph.query {
+            val movie = create(::MovieNode {
+                it[title] = "Star Wars: Episode V - The Empire Strikes Back"
+                it[releaseYear] = 1980
+            })
+            create(::ActorNode{ it[name] = "Mark Hamill" } - { actedIn { it[role] = "Luke Skywalker" } } - movie)
+            create(::ActorNode{ it[name] = "Harrison Ford" } - { actedIn{ it[role] = "Han Solo" } } - movie)
+            create(::ActorNode{ it[name] = "Carrie Fisher" } - { actedIn{ it[role] = "Princess Leia" } } - movie)
+            val (actor) = match(::ActorNode - { actedIn { it[role] = "Luke Skywalker" } } - using(movie))
+            actor.name
+        }
+        response.size `should be equal to` 1
+        response.first() `should be equal to` "Mark Hamill"
     }
 }

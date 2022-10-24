@@ -20,21 +20,21 @@ class NodeReturns {
         setupList()
     }
     private fun setupList() {
-        graph.create(ReturningNode::class) {
+        graph.create(::ReturningNode) {
             it[data] = "Hello, World!"
             it[number] = 10
         }
     }
 
     private fun deleteAll() = graph.query {
-        val node = match(ReturningNode())
+        val node = match(::ReturningNode)
         delete(node)
     }
 
     @Test
     fun `Test node returns`(){
         graph.query {
-            val node = match(ReturningNode())
+            val node = match(::ReturningNode)
             node
         }.first() `should be equal to` NodeTestData("Hello, World!", 10)
     }

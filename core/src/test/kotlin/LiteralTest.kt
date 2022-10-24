@@ -14,11 +14,11 @@ class LiteralTest {
     )
     @Before
     fun deleteAll(){
-        structsGraph.query { delete(match(StructNode())) }
+        structsGraph.query { delete(match(::StructNode)) }
     }
     @Test
     fun `Create int literal`(){
-        structsGraph.create(StructNode::class){
+        structsGraph.create(::StructNode){
             it[myLine] = Vector2(1,2) to Vector2(3, 4)
             it[myVector] = Vector2(0, 0)
         }
@@ -29,7 +29,7 @@ class LiteralTest {
     }
     @Test
     fun `Create string literal`(){
-        structsGraph.create(StructNode::class){
+        structsGraph.create(::StructNode){
             it[myLine] = Vector2(1,2) to Vector2(3, 4)
             it[myVector] = Vector2(0, 0)
         }

@@ -27,15 +27,15 @@ class MyTest{
         createTestData()
     }
     private fun deleteAll() = graph.query{
-        val node = match(SwitchTestNode())
+        val node = match(::SwitchTestNode)
         delete(node)
     }
-    private fun createTestData() = graph.create(SwitchTestNode::class) { it[number] = 1L }
+    private fun createTestData() = graph.create(::SwitchTestNode) { it[number] = 1L }
 
     @Test
     fun `Test from literal to literal`() {
         graph.query {
-            val node = match(SwitchTestNode())
+            val node = match(::SwitchTestNode)
             switch(node.number, StringResult::class) {
                 1L then "Test"
                 2L then "Test2"
@@ -46,7 +46,7 @@ class MyTest{
     @Test
     fun `Test from literal to reference`() {
         graph.query {
-            val node = match(SwitchTestNode())
+            val node = match(::SwitchTestNode)
             switch(node.number, LongResult::class) {
                 1L then node.number
                 2L then node.number + 1
@@ -57,7 +57,7 @@ class MyTest{
     @Test
     fun `Test from reference to literal`() {
         graph.query {
-            val node = match(SwitchTestNode())
+            val node = match(::SwitchTestNode)
             val numberPlusOne = node.number + 1
             switch(node.number, StringResult::class) {
                 node.number then "Test"
@@ -69,7 +69,7 @@ class MyTest{
     @Test
     fun `Test from reference to reference`() {
         graph.query {
-            val node = match(SwitchTestNode())
+            val node = match(::SwitchTestNode)
             val numberPlusOne = node.number + 1
             switch(node.number, LongResult::class) {
                 node.number then numberPlusOne

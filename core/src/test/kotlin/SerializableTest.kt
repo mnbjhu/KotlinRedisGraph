@@ -14,11 +14,11 @@ class SerializableTest {
     )
     @Test
     fun test(){
-        enumGraph.create(EnumSchema::class){
+        enumGraph.create(::EnumSchema){
            it[enum] = MyEnum.B
         }
         val x =  enumGraph.query {
-            val enum = match(EnumSchema())
+            val enum = match(::EnumSchema)
             where(enum.enum eq MyEnum.B)
             enum.enum
         }
