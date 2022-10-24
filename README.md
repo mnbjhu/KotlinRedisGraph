@@ -173,19 +173,6 @@ moviesGraph.create(::ActorNode, actors) {
 }
 ```
 
-Alternatively you can create the node and edges as part of a single query:
-```kotlin
-var index = 1L
-val actors = listOf(
-    "Mark Hamill",
-    "Harrison Ford",
-    "Carrie Fisher"
-)
-moviesGraph.create(::ActorNode, actors) {
-    name[it]
-    actorId[index++]
-}
-```
 ##### Generated Cypher
 ```cypher
 CREATE (:ActorNode{name:'Mark Hamill', actor_id:1}), (:ActorNode{name:'Harrison Ford', actor_id:2}), (:ActorNode{name:'Carrie Fisher', actor_id:3})
@@ -196,26 +183,26 @@ Currently, all other functionality is performed with the **query** function whic
 Returns a list of all the movie names in the graph.
 ```kotlin
 moviesGraph.query {
-    match (MovieNode())
+    match(::MovieNode)
     movie.title
 }
 ```
 ### Create Relationships
 ```kotlin
 moviesGraph.query {
-    val (actor, movie) = match(ActorNode(), MovieNode())
-    where ( (actor.actorId eq 1) and (movie.movieId eq 1) )
+    val (actor, movie) = match(::ActorNode, ::MovieNode)
+    where ((actor.actorId eq 1) and (movie.movieId eq 1))
     create(actor - { actedIn { role["Luke Skywalker"] } } - movie)
 }
 moviesGraph.query {
-    val (actor, movie) = match(ActorNode(), MovieNode())
-    where ( (actor.actorId eq 2) and (movie.movieId eq 1) )
+    val (actor, movie) = match(::ActorNode, ::MovieNode)
+    where ((actor.actorId eq 2) and (movie.movieId eq 1))
     create(actor - { actedIn{role["Han Solo"]} } - movie)
 }
 moviesGraph.query {
-    val (actor, movie) = match(ActorNode(), MovieNode())
+    val (actor, movie) = match(::ActorNode, ::MovieNode)
     where ( (actor.actorId eq 3) and (movie.movieId eq 1) )
-    create( actor - { actedIn{role["Princess Leia"]} } - movie )
+    create(actor - { actedIn{role["Princess Leia"]} } - movie)
 }
 ```
 ##### Generated Cypher
@@ -224,13 +211,25 @@ MATCH (actor:ActorNode), (movie:MovieNode)
 WHERE (actor.actor_id = 1) AND (movie.movie_id = 1)
 CREATE (actor)-[r:ACTED_IN {role:'Luke Skywalker'}]->(movie)
 ```
+Alternatively you can create the node and edges as a single query:
+```kotlin
+graph.query {
+    val movie = create(::MovieNode {
+        it[title] = "Star Wars: Episode V - The Empire Strikes Back"
+        it[releaseYear] = 1980
+    })
+    create(::ActorNode{ it[name] = "Mark Hamill" } - { actedIn { it[role] = "Luke Skywalker" } } - movie)
+    create(::ActorNode{ it[name] = "Harrison Ford" } - { actedIn{ it[role] = "Han Solo" } } - movie)
+    create(::ActorNode{ it[name] = "Carrie Fisher" } - { actedIn{ it[role] = "Princess Leia" } } - movie)
+}
+```
 ### Constructing Queries
 In this example we search for all movies and return the movie 'title'.
 
 The same however we also return the 'releaseYear' and the 'movieId':
 ```kotlin
 val movies = moviesGraph.query{
-    val movie = match(MovieNode())
+    val movie = match(::MovieNode)
     movie.title
 }
 movies `should contain` "Star Wars: Episode V - The Empire Strikes Back"
@@ -247,7 +246,7 @@ When using the @Node annotation we can return the movie node itself
 data class Movie(val title: String, val releaseYear: Long, val movieId: Long)
 
 val (title, releaseYear, id) = moviesGraph.query {
-    val movie = match(MovieNode())
+    val movie = match(::MovieNode)
     movie
 }.first()
 
@@ -266,8 +265,8 @@ Here we:
 * And return the actor name and movie title
 ```kotlin
 val actedInMovies = moviesGraph.query {
-    val (actor, _, movie) = match(ActorNode() - { actedIn }  - MovieNode())
-    where ( movie.movieId eq 1 )
+    val (actor, _, movie) = match(::ActorNode - { actedIn }  - ::MovieNode)
+    where (movie.movieId eq 1)
     orderBy(actor.actorId)
     result(actor.name, movie.title)
 }
@@ -290,8 +289,8 @@ ORDER BY actor.actor_id
 Any nodes or relationships referenced in the Query block can be deleted calling them in the (vararg) delete function:
 ```kotlin
 val removedActor = moviesGraph.query {
-    val (actor, relationship) = match(ActorNode() - { actedIn }  - MovieNode())
-    where ( actor.actorId eq 1 )
+    val (actor, relationship) = match(::ActorNode - { actedIn }  - ::MovieNode)
+    where (actor.actorId eq 1)
     delete(relationship)
     result(actor.name)
 }
