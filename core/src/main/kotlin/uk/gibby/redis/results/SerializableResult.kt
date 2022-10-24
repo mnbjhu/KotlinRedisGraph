@@ -16,4 +16,10 @@ abstract class SerializableResult<T : Any> : PrimitiveResult<T>() {
         val strData = Json.encodeToString(clazz.serializer(), value)
         return "'$strData'"
     }
+
+    override fun copyType(): ResultValue<T>  = object : SerializableResult<T>() {
+        override val clazz: KClass<T>
+            get() = this@SerializableResult.clazz
+
+    }
 }

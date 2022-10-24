@@ -10,6 +10,6 @@ data class NodeTestData(val data: String, val number: Long)
 class ReturningNode: RedisNode<NodeTestData>() {
     val data by StringAttribute()
     val number by LongAttribute()
-    override fun NodeResult.getResult() = NodeTestData(!data, !number)
+    override fun NodeResult.getResult() = NodeTestData(data.result(), number.result())
 
 }

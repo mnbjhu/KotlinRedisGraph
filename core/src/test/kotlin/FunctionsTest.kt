@@ -29,7 +29,7 @@ class FunctionsTest {
         setupList()
     }
     private fun setupList() {
-        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)) { attr, iter ->
+        numbersGraph.create(::MyNumber, listOf(1.0, 10.0, 13.0)) { attr, iter ->
             attr[num] = iter
         }
     }
@@ -38,7 +38,7 @@ class FunctionsTest {
      *
      */
     private fun deleteAll() = numbersGraph.query {
-        val number = match(MyNumber())
+        val number = match(::MyNumber)
         delete(number)
     }
 
@@ -48,9 +48,9 @@ class FunctionsTest {
      */
     @Test
     fun `Test Averages`(){
-        numbersGraph.create(MyNumber::class, listOf(1.0, 10.0, 13.0)){ attr, iter -> attr[num] = iter }
+        numbersGraph.create(::MyNumber, listOf(1.0, 10.0, 13.0)){ attr, iter -> attr[num] = iter }
         numbersGraph.query {
-            val number = match(MyNumber())
+            val number = match(::MyNumber)
             avg(number.num)
         }.first() `should be equal to` 8.0
     }
@@ -62,7 +62,7 @@ class FunctionsTest {
     @Test
     fun `Test Max`(){
         numbersGraph.query {
-            val number = match(MyNumber())
+            val number = match(::MyNumber)
             max(number.num)
         }.first() `should be equal to` 13.0
     }
@@ -74,7 +74,7 @@ class FunctionsTest {
     @Test
     fun `Test Min`(){
         numbersGraph.query {
-            val number = match(MyNumber())
+            val number = match(::MyNumber)
             min(number.num)
         }.first() `should be equal to` 1.0
     }
@@ -86,7 +86,7 @@ class FunctionsTest {
     @Test
     fun `Test Sum`(){
         numbersGraph.query {
-            val number = match(MyNumber())
+            val number = match(::MyNumber)
             sum(number.num)
         }.first() `should be equal to` 24.0
     }

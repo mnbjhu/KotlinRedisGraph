@@ -1,13 +1,17 @@
 import uk.gibby.redis.core.RedisGraph
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain same`
+import org.amshove.kluent.shouldContainSame
 import uk.gibby.redis.statements.Match.Companion.match
 import schemas.ListNode
 import org.junit.Test
 import uk.gibby.redis.conditions.array.contains
+import uk.gibby.redis.core.ResultParent.Companion.long
 import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Where.Companion.where
 import uk.gibby.redis.functions.string.Contains.Companion.contains
+import uk.gibby.redis.results.array
+import uk.gibby.redis.results.of
 
 
 class ListsTests {
@@ -20,15 +24,15 @@ class ListsTests {
 
     private fun deleteAll(){
         listGraph.query {
-            val myList = match(ListNode())
+            val myList = match(::ListNode)
             delete(myList)
         }
     }
     @Test
     fun `Test Create`(){
         deleteAll()
-        listGraph.create(ListNode::class){
-            it[myList] = listOf("first", "second", "third")
+        listGraph.create(::ListNode){
+            it[myList] = listOf(1, 2, 3)
         }
     }
     @Test
@@ -36,26 +40,25 @@ class ListsTests {
         deleteAll()
         `Test Create`()
         val result = listGraph.query {
-            val myList = match(ListNode())
+            val myList = match(::ListNode)
             myList.myList
         }
         result.size `should be equal to` 1
         val (first, second, third) = result.first()
-        first `should be equal to` "first"
-        second `should be equal to` "second"
-        third `should be equal to` "third"
+        first `should be equal to` 1
+        second `should be equal to` 2
+        third `should be equal to` 3
     }
     @Test
     fun `Test Where`(){
         deleteAll()
-        val currentList = mutableListOf(1)
-        listGraph.create(ListNode::class, 1..10){attr, _ ->
-            attr[myList] = currentList.map { it.toString() }
-            currentList += currentList.last() + 1
+        listGraph.create(::ListNode, 1L..10L){ attr, iter ->
+            val list: List<Long> = (1L..iter).toList()
+            attr[myList] = array(::long) of (1L..iter).toList()
         }
         val lists = listGraph.query {
-            val myList = match(ListNode())
-            where ( myList.myList contains "5" )
+            val myList = match(::ListNode)
+            where ( myList.myList contains 5 )
             myList.myList
         }
         lists.size `should be equal to` 6
@@ -63,17 +66,15 @@ class ListsTests {
     @Test
     fun `Test Unwind`(){
         deleteAll()
-        val currentList = mutableListOf(1)
-        listGraph.create(ListNode::class, 1..10){attr, _ ->
-            attr[myList] = currentList.map { it.toString() }
-            currentList += currentList.last() + 1
+        listGraph.create(::ListNode, 1..10){attr, it ->
+            attr[myList] = (1L..it).toList()
         }
         val lists = listGraph.query {
-            val myList = match(ListNode())
+            val myList = match(::ListNode)
             val element = unwind(myList.myList)
             element
         }
-        lists `should contain same` listOf<Long>(
+        lists shouldContainSame listOf(
             1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
             1, 2, 3, 4, 5, 6, 7, 8, 9,
             1, 2, 3, 4, 5, 6, 7, 8,
@@ -84,60 +85,6 @@ class ListsTests {
             1, 2, 3,
             1, 2,
             1
-        ).map { it.toString() }
-    }
-    @Test
-    fun `Test map`(){
-        deleteAll()
-        `Test Create`()
-        listGraph.query {
-            val node = match(ListNode())
-            node.myList.map { it contains "r" }
-        }.first() `should be equal to` listOf(true, false, true)
-    }
-    @Test
-    fun `Test any`(){
-        deleteAll()
-        `Test Create`()
-        listGraph.query {
-            val node = match(ListNode())
-            node.myList.any { it contains "r" }
-        }.first() `should be equal to` true
-    }
-    @Test
-    fun `Test all`(){
-        deleteAll()
-        `Test Create`()
-        listGraph.query {
-            val node = match(ListNode())
-            node.myList.all { it contains "r" }
-        }.first() `should be equal to` false
-    }
-    @Test
-    fun `Test none`(){
-        deleteAll()
-        `Test Create`()
-        listGraph.query {
-            val node = match(ListNode())
-            node.myList.none { it contains "r" }
-        }.first() `should be equal to` false
-    }
-    @Test
-    fun `Test single Ex 1`(){
-        deleteAll()
-        `Test Create`()
-        listGraph.query {
-            val node = match(ListNode())
-            node.myList.single { !(it contains "r") }
-        }.first() `should be equal to` true
-    }
-    @Test
-    fun `Test single Ex 2`(){
-        deleteAll()
-        `Test Create`()
-        listGraph.query {
-            val node = match(ListNode())
-            node.myList.single { it contains "r" }
-        }.first() `should be equal to` false
+        )
     }
 }

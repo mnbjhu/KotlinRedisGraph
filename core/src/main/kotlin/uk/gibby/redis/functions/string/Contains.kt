@@ -12,7 +12,7 @@ import uk.gibby.redis.results.literalOf
  * @constructor Create empty Contains
  */
 class Contains(private val hayStack: StringResult, private val needle: StringResult): BooleanResult() {
-    override var reference: String? = "(${hayStack.getString()} contains ${needle.getString()})"
+    override var _reference: String? = "(${hayStack.getString()} contains ${needle.getString()})"
     companion object{
         @JvmStatic
         infix fun StringResult.contains(needle: String) = Contains(this, literalOf(StringResult(), needle))

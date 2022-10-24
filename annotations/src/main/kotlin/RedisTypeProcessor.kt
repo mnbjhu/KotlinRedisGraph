@@ -50,5 +50,6 @@ private fun buildResultClass(
 
 val javaString = ClassName("java.lang", "String")
 val javaLong = ClassName("java.lang", "Long")
+val javaBool = ClassName("java.lang", "Boolean")
 
 

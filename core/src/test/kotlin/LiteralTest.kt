@@ -14,63 +14,43 @@ class LiteralTest {
     )
     @Before
     fun deleteAll(){
-        structsGraph.query { delete(match(StructNode())) }
+        structsGraph.query { delete(match(::StructNode)) }
     }
     @Test
     fun `Create int literal`(){
-        structsGraph.create(StructNode::class){
+        structsGraph.create(::StructNode){
             it[myLine] = Vector2(1,2) to Vector2(3, 4)
             it[myVector] = Vector2(0, 0)
         }
-        structsGraph.query {
-            val node = match(StructNode())
-            12.literal()
-        }.first() `should be equal to` 12
+        structsGraph.query { 12.literal() }.apply {
+            first() `should be equal to` 12
+            size `should be equal to` 1
+        }
     }
     @Test
     fun `Create string literal`(){
-        structsGraph.create(StructNode::class){
+        structsGraph.create(::StructNode){
             it[myLine] = Vector2(1,2) to Vector2(3, 4)
             it[myVector] = Vector2(0, 0)
         }
-        structsGraph.query {
-            val node = match(StructNode())
-            "abc".literal()
-        }.first() `should be equal to` "abc"
+        structsGraph.query { "abc".literal() }.first() `should be equal to` "abc"
     }
 
     @Test
     fun `Create list literal`(){
-        structsGraph.create(StructNode::class){
-            it[myLine] = Vector2(1,2) to Vector2(3, 4)
-            it[myVector] = Vector2(0, 0)
-        }
         structsGraph.query {
-            val node = match(StructNode())
             listOf("abc").literal()
         }.first() `should be equal to` listOf("abc")
     }
 
     @Test
     fun `Create struct literal`(){
-        structsGraph.create(StructNode::class){
-            it[myLine] = Vector2(1,2) to Vector2(3, 4)
-            it[myVector] = Vector2(0, 0)
-        }
         structsGraph.query {
-            val node = match(StructNode())
             literalOf(Vector2Result(), Vector2(1,2))
         }.first() `should be equal to` Vector2(1, 2)
     }
     @Test
     fun `Create list of struct literal`(){
-        structsGraph.create(StructNode::class){
-            it[myLine] = Vector2(1,2) to Vector2(3, 4)
-            it[myVector] = Vector2(0, 0)
-        }
-        structsGraph.query {
-            val node = match(StructNode())
-            literalOf(array(::Vector2Result), listOf(Vector2(1,2)))
-        }.first() `should be equal to` listOf(Vector2(1, 2))
+        structsGraph.query { literalOf(array(::Vector2Result), listOf(Vector2(1,2))) }.first() `should be equal to` listOf(Vector2(1, 2))
     }
 }

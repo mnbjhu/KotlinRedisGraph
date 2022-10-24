@@ -29,4 +29,21 @@ class OpenPath2<A : RedisNode<*>, B : RedisRelation<*, A, C>, C : RedisNode<*>, 
             },
         node
     )
+    operator fun minus(node: () -> E) = node().let{
+        Path3(
+            first,
+            firstToSecond,
+            second,
+            secondToThird.constructors.first().call()
+                .apply {
+                    from = second
+                    to = it
+                    val p = ParamMap()
+                    setArgs(p)
+                    params = p.getParams()
+                    isMultipleRelation = isMultiple
+                },
+            it
+        )
+    }
 }

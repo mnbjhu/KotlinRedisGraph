@@ -12,22 +12,32 @@ import uk.gibby.redis.core.ResultParent.Companion.string
  * @param T
  * @constructor Create empty Result value
  */
-interface ResultValue<T> {
-    var value: T?
-    var reference: String?
-    fun parse(result: Iterator<Any?>): T = result.next() as T
-    fun getLiteral(value: T): String = "$value"
-    fun getString() = reference ?: getStructuredString()
-    fun getStructuredString() = getLiteral(value!!)
+abstract class ResultValue<T>: Referencable<T> {
+    internal abstract var ValueSetter.value: T?
+    internal open fun parse(result: Iterator<Any?>): T = result.next() as T
+    internal open fun getLiteral(value: T): String = "$value"
+    internal fun getString() = _reference ?: getStructuredString()
+    internal open fun getStructuredString() = getLiteral(with(DefaultValueSetter){ value }!!)
+    internal abstract fun copyType(): ResultValue<T>
+    fun ParamMap.createCopy() = copyType()
+    internal interface ValueSetter
+    internal object DefaultValueSetter: ValueSetter
+}
+
+interface Referencable<T>{
+    var _reference: String?
 }
 fun <T, U: ResultValue<T>>literalOf(result: U, value: T): U{
     return result.apply {
-        this.value = value
+        with(ResultValue.DefaultValueSetter) {
+            this.value = value
+        }
     }
+
 }
 fun <T, U: ResultValue<T>>literalOf(resultBuilder: ResultBuilder<T, U>, value: T): U{
     return resultBuilder.action().apply {
-        this.value = value
+        with(ResultValue.DefaultValueSetter){ this.value = value }
     }
 }
 fun Int.literal() = literalOf(long(), toLong())

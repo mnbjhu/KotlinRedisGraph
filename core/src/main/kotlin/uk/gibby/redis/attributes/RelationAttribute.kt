@@ -15,12 +15,23 @@ import kotlin.reflect.KClass
  * @property parent
  * @constructor Create empty Relation attribute
  */
+
+object RelationSetter
 class RelationAttribute<T : RedisNode<*>, U : RedisNode<*>, V : RedisRelation<*, T, U>>(
-    val relation: KClass<out V>,
+    private val _relation: KClass<out V>,
     private val parent: T
 ) {
-    var setArgs: V.(ParamMap) -> Unit = {}
-    var isMultiple = false
-    operator fun invoke(scope: V.(ParamMap) -> Unit) = this.also { setArgs = scope }
-    operator fun unaryPlus() = this.also { isMultiple = true }
+    private var _setArgs: V.(ParamMap) -> Unit = {}
+    private var _isMultiple = false
+    val RelationSetter.relation
+        get() = _relation
+    var RelationSetter.setArgs
+        get() = _setArgs
+        set(value) { _setArgs = value }
+    var RelationSetter.isMultiple
+        get() = _isMultiple
+        set(value) { _isMultiple = value }
+
+    operator fun invoke(scope: V.(ParamMap) -> Unit) = this.also { RelationSetter.setArgs = scope }
+    operator fun unaryPlus() = this.also { RelationSetter.isMultiple = true }
 }

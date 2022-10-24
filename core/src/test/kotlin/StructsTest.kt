@@ -67,7 +67,7 @@ class Vector2Attribute: Vector2Result(), Attribute<Vector2>
 open class Vector2Result: StructResult<Vector2>() {
     open val x by long()
     open val y by long()
-    override fun ResultScope.getResult() = Vector2(!x, !y)
+    override fun ResultScope.getResult() = Vector2(x.result(), y.result())
     override fun ParamMap.setResult(value: Vector2) {
         x[value.x]
         y[value.y]
@@ -80,7 +80,7 @@ operator fun Vector2Result.plus(other: Vector2Result) = object: Vector2Result(){
 open class LineResult: StructResult<Line>(){
     val a by Vector2Result()
     val b by Vector2Result()
-    override fun ResultScope.getResult(): Line = !a to !b
+    override fun ResultScope.getResult(): Line = a.result() to b.result()
 
     override fun ParamMap.setResult(value: Line) {
         a[value.first]

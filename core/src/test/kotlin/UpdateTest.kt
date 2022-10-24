@@ -4,6 +4,7 @@ import schemas.Actor
 import schemas.Movie
 import uk.gibby.redis.conditions.equality.eq
 import uk.gibby.redis.core.RedisGraph
+import uk.gibby.redis.core.toValue
 import uk.gibby.redis.paths.minus
 import uk.gibby.redis.statements.Create.Companion.create
 import uk.gibby.redis.statements.Delete.Companion.delete
@@ -42,35 +43,34 @@ class UpdateTest {
             "Harrison Ford",
             "Carrie Fisher"
         )
-        moviesGraph.create(Actor::class, actors) { attr, iter ->
+        moviesGraph.create(::Actor, actors) { attr, iter ->
             attr[name] = iter
             attr[actorId] = index++
         }
-        moviesGraph.create(Movie::class) {
+        moviesGraph.create(::Movie) {
             it[title] = "Star Wars: Episode V - The Empire Strikes Back"
             it[releaseYear] = 1980
             it[movieId] = 1
         }
 
         moviesGraph.query {
-            val (actor, movie) = match(Actor(), Movie())
+            val (actor, movie) = match(::Actor, ::Movie)
             where((actor.actorId eq 1) and (movie.movieId eq 1))
             create(actor - { actedIn { it[role] = "Luke Skywalker" } } - movie)
         }
         moviesGraph.query {
-            val (actor, movie) = match(Actor(), Movie())
+            val (actor, movie) = match(::Actor, ::Movie)
             where((actor.actorId eq 2) and (movie.movieId eq 1))
             create(actor - { actedIn { it[role] = "Han Solo" } } - movie)
         }
         moviesGraph.query {
-            val (actor, movie) = match(Actor(), Movie())
+            val (actor, movie) = match(::Actor, ::Movie)
             where((actor.actorId eq 3) and (movie.movieId eq 1))
             create(actor - { actedIn { it[role] = "Princess Leia" } } - movie)
         }
-
         moviesGraph.query {
-            val movie = match(Movie())
-            set(movie.title to "New Title")
+            val movie = match(::Movie)
+            set(movie.title toValue "New Title")
             movie.title
         }.first() `should be equal to` "New Title"
     }

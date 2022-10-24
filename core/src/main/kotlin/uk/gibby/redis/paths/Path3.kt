@@ -3,6 +3,7 @@ package uk.gibby.redis.paths
 import uk.gibby.redis.core.RedisNode
 import uk.gibby.redis.core.RedisRelation
 import uk.gibby.redis.attributes.RelationAttribute
+import uk.gibby.redis.attributes.RelationSetter
 
 class Path3<A : RedisNode<*>, B : RedisRelation<*, A, C>, C : RedisNode<*>, D : RedisRelation<*, C, E>, E : RedisNode<*>>
     (val first: A, private val firstToSecond: B, val second: C, val secondToThird: D, val third: E) : Path {
@@ -14,9 +15,9 @@ class Path3<A : RedisNode<*>, B : RedisRelation<*, A, C>, C : RedisNode<*>, D : 
                 second,
                 secondToThird,
                 third,
-                relation,
-                setArgs,
-                isMultiple
+                RelationSetter.relation,
+                RelationSetter.setArgs,
+                RelationSetter.isMultiple
             )
         }
 

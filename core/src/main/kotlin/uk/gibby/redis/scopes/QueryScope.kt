@@ -23,19 +23,19 @@ class QueryScope {
     else "RETURN ${result.getString()}"
 
     fun <T, U: ResultValue<T>, V : ArrayResult<T, U>> QueryScope.unwind(arr: V): ResultValue<T> {
-        val result = object : ResultValue<T> {
-            override var value: T? = null
-            override var reference: String? = NameCounter.getNext()
-            override fun parse(result: Iterator<Any?>): T {
-                return arr.newElement.parse(result)
-            }
+        val result = arr.newElement.copyType().apply {
+            _reference = NameCounter.getNext()
         }
         commands.add(Unwind(arr, result))
         return result
     }
 }
 
-object EmptyResult : ResultValue<Unit> {
-    override var value: Unit? = null
-    override var reference: String? = ""// throw Exception("Cannot access empty result")
+object EmptyResult : ResultValue<Unit>() {
+    override var _reference: String? = ""// throw Exception("Cannot access empty result")
+    override var ValueSetter.value: Unit?
+        get() = null
+        set(value) {}
+
+    override fun copyType(): ResultValue<Unit> = EmptyResult
 }

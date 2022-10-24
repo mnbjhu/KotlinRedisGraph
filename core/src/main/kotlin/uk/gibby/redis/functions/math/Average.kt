@@ -11,14 +11,14 @@ import uk.gibby.redis.results.DoubleResult
  */
 
 fun avg(value: ResultValue<Double>) = DoubleResult().apply{
-    reference = "avg(${value.getString()})"
+    _reference = "avg(${value.getString()})"
 }
 fun min(value: ResultValue<Double>) = DoubleResult().apply{
-    reference = "min(${value.getString()})"
+    _reference = "min(${value.getString()})"
 }
 fun max(value: ResultValue<Double>) = DoubleResult().apply{
-    reference = "max(${value.getString()})"
+    _reference = "max(${value.getString()})"
 }
 fun sum(value: ResultValue<Double>) = DoubleResult().apply{
-    reference = "sum(${value.getString()})"
+    _reference = "sum(${value.getString()})"
 }
