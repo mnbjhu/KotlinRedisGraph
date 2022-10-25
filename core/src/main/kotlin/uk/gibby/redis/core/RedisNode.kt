@@ -23,7 +23,6 @@ abstract class RedisNode<T>: WithAttributes<T>(), Matchable, Creatable {
         matched = true
         return "($instanceName:$typeName{${params?.joinToString { (it as ParameterPair<Any?>).getLocalEqualityString() } ?: ""}})"
     }
-
     override fun getCreateString(): String {
         if (matched) return "($instanceName)"/*
         if((params?.size ?: 0) != attributes.size)

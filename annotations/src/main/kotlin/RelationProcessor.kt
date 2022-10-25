@@ -32,5 +32,6 @@ private fun buildRelationClass(
     val members = clazz.enclosedElements.filter { it.kind.isField }
     members.forEach { nodeClassBuilder.addProperty(buildNodeProperty(it, classElements)) }
     nodeClassBuilder.addFunction(buildNodeGetResult(clazz.asType().asTypeName(), members))
+    nodeClassBuilder.addFunction(buildNodeSetResult(clazz.asType().asTypeName(), members))
     return nodeClassBuilder.build()
 }

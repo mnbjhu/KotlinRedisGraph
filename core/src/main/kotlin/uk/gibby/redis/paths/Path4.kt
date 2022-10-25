@@ -2,6 +2,7 @@ package uk.gibby.redis.paths
 
 import uk.gibby.redis.core.RedisNode
 import uk.gibby.redis.core.RedisRelation
+import uk.gibby.redis.scopes.NoResult
 
 class Path4<
         A : RedisNode<*>, B : RedisRelation<*, A, C>,
@@ -14,7 +15,7 @@ class Path4<
     val second: C, private val secondToThird: D,
     private val third: E, private val thirdToForth: F,
     private val forth: G
-) : Path {
+) : NoResult(), Path {
     operator fun component1() = first
     operator fun component2() = firstToSecond
     operator fun component3() = second

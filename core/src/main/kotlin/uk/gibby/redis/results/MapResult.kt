@@ -1,5 +1,11 @@
 package uk.gibby.redis.results
 
+import uk.gibby.redis.core.ParamMap
+import uk.gibby.redis.core.WithAttributes
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction0
+import kotlin.reflect.full.isSubclassOf
+
 open class MapResult<T, U : ResultValue<T>>(private val toTypeProducer: ResultBuilder<T, U>) : PrimitiveResult<Map<String, T>>() {
     constructor(from: () -> U): this(ResultBuilder { from() } )
     private val toElementType: U
@@ -36,4 +42,16 @@ fun <T, U: ResultValue<T>>map(type: ResultBuilder<T, U>) =
     ResultBuilder{ MapResult(type) }
 
 infix fun <T, U: ResultValue<T>, V: ResultBuilder<T, U>>V.of(value: T) = literalOf(this, value)
-infix fun <T, U: ResultValue<T>>U.of(value: T) = literalOf(this, value)
+inline infix fun <reified T, reified U: ResultValue<T>>U.of(value: T): U {
+
+    return literalOf(this, value)
+}
+operator fun <T, U: WithAttributes<T>> KFunction0<U>.get(value: T): () -> U  {
+    with(this()) {
+        val p = ParamMap()
+        setResult(p, value)
+        params = p.getParams()
+        return { this }
+    }
+
+}
