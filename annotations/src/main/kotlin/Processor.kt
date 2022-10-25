@@ -43,11 +43,11 @@ class Processor: AbstractProcessor() {
                         relation.by,
                         relationType,
                         classElements,
-                        node.asType().asTypeName(),
-                        try { relation.to.asTypeName() }catch (e: MirroredTypeException){ e.typeMirror.asTypeName() }
+                        node.simpleName.toString(),
+                        try { relation.to.simpleName.toString() } catch (e: MirroredTypeException) { e.typeMirror.asTypeName().toString().split(".").last() }
                     )
                     spec.writeTo(File(targetDirectory))
-                    Triple(relation, ClassName("uk.gibby.redis.generated", relation.by.capitalizeFirst() + "Relation"), node.asType().asTypeName())
+                    Triple(relation, ClassName("uk.gibby.redis.generated", relation.by.capitalizeFirst() + "Relation"), node)
                 }
             processRedisNode(node!!, classElements, relationships).writeTo(File(targetDirectory))
         }

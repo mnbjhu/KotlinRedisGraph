@@ -7,12 +7,12 @@ fun processRedisRelation(
     name: String,
     classElement: Element,
     classElements: List<Element>,
-    firstNode: TypeName,
-    secondNode: TypeName
+    firstNode: String,
+    secondNode: String
 ): FileSpec {
     val uppercaseName = name.capitalizeFirst()
-    val firstClassName = ClassName("uk.gibby.redis.generated", "${firstNode.toString().split(".").last()}Node")
-    val secondClassName = ClassName("uk.gibby.redis.generated", "${secondNode.toString().split(".").last()}Node")
+    val firstClassName = ClassName("uk.gibby.redis.generated", "${firstNode.split(".").last()}Node")
+    val secondClassName = ClassName("uk.gibby.redis.generated", "${secondNode.split(".").last()}Node")
     val superClassName = RedisRelation::class.asTypeName().parameterizedBy(classElement.asType().asTypeName(), firstClassName, secondClassName)
     val nodeClassName = ClassName("uk.gibby.redis.generated", "${uppercaseName}Relation")
     val resultClass = buildRelationClass(nodeClassName, superClassName, classElement, classElements)
