@@ -5,8 +5,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import kotlin.reflect.KClass
 
-abstract class SerializableResult<T : Any> : PrimitiveResult<T>() {
-    abstract val clazz: KClass<T>
+open class SerializableResult<T : Any>(open val clazz: KClass<T>) : PrimitiveResult<T>() {
     @OptIn(InternalSerializationApi::class)
     override fun parse(result: Iterator<Any?>): T {
         return Json.decodeFromString(clazz.serializer(), result.next() as String)
@@ -17,7 +16,7 @@ abstract class SerializableResult<T : Any> : PrimitiveResult<T>() {
         return "'$strData'"
     }
 
-    override fun copyType(): ResultValue<T>  = object : SerializableResult<T>() {
+    override fun copyType(): ResultValue<T>  = object : SerializableResult<T>(clazz) {
         override val clazz: KClass<T>
             get() = this@SerializableResult.clazz
 

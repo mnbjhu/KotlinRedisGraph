@@ -5,5 +5,5 @@ import uk.gibby.redis.results.SerializableResult
 import kotlin.reflect.KClass
 
 class SerializableAttribute<T : Any>(
-    override val clazz: KClass<T>
-): SerializableResult<T>(), Attribute<T>
+    clazz: KClass<T>
+): SerializableResult<T>(clazz), Attribute<T>
