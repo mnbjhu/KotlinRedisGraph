@@ -19,7 +19,7 @@ class QueryScope {
             .joinToString(" ")
     }
 
-    private fun getResultString(result: ResultValue<*>) = if (result is EmptyResult) ""
+    private fun getResultString(result: ResultValue<*>) = if (result is NoResult) ""
     else "RETURN ${result.getString()}"
 
     fun <T, U: ResultValue<T>, V : ArrayResult<T, U>> QueryScope.unwind(arr: V): ResultValue<T> {
@@ -31,7 +31,7 @@ class QueryScope {
     }
 }
 
-object EmptyResult : ResultValue<Unit>() {
+open class NoResult: ResultValue<Unit>() {
     override var _reference: String? = ""// throw Exception("Cannot access empty result")
     override var ValueSetter.value: Unit?
         get() = null
@@ -39,3 +39,4 @@ object EmptyResult : ResultValue<Unit>() {
 
     override fun copyType(): ResultValue<Unit> = EmptyResult
 }
+object EmptyResult: NoResult()

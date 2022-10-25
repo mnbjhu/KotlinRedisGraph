@@ -15,6 +15,7 @@ import kotlin.reflect.full.primaryConstructor
 object NameSetter
 object ParamSetter
 sealed class WithAttributes<T>: ResultValue<T>() {
+    protected var set = false
     val NameSetter.current
         get() = instanceName
     var ParamSetter.current
@@ -47,6 +48,7 @@ sealed class WithAttributes<T>: ResultValue<T>() {
         return attr
     }
 
+
     override fun parse(result: Iterator<Any?>): T {
         return NodeResult(result).getResult()
     }
@@ -56,9 +58,21 @@ sealed class WithAttributes<T>: ResultValue<T>() {
     protected fun boolean() = BooleanAttribute()
     protected inline fun <reified T : Any>serializable(): SerializableAttribute<T> = SerializableAttribute(T::class)
     abstract fun NodeResult.getResult(): T
+    abstract fun setResult(params: ParamMap, value: T)
     override fun copyType(): ResultValue<T> {
         return this::class.primaryConstructor!!.call()
+    }/*
+    inner class AttributeSetter{
+        val attrs: MutableList<ParameterPair<*>> = mutableListOf()
+        inline operator fun <reified T, U: Attribute<T>>U.get(value: T) = with(this as ResultValue<T>){
+            val toValue = this of value
+            attrs.add(ParameterPair(this, toValue))
+        }
+        fun set(){
+            this@WithAttributes.params = attrs.toList()
+        }
     }
+    */
 }
 operator fun <T : WithAttributes<*>> T.invoke(scope: T.(ParamMap) -> Unit) {
     val params = ParamMap()

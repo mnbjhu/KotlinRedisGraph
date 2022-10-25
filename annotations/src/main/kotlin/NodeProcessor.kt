@@ -9,6 +9,7 @@ import uk.gibby.redis.attributes.primative.DoubleAttribute
 import uk.gibby.redis.attributes.primative.LongAttribute
 import uk.gibby.redis.attributes.primative.StringAttribute
 import uk.gibby.redis.core.NodeResult
+import uk.gibby.redis.core.ParamMap
 import uk.gibby.redis.core.RedisNode
 import javax.lang.model.element.Element
 import javax.lang.model.type.DeclaredType
@@ -53,6 +54,7 @@ private fun buildNodeClass(
     val members = clazz.enclosedElements.filter { it.kind.isField }
     members.forEach { nodeClassBuilder.addProperty(buildNodeProperty(it, classElements)) }
     nodeClassBuilder.addFunction(buildNodeGetResult(clazz.asType().asTypeName(), members))
+    nodeClassBuilder.addFunction(buildNodeSetResult(clazz.asType().asTypeName(), members))
     nodeClassBuilder.buildRelations(relations)
     return nodeClassBuilder.build()
 }
@@ -124,4 +126,14 @@ fun buildNodeGetResult(type: TypeName, members: List<Element>) =
         .addStatement("return %T(${members.joinToString { "${it.simpleName}.result()" }})", type)
         .returns(type)
         .build()
+fun buildNodeSetResult(type: TypeName, members: List<Element>) =
+    FunSpec.builder("setResult")
+        .addParameter("params", ParamMap::class.asTypeName())
+        .addParameter("value", type)
+        .addModifiers(KModifier.OVERRIDE)
+        .apply {
+            members.forEach {
+                addStatement("params[${it.simpleName}] = value.${it.simpleName}", type)
+            }
+        }.build()
 

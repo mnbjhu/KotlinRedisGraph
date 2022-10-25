@@ -4,9 +4,10 @@ import uk.gibby.redis.core.RedisNode
 import uk.gibby.redis.core.RedisRelation
 import uk.gibby.redis.attributes.RelationAttribute
 import uk.gibby.redis.attributes.RelationSetter
+import uk.gibby.redis.scopes.NoResult
 
 class Path2<A : RedisNode<*>, B : RedisRelation<*, A, C>, C : RedisNode<*>>
-    (val first: A, private val firstToSecond: B, val second: C) : Path {
+    (val first: A, private val firstToSecond: B, val second: C): NoResult(), Path {
     operator fun <E : RedisNode<*>, D : RedisRelation<*, C, E>, W : RelationAttribute<C, E, D>> minus(scope: C.() -> W) =
         with(second.scope()) { OpenPath2(first, firstToSecond, second, RelationSetter.relation, RelationSetter.setArgs, RelationSetter.isMultiple) }
 

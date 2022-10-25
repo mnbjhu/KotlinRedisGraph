@@ -9,7 +9,7 @@ class Create(private val toCreate: List<Creatable>) : Statement() {
     override fun getCommand(): String = "CREATE ${toCreate.joinToString { it.getCreateString() }}"
 
     companion object {
-        fun QueryScope.create(path: Path) = EmptyResult
+        fun <T: Path>QueryScope.create(path: T) = path
             .also { commands.add(Create(listOf(path))) }
         fun <a, A : RedisNode<a>>QueryScope.create(node: () -> A): A = node().let {
             commands.add(Create(listOf(it)))

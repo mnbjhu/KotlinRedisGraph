@@ -18,7 +18,7 @@ abstract class ResultValue<T>: Referencable<T> {
     internal open fun getLiteral(value: T): String = "$value"
     internal fun getString() = _reference ?: getStructuredString()
     internal open fun getStructuredString() = getLiteral(with(DefaultValueSetter){ value }!!)
-    internal abstract fun copyType(): ResultValue<T>
+    abstract fun copyType(): ResultValue<T>
     fun ParamMap.createCopy() = copyType()
     internal interface ValueSetter
     internal object DefaultValueSetter: ValueSetter
