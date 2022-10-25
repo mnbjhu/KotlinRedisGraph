@@ -3,6 +3,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import uk.gibby.redis.annotation.Relates
 import uk.gibby.redis.attributes.ArrayAttribute
 import uk.gibby.redis.attributes.RelationAttribute
+import uk.gibby.redis.attributes.SerializableAttribute
 import uk.gibby.redis.attributes.primative.BooleanAttribute
 import uk.gibby.redis.attributes.primative.DoubleAttribute
 import uk.gibby.redis.attributes.primative.LongAttribute
@@ -64,6 +65,7 @@ fun buildNodeProperty(member: Element, classElements: List<Element>): PropertySp
 fun getNodeType(type: TypeMirror, classElements: List<Element>): TypeName {
     if(classElements.any{ (it.asType().asTypeName().toString() == type.asTypeName().toString()) })
         return ClassName("uk.gibby.redis.generated", "${type.asTypeName()}Attribute")
+    if(type.isEnum()) return SerializableAttribute::class.asClassName().parameterizedBy(type.asTypeName())
     when (type.asTypeName()) {
         String::class.asClassName(), javaString -> return StringAttribute::class.asClassName()
         Double::class.asClassName() -> return DoubleAttribute::class.asClassName()
@@ -102,6 +104,7 @@ fun getArrayAttributeFunction(startType: TypeMirror, classElements: List<Element
     return builder.build()
 }
 fun getBaseAttributeFunction(type: TypeMirror, classElements: List<Element>): MemberName {
+    if(type.isEnum()) return MemberName("uk.gibby.redis.core.ResultParent.Companion", "serializable")
     return when (type.asTypeName()) {
         ClassName("java.lang", "String"), javaString -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "string")
         Long::class.asClassName(), javaLong -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "long")

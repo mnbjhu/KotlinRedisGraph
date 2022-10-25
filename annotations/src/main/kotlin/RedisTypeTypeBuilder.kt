@@ -15,7 +15,7 @@ fun getType(member: Element, classElements: List<Element>): TypeName {
 }
 
 fun getBaseTypeFunction(type: TypeMirror, classElements: List<Element>): MemberName {
-    //if(type.isEnum()) return MemberName("uk.gibby.redis.core.ResultParent.Companion", "serializable")
+    if(type.isEnum()) return MemberName("uk.gibby.redis.core.ResultParent.Companion", "serializable")
     return when (type.asTypeName()) {
         ClassName("java.lang", "String"), javaString -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "string")
         Long::class.asClassName(), javaLong -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "long")
@@ -50,7 +50,7 @@ fun TypeMirror.isEnum() = kind == TypeKind.DECLARED && ((this as DeclaredType).a
 fun getDefaultType(type: TypeMirror, classElements: List<Element>, isOuter: Boolean = true): TypeName {
     if(classElements.any{ (it.asType().asTypeName().toString() == type.asTypeName().toString()) })
         return ClassName("uk.gibby.redis.generated", "${type.asTypeName()}Result")
-    //if(type.isEnum()) return SerializableResult::class.asClassName().parameterizedBy(type.asTypeName())
+    if(type.isEnum()) return SerializableResult::class.asClassName().parameterizedBy(type.asTypeName())
     when (type.asTypeName()) {
         String::class.asClassName(), javaString -> return StringResult::class.asClassName()
         Double::class.asClassName() -> return DoubleResult::class.asClassName()

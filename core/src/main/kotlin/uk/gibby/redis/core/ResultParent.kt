@@ -8,7 +8,8 @@ import kotlin.reflect.KClass
 class ResultParent
 {
     companion object {
-        fun <T : Any> serializable(clazz: KClass<T>) = SerializableAttribute(clazz)
+        fun <T : Any> serializableOf(clazz: KClass<T>) = SerializableResult(clazz)
+        inline fun <reified T : Any> serializable() = SerializableResult(T::class)
         fun string() = StringResult()
         fun long() = LongResult()
         fun double() = DoubleResult()

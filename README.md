@@ -292,10 +292,7 @@ val removedActor = moviesGraph.query {
     val (actor, relationship) = match(::ActorNode - { actedIn }  - ::MovieNode)
     where (actor.actorId eq 1)
     delete(relationship)
-    result(actor.name)
 }
-removedActor.size `should be equal to` 1
-removedActor.first() `should be equal to` "Mark Hamill"
 ```
 ##### Generated Cypher
 ```cypher
