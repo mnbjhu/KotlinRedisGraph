@@ -9,10 +9,10 @@ fun processRedisTypeClass(
     classElements: List<Element>
 ): FileSpec {
     val superClassName = StructResult::class.asTypeName().parameterizedBy(classElement.asType().asTypeName())
-    val resultClassName = ClassName("uk.gibby.redis.generated", "${classElement.simpleName}Result")
+    val resultClassName = ClassName("uk.gibby.redis.generated", "${classElement.simpleName.split(".").last()}Result")
     val resultClass = buildResultClass(resultClassName, superClassName, classElement, classElements)
     val attributeClass = buildAttribute(classElement, resultClassName)
-    return FileSpec.builder("uk.gibby.redis.generated", "${classElement.simpleName}Type")
+    return FileSpec.builder("uk.gibby.redis.generated", "${classElement.simpleName.toString().split(".").last()}Type")
         .addType(resultClass)
         .addType(attributeClass)
         .build()
@@ -26,7 +26,7 @@ private fun buildAttribute(
             .asTypeName()
             .parameterizedBy(classElement.asType().asTypeName())
     return TypeSpec
-        .classBuilder("${classElement.simpleName}Attribute")
+        .classBuilder("${classElement.simpleName.toString().split(".").last()}Attribute")
         .superclass(resultClassName)
         .addSuperinterface(attributesTypeName)
         .build()

@@ -18,7 +18,7 @@ import javax.lang.model.type.TypeMirror
 fun processRedisNode(
     classElement: Element,
     classElements: List<Element>,
-    relations: List<Triple<Relates, ClassName, TypeName>>
+    relations: List<Triple<Relates, ClassName, Element>>
 ): FileSpec {
     val superClassName = RedisNode::class.asTypeName().parameterizedBy(classElement.asType().asTypeName())
     val nodeClassName = ClassName("uk.gibby.redis.generated", "${classElement.simpleName}Node")
@@ -27,10 +27,10 @@ fun processRedisNode(
         .addType(resultClass)
         .build()
 }
-fun TypeSpec.Builder.buildRelations(relations: List<Triple<Relates, ClassName, TypeName>>){
+fun TypeSpec.Builder.buildRelations(relations: List<Triple<Relates, ClassName, Element>>){
     relations.forEach {
-        val first = ClassName("uk.gibby.redis.generated","${it.third}Node")
-        val second = ClassName("uk.gibby.redis.generated","${try { it.first.to.asTypeName() } catch (e: MirroredTypeException){e.typeMirror.asTypeName()}}Node")
+        val first = ClassName("uk.gibby.redis.generated","${it.third.simpleName}Node")
+        val second = ClassName("uk.gibby.redis.generated","${try { it.first.to.simpleName.toString() } catch (e: MirroredTypeException) { e.typeMirror.asTypeName().toString().split(".").last() }}Node")
         val third = it.second
         addProperty(
             PropertySpec
@@ -46,7 +46,7 @@ private fun buildNodeClass(
     nodeType: ParameterizedTypeName,
     clazz: Element,
     classElements: List<Element>,
-    relations: List<Triple<Relates, ClassName, TypeName>>
+    relations: List<Triple<Relates, ClassName, Element>>
 ): TypeSpec {
     val nodeClassBuilder = TypeSpec.classBuilder(nodeClassName)
         .superclass(nodeType)
@@ -64,7 +64,7 @@ fun buildNodeProperty(member: Element, classElements: List<Element>): PropertySp
 }
 fun getNodeType(type: TypeMirror, classElements: List<Element>): TypeName {
     if(classElements.any{ (it.asType().asTypeName().toString() == type.asTypeName().toString()) })
-        return ClassName("uk.gibby.redis.generated", "${type.asTypeName()}Attribute")
+        return ClassName("uk.gibby.redis.generated", "${type.asTypeName().toString().split(".").last()}Attribute")
     if(type.isEnum()) return SerializableAttribute::class.asClassName().parameterizedBy(type.asTypeName())
     when (type.asTypeName()) {
         String::class.asClassName(), javaString -> return StringAttribute::class.asClassName()
@@ -112,7 +112,7 @@ fun getBaseAttributeFunction(type: TypeMirror, classElements: List<Element>): Me
         ClassName("java.lang", "Boolean") -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "boolean")
         in classElements.map { it.asType().asTypeName() } -> MemberName(
             "uk.gibby.redis.generated",
-            "${type.asTypeName()}Attribute"
+            "${type.asTypeName().toString().split(".").last()}Attribute"
         )
         else -> throw Exception("Type should be primitive, array or annotated with @RedisType. '${type.asTypeName()}'")
     }

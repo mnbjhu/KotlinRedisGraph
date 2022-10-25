@@ -1,7 +1,10 @@
+package test_package
+
 import uk.gibby.redis.annotation.Node
 import uk.gibby.redis.annotation.RedisType
 import uk.gibby.redis.annotation.Relates
 import uk.gibby.redis.core.RedisGraph
+
 
 class ChessTest {
     private val graph = RedisGraph(

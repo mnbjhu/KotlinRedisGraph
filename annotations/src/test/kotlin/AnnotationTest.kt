@@ -1,6 +1,10 @@
 import org.amshove.kluent.`should be equal to`
 import org.junit.Test
+import test_package.Empty
+import test_package.Piece
+import uk.gibby.redis.annotation.Node
 import uk.gibby.redis.annotation.RedisType
+import uk.gibby.redis.annotation.Relates
 import uk.gibby.redis.core.RedisGraph
 import uk.gibby.redis.generated.ArrayRedisStructAttribute
 import uk.gibby.redis.generated.ListStructAttribute
@@ -45,6 +49,11 @@ data class StringArrayTest(val data: List<String>)
 
 @RedisType
 data class BooleanArrayTest(val data: List<Boolean>)
+
+@Node
+@Relates(to = PackageTest::class, by = "hasOther", data = Empty::class)
+data class PackageTest(val color: Piece.Color)
+
 
 // @RedisType
 data class EnumTest(val data: MyEnum)

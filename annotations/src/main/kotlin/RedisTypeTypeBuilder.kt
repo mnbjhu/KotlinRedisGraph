@@ -23,7 +23,7 @@ fun getBaseTypeFunction(type: TypeMirror, classElements: List<Element>): MemberN
         Boolean::class.asClassName(), javaBool -> MemberName("uk.gibby.redis.core.ResultParent.Companion", "boolean")
         in classElements.map { it.asType().asTypeName() } -> MemberName(
             "uk.gibby.redis.generated",
-            "${type.asTypeName()}Result"
+            "${type.asTypeName().toString().split(".").last()}Result"
         )
         else -> throw Exception("Type should be primitive, array or annotated with @RedisType. '${type.asTypeName()}'")
     }
@@ -49,7 +49,7 @@ fun getArrayTypeFunction(startType: TypeMirror, classElements: List<Element>): C
 fun TypeMirror.isEnum() = kind == TypeKind.DECLARED && ((this as DeclaredType).asElement() as TypeElement).kind == ElementKind.ENUM
 fun getDefaultType(type: TypeMirror, classElements: List<Element>, isOuter: Boolean = true): TypeName {
     if(classElements.any{ (it.asType().asTypeName().toString() == type.asTypeName().toString()) })
-        return ClassName("uk.gibby.redis.generated", "${type.asTypeName()}Result")
+        return ClassName("uk.gibby.redis.generated", "${type.asTypeName().toString().split(".").last()}Result")
     if(type.isEnum()) return SerializableResult::class.asClassName().parameterizedBy(type.asTypeName())
     when (type.asTypeName()) {
         String::class.asClassName(), javaString -> return StringResult::class.asClassName()
