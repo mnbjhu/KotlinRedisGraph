@@ -1,8 +1,4 @@
 
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-
-
 group = "uk.gibby"
 version = "0.3.3"
 

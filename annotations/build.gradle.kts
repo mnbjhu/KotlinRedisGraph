@@ -11,7 +11,7 @@ dependencies {
     implementation(project(":core"))
     implementation(kotlin("test"))
     implementation("com.natpryce:konfig:1.6.10.0")
-    testImplementation(kotlin("test"))
+    testImplementation("junit:junit:4.13.2")
     testImplementation("org.amshove.kluent:kluent:1.68")
     kaptTest(project(":annotations"))
 }
