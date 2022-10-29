@@ -1,3 +1,3 @@
 
 rootProject.name = "KotlinRedisGraph"
-include(":core", ":annotations")
+include(":core", ":processor", "annotations")
