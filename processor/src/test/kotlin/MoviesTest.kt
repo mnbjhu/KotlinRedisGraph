@@ -19,8 +19,6 @@ import uk.gibby.redis.statements.Match.Companion.match
 import uk.gibby.redis.statements.Where.Companion.where
 import uk.gibby.redis.statements.WithAs.Companion.using
 import uk.gibby.redis.core.invoke
-import uk.gibby.redis.scopes.EmptyResult
-import java.util.EmptyStackException
 
 
 @RedisType
