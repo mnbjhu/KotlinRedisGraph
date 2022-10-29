@@ -1,6 +1,6 @@
 
 group = "uk.gibby"
-version = "0.3.3"
+version = "0.8.8"
 
 
 buildscript {
@@ -21,8 +21,8 @@ subprojects {
     }
 
     dependencies {
-        "implementation"(kotlin("stdlib", version = "1.7.10"))
-        "implementation"(kotlin("reflect", version = "1.7.10"))
+        "api"(kotlin("stdlib", version = "1.7.10"))
+        "api"(kotlin("reflect", version = "1.7.10"))
     }
 }
 
