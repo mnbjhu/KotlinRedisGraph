@@ -1,5 +1,7 @@
 package uk.gibby.redis.results
 
+import uk.gibby.redis.paths.NameCounter
+
 open class PairResult<T, U : ResultValue<T>, R, V : ResultValue<R>>(private val firstType: ResultBuilder<T, U>, private val secondType: ResultBuilder<R, V>) : ResultValue<Pair<T, R>>() {
     constructor(first: () -> U, second: () -> V) : this(ResultBuilder { first() }, ResultBuilder { second() })
     val first
@@ -24,7 +26,7 @@ open class PairResult<T, U : ResultValue<T>, R, V : ResultValue<R>>(private val 
 
     override fun getLiteral(value: Pair<T, R>) = "[${firstElement.getLiteral(value.first)}, ${secondElement.getLiteral(value.second)}]"
     override fun copyType(): ResultValue<Pair<T, R>> {
-        return pair(firstElement::copyType, secondElement::copyType).action()
+        return pair(firstElement::copyType, secondElement::copyType).action().apply { _reference = NameCounter.getNext() }
     }
 
 }

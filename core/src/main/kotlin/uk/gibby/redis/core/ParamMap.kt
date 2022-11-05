@@ -23,6 +23,7 @@ class ParamMap: ResultValue.ValueSetter {
     operator fun <T: Any, U: ResultValue<T>>U.get(newValue: T){
         val wrapperInstance = with(this){
             createCopy().apply {
+                _reference = null
                 value = newValue
             }
         }
