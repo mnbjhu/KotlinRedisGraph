@@ -13,14 +13,14 @@ class WithAs<T, U: ResultValue<T>>(private val variable: U, private val referenc
     override fun getCommand(): String = "WITH ${variable.getString()} AS ${reference.getString()}"
     companion object {
         fun <T, U: ResultValue<T>>QueryScope.using(variable: U): U {
-            val newReference = variable.copyType()
+            val newReference = variable.copyType().apply { _reference = NameCounter.getNext() }
             if(newReference is RedisNode) newReference.matched = true
             commands.add(WithAs(variable, newReference))
             return newReference as U
         }
         fun <T, U: ResultValue<T>, A, B: ResultValue<A>>QueryScope.using(var1: U, var2: B): Pair<U, B> {
-            val newRef1 = var1.copyType()
-            val newRef2 = var2.copyType()
+            val newRef1 = var1.copyType().apply { _reference = NameCounter.getNext() }
+            val newRef2 = var2.copyType().apply { _reference = NameCounter.getNext() }
             val command1 = WithAs(var1, newRef1.apply { if(this is RedisNode) matched = true})
             val command2 = WithAs(var2, newRef2.apply { if(this is RedisNode) matched = true})
             val command = MultipleWith(command1, command2)
