@@ -2,6 +2,7 @@ package uk.gibby.redis.results
 
 import uk.gibby.redis.core.ParamMap
 import uk.gibby.redis.core.WithAttributes
+import uk.gibby.redis.paths.NameCounter
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction0
 import kotlin.reflect.full.isSubclassOf
@@ -32,7 +33,7 @@ open class MapResult<T, U : ResultValue<T>>(private val toTypeProducer: ResultBu
         }
     }
     override fun copyType(): ResultValue<Map<String, T>> {
-        return map(toElementType::copyType).action()
+        return map(toElementType::copyType).action().apply { _reference = NameCounter.getNext() }
     }
     fun keys() = array(toTypeProducer).action().also { it._reference = "keys(${getString()})" }
 }
@@ -43,7 +44,6 @@ fun <T, U: ResultValue<T>>map(type: ResultBuilder<T, U>) =
 
 infix fun <T, U: ResultValue<T>, V: ResultBuilder<T, U>>V.of(value: T) = literalOf(this, value)
 inline infix fun <reified T, reified U: ResultValue<T>>U.of(value: T): U {
-
     return literalOf(this, value)
 }
 operator fun <T, U: WithAttributes<T>> KFunction0<U>.get(value: T): () -> U  {
