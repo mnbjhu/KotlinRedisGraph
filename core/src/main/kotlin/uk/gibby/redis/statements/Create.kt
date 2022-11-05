@@ -15,7 +15,7 @@ class Create(private val toCreate: List<Creatable>) : Statement() {
             commands.add(Create(listOf(it)))
             (it.copyType() as A).apply {
                 matched = true
-                NameSetter.set(with(it) { NameSetter.current })
+                NameSetter.set(with(it) { NameSetter.current!! })
             }
         }
         @JvmName("createNode")
