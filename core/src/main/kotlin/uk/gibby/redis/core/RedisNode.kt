@@ -20,7 +20,6 @@ abstract class RedisNode<T>: WithAttributes<T>(), Matchable, Creatable {
         RelationAttribute(clazz, this)
 
     override fun getMatchString(): String {
-        matched = true
         return "($instanceName:$typeName{${params?.joinToString { (it as ParameterPair<Any?>).getLocalEqualityString() } ?: ""}})"
     }
     override fun getCreateString(): String {

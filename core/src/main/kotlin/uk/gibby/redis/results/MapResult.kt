@@ -42,9 +42,8 @@ fun <T, U: ResultValue<T>>map(type: ResultBuilder<T, U>) =
     ResultBuilder{ MapResult(type) }
 
 infix fun <T, U: ResultValue<T>, V: ResultBuilder<T, U>>V.of(value: T) = literalOf(this, value)
-inline infix fun <reified T, reified U: ResultValue<T>>U.of(value: T): U {
-
-    return literalOf(this, value)
+infix fun <T,  U: ResultValue<T>>KFunction0<U>.of(value: T): U{
+    return literalOf(this(), value)
 }
 operator fun <T, U: WithAttributes<T>> KFunction0<U>.get(value: T): () -> U  {
     with(this()) {

@@ -50,8 +50,8 @@ class FunctionsTest {
     fun `Test Averages`(){
         numbersGraph.create(::MyNumber, listOf(1.0, 10.0, 13.0)){ attr, iter -> attr[num] = iter }
         numbersGraph.query {
-            val number = match(::MyNumber)
-            avg(number.num)
+            val node = match(::MyNumber)
+            avg(node.num)
         }.first() `should be equal to` 8.0
     }
 
