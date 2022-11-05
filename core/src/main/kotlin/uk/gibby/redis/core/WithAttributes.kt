@@ -24,7 +24,10 @@ sealed class WithAttributes<T>: ResultValue<T>() {
     internal var params: List<ParameterPair<*>>? = null
     internal abstract val typeName: String
     internal abstract val attributes: MutableSet<Attribute<*>>
-    internal var instanceName = NameCounter.getNext()
+    private var _instanceName: String = NameCounter.getNext()
+    internal var instanceName
+        get() = if(_reference == null) _instanceName else _reference
+        set(value){ _instanceName = value!! }
     private var _value: T? = null
     fun NameSetter.set(name: String){
         instanceName = name

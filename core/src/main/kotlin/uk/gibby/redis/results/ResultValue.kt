@@ -37,7 +37,6 @@ fun <T, U: ResultValue<T>>literalOf(result: U, value: T): U{
 }
 fun <T, U: ResultValue<T>>literalOf(resultBuilder: ResultBuilder<T, U>, value: T): U{
     return resultBuilder.action().apply {
-        _reference = null
         with(ResultValue.DefaultValueSetter){ this.value = value }
     }
 }

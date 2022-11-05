@@ -21,7 +21,7 @@ class UsersTest {
 
     @Node
     @Relates(to = User::class, by = "invited", data = EmptyData::class)
-    @Relates(to = UserSession::class, by = "authenticatedBy", data = EmptyData::class)
+    @Relates(to = UserSession::class, by = "authorisedBy", data = EmptyData::class)
     data class User(val username: String, val passwordHash: String)
 
     @Node
@@ -55,7 +55,10 @@ class UsersTest {
             val (user1Ref, user2Ref) = using(user1, user2)
             create(user1Ref - { invited } - user2Ref)
         }
-        inviteUser("TestUser1", "TestUser2") `should be equal to` false
+        graph.query {
+            val (user) = match(::UserNode{ it[username] = "TestUser1" } - { invited } - ::UserNode{ it[username] = "TestUser2" })
+            user.username
+        } `should be equal to` listOf("TestUser1")
     }
 
     @Test
@@ -64,21 +67,29 @@ class UsersTest {
             create(::UserNode{it[username] = "TestUser1"; it[passwordHash] = "###"})
             create(::UserNode{it[username] = "TestUser2"; it[passwordHash] = "###"})
         }
-        inviteUser("TestUser1", "TestUser2") `should be equal to` true
-    }
-    private fun inviteUser(fromUser: String, toUser: String): Boolean{
-        val inviteExists = graph.query {
-            val (_, invite, _) = match(::UserNode{ it[username] = fromUser } - { invited } - ::UserNode{ it[username] = toUser })
-            invite
-        }.isNotEmpty()
-        if(inviteExists) return false
+        graph.query {
+            val (user) = match(::UserNode{ it[username] = "TestUser1" } - { invited } - ::UserNode{ it[username] = "TestUser2" })
+            user.username
+        } `should be equal to` emptyList()
         graph.query {
             val (from, to) = match(
-                ::UserNode{ it[username] = fromUser },
-                ::UserNode{ it[username] = toUser }
+                ::UserNode{ it[username] = "TestUser1" },
+                ::UserNode{ it[username] = "TestUser2" }
             )
             create(from - { invited } - to)
         }
-        return true
+    }
+    @Test
+    fun createUser(){
+        val (name: String, pass: String) = "TestUser1" to "###"
+        if(graph.query { match(::UserNode{ it[username] = name }) }.isEmpty()){
+            graph.query {
+                val userNode = create(::UserNode{ it[username] = name; it[passwordHash] = pass })
+                val usernameRef = using(userNode.username)
+                val (_, session) =
+                    create(userNode - { authorisedBy } - ::UserSessionNode { it[username] = usernameRef; it[key] = "123" }).nodes()
+                session
+            }.first()
+        }
     }
 }
