@@ -4,6 +4,7 @@ import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
+@Repeatable
 annotation class Relates(
     val to: KClass<*>,
     val by: String,

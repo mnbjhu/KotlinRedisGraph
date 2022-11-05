@@ -52,6 +52,7 @@ data class BooleanArrayTest(val data: List<Boolean>)
 
 @Node
 @Relates(to = PackageTest::class, by = "hasOther", data = Empty::class)
+@Relates(to = PackageTest::class, by = "hasAnother", data = Empty::class)
 data class PackageTest(val color: Piece.Color)
 
 
