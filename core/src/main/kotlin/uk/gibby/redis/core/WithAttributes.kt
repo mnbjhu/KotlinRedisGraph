@@ -10,6 +10,8 @@ import uk.gibby.redis.paths.NameCounter
 import uk.gibby.redis.results.*
 import kotlin.reflect.KProperty
 import redis.clients.jedis.graph.entities.Property
+import uk.gibby.redis.attributes.Attribute
+import uk.gibby.redis.results.primitive.AttributeBuilder
 import kotlin.reflect.full.primaryConstructor
 
 object NameSetter

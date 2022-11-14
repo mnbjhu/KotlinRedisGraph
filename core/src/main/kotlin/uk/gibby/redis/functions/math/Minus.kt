@@ -1,7 +1,7 @@
 package uk.gibby.redis.functions.math
 
-import uk.gibby.redis.results.DoubleResult
-import uk.gibby.redis.results.LongResult
+import uk.gibby.redis.results.primitive.DoubleResult
+import uk.gibby.redis.results.primitive.LongResult
 
 operator fun LongResult.minus(other: LongResult) = LongResult().also {
     it._reference = "(${getString()} - ${other.getString()})"

@@ -1,6 +1,6 @@
 package uk.gibby.redis.core
 
-import uk.gibby.redis.results.Attribute
+import uk.gibby.redis.attributes.Attribute
 import uk.gibby.redis.results.ResultValue
 
 interface Matchable {

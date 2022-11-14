@@ -1,5 +1,6 @@
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import uk.gibby.redis.attributes.Attribute
 import uk.gibby.redis.results.*
 import javax.lang.model.element.Element
 

@@ -6,8 +6,8 @@ import uk.gibby.redis.core.RedisGraph
 import uk.gibby.redis.functions.math.plus
 import uk.gibby.redis.functions.switch
 import uk.gibby.redis.generated.SwitchTestNode
-import uk.gibby.redis.results.LongResult
-import uk.gibby.redis.results.StringResult
+import uk.gibby.redis.results.primitive.LongResult
+import uk.gibby.redis.results.primitive.StringResult
 import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Match.Companion.match
 

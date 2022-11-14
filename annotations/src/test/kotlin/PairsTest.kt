@@ -1,13 +1,10 @@
 import org.amshove.kluent.`should be equal to`
-import org.junit.Before
 import org.junit.Test
 import uk.gibby.redis.core.RedisGraph
 import uk.gibby.redis.core.ResultParent.Companion.long
-import uk.gibby.redis.results.literal
-import uk.gibby.redis.results.of
+import uk.gibby.redis.results.primitive.of
 import uk.gibby.redis.results.pair
 import uk.gibby.redis.results.pairAttribute
-import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Match.Companion.match
 
 class PairsTest{

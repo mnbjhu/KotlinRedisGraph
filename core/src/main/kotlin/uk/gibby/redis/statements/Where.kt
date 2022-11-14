@@ -1,6 +1,6 @@
 package uk.gibby.redis.statements
 
-import uk.gibby.redis.results.BooleanResult
+import uk.gibby.redis.results.primitive.BooleanResult
 import uk.gibby.redis.scopes.QueryScope
 
 class Where(private val predicate: BooleanResult) : Statement() {

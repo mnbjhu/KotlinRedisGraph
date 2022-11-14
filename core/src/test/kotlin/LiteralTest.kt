@@ -3,6 +3,7 @@ import org.junit.Before
 import org.junit.Test
 import uk.gibby.redis.core.RedisGraph
 import uk.gibby.redis.results.*
+import uk.gibby.redis.results.primitive.array
 import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Match.Companion.match
 

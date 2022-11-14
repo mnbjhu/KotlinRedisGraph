@@ -1,7 +1,7 @@
 package uk.gibby.redis.functions.math
 
 import uk.gibby.redis.results.ResultValue
-import uk.gibby.redis.results.DoubleResult
+import uk.gibby.redis.results.primitive.DoubleResult
 
 /**
  * Average

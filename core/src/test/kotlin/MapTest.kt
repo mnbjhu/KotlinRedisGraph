@@ -4,6 +4,8 @@ import org.junit.Test
 import uk.gibby.redis.core.RedisGraph
 import uk.gibby.redis.core.ResultParent.Companion.string
 import uk.gibby.redis.results.*
+import uk.gibby.redis.results.primitive.map
+import uk.gibby.redis.results.primitive.of
 
 class MapTest {
     private val graph = RedisGraph(

@@ -1,7 +1,7 @@
 package uk.gibby.redis.attributes.primative
 
-import uk.gibby.redis.results.StringResult
-import uk.gibby.redis.results.Attribute
+import uk.gibby.redis.results.primitive.StringResult
+import uk.gibby.redis.attributes.Attribute
 
 /**
  * String attribute

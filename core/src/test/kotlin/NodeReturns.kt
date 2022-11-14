@@ -4,8 +4,7 @@ import org.junit.Test
 import schemas.NodeTestData
 import schemas.ReturningNode
 import uk.gibby.redis.core.RedisGraph
-import uk.gibby.redis.results.get
-import uk.gibby.redis.results.of
+import uk.gibby.redis.results.primitive.get
 import uk.gibby.redis.statements.Create.Companion.create
 import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Match.Companion.match

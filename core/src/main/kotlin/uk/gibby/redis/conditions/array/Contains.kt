@@ -1,8 +1,8 @@
 package uk.gibby.redis.conditions.array
 
-import uk.gibby.redis.results.ArrayResult
+import uk.gibby.redis.results.primitive.ArrayResult
 import uk.gibby.redis.results.ResultValue
-import uk.gibby.redis.results.BooleanResult
+import uk.gibby.redis.results.primitive.BooleanResult
 
 /**
  * Contains

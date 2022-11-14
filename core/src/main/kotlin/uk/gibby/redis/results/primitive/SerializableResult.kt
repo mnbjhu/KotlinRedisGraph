@@ -1,8 +1,9 @@
-package uk.gibby.redis.results
+package uk.gibby.redis.results.primitive
 
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import uk.gibby.redis.results.ResultValue
 import kotlin.reflect.KClass
 
 open class SerializableResult<T : Any>(open val clazz: KClass<T>) : PrimitiveResult<T>() {
@@ -16,7 +17,7 @@ open class SerializableResult<T : Any>(open val clazz: KClass<T>) : PrimitiveRes
         return "'$strData'"
     }
 
-    override fun copyType(): ResultValue<T>  = object : SerializableResult<T>(clazz) {
+    override fun copyType(): ResultValue<T> = object : SerializableResult<T>(clazz) {
         override val clazz: KClass<T>
             get() = this@SerializableResult.clazz
 

@@ -1,7 +1,10 @@
-package uk.gibby.redis.results
+package uk.gibby.redis.results.primitive
 
 import uk.gibby.redis.attributes.ArrayAttribute
 import uk.gibby.redis.paths.NameCounter
+import uk.gibby.redis.attributes.Attribute
+import uk.gibby.redis.results.ResultValue
+import uk.gibby.redis.results.StructResult
 import kotlin.reflect.KFunction0
 import kotlin.reflect.KProperty
 
@@ -18,7 +21,7 @@ open class ArrayResult<T, U : ResultValue<T>>(private val type: ResultBuilder<T,
     override fun copyType(): ResultValue<List<T>> {
         return array(newElement::copyType).action()
     }
-    fun <A, B: ResultValue<A>>map(transform: (U) -> B): ArrayResult<A, B>{
+    fun <A, B: ResultValue<A>>map(transform: (U) -> B): ArrayResult<A, B> {
         val element = newElement.also { it._reference = NameCounter.getNext() }
         val output = transform(element)
         return ArrayResult(
@@ -27,22 +30,22 @@ open class ArrayResult<T, U : ResultValue<T>>(private val type: ResultBuilder<T,
             }
         ).also { it._reference = "[${element.getString()} IN ${getString()}|${output.getString()}]" }
     }
-    fun all(predicate: (U) -> BooleanResult): BooleanResult{
+    fun all(predicate: (U) -> BooleanResult): BooleanResult {
         val element = newElement.also { it._reference = NameCounter.getNext() }
         val condition = predicate(element)
         return BooleanResult().also { it._reference = "all(${element.getString()} IN ${getString()} WHERE ${condition.getString()})" }
     }
-    fun any(predicate: (U) -> BooleanResult): BooleanResult{
+    fun any(predicate: (U) -> BooleanResult): BooleanResult {
         val element = newElement.also { it._reference = NameCounter.getNext() }
         val condition = predicate(element)
         return BooleanResult().also { it._reference = "any(${element.getString()} IN ${getString()} WHERE ${condition.getString()})" }
     }
-    fun single(predicate: (U) -> BooleanResult): BooleanResult{
+    fun single(predicate: (U) -> BooleanResult): BooleanResult {
         val element = newElement.also { it._reference = NameCounter.getNext() }
         val condition = predicate(element)
         return BooleanResult().also { it._reference = "single(${element.getString()} IN ${getString()} WHERE ${condition.getString()})" }
     }
-    fun none(predicate: (U) -> BooleanResult): BooleanResult{
+    fun none(predicate: (U) -> BooleanResult): BooleanResult {
         val element = newElement.also { it._reference = NameCounter.getNext() }
         val condition = predicate(element)
         return BooleanResult().also { it._reference = "none(${element.getString()} IN ${getString()} WHERE ${condition.getString()})" }

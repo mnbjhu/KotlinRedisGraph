@@ -1,7 +1,7 @@
 package uk.gibby.redis.functions.array
 
-import uk.gibby.redis.results.ArrayResult
-import uk.gibby.redis.results.LongResult
+import uk.gibby.redis.results.primitive.ArrayResult
+import uk.gibby.redis.results.primitive.LongResult
 
 fun range(first: Long, second: Long, step: Long? = null) = ArrayResult(::LongResult).also {
     it._reference = "range(${listOf(first, second, step).joinToString()})"

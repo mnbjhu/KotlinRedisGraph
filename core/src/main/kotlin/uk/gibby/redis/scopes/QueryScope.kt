@@ -2,7 +2,7 @@ package uk.gibby.redis.scopes
 
 import uk.gibby.redis.results.ResultValue
 import uk.gibby.redis.paths.NameCounter
-import uk.gibby.redis.results.ArrayResult
+import uk.gibby.redis.results.primitive.ArrayResult
 import uk.gibby.redis.statements.*
 
 class QueryScope {

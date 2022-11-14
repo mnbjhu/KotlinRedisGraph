@@ -5,6 +5,7 @@ import uk.gibby.redis.core.ResultParent.Companion.boolean
 import uk.gibby.redis.core.ResultParent.Companion.double
 import uk.gibby.redis.core.ResultParent.Companion.long
 import uk.gibby.redis.core.ResultParent.Companion.string
+import uk.gibby.redis.results.primitive.*
 
 /**
  * Result value

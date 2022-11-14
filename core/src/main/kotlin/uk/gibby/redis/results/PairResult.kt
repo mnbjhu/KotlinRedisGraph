@@ -1,6 +1,10 @@
 package uk.gibby.redis.results
 
+import uk.gibby.redis.attributes.Attribute
 import uk.gibby.redis.paths.NameCounter
+import uk.gibby.redis.results.primitive.ArrayResult
+import uk.gibby.redis.results.primitive.AttributeBuilder
+import uk.gibby.redis.results.primitive.ResultBuilder
 
 open class PairResult<T, U : ResultValue<T>, R, V : ResultValue<R>>(private val firstType: ResultBuilder<T, U>, private val secondType: ResultBuilder<R, V>) : ResultValue<Pair<T, R>>() {
     constructor(first: () -> U, second: () -> V) : this(ResultBuilder { first() }, ResultBuilder { second() })
@@ -30,7 +34,8 @@ open class PairResult<T, U : ResultValue<T>, R, V : ResultValue<R>>(private val 
     }
 
 }
-class PairAttribute<T, U : ResultValue<T>, R, V : ResultValue<R>>(first: ResultBuilder<T, U>, second: ResultBuilder<R, V>): PairResult<T, U, R, V>(first, second), Attribute<Pair<T, R>>{
+class PairAttribute<T, U : ResultValue<T>, R, V : ResultValue<R>>(first: ResultBuilder<T, U>, second: ResultBuilder<R, V>): PairResult<T, U, R, V>(first, second),
+    Attribute<Pair<T, R>> {
     constructor(first: () -> U, second: () -> V) : this(ResultBuilder { first() }, ResultBuilder { second() })
 }
 fun <T, U: ResultValue<T>, R, V: ResultValue<R>>pair(first: () -> U, second: () -> V) = ResultBuilder{ PairResult(first, second) }

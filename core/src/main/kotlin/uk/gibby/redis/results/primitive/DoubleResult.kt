@@ -1,4 +1,4 @@
-package uk.gibby.redis.results
+package uk.gibby.redis.results.primitive
 
 /**
  * Double result

@@ -1,7 +1,6 @@
 package uk.gibby.redis.core
 
-import uk.gibby.redis.attributes.SerializableAttribute
-import uk.gibby.redis.results.*
+import uk.gibby.redis.results.primitive.*
 import kotlin.reflect.KClass
 
 //fun <T, U: ResultValue<T>>array(type: U) = ArrayAttribute(type)

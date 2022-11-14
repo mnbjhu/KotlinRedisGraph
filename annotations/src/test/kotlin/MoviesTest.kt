@@ -12,13 +12,14 @@ import uk.gibby.redis.core.ResultParent.Companion.string
 import uk.gibby.redis.generated.ActorNode
 import uk.gibby.redis.generated.MovieNode
 import uk.gibby.redis.paths.minus
-import uk.gibby.redis.results.*
 import uk.gibby.redis.statements.Create.Companion.create
 import uk.gibby.redis.statements.Delete.Companion.delete
 import uk.gibby.redis.statements.Match.Companion.match
 import uk.gibby.redis.statements.Where.Companion.where
 import uk.gibby.redis.statements.WithAs.Companion.using
 import uk.gibby.redis.core.invoke
+import uk.gibby.redis.results.primitive.map
+import uk.gibby.redis.results.primitive.of
 
 
 @RedisType

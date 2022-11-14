@@ -1,7 +1,7 @@
 package uk.gibby.redis.attributes.primative
 
-import uk.gibby.redis.results.Attribute
-import uk.gibby.redis.results.DoubleResult
+import uk.gibby.redis.attributes.Attribute
+import uk.gibby.redis.results.primitive.DoubleResult
 
 /**
  * Double attribute

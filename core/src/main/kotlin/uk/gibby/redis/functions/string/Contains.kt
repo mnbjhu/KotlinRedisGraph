@@ -1,7 +1,7 @@
 package uk.gibby.redis.functions.string
 
-import uk.gibby.redis.results.BooleanResult
-import uk.gibby.redis.results.StringResult
+import uk.gibby.redis.results.primitive.BooleanResult
+import uk.gibby.redis.results.primitive.StringResult
 import uk.gibby.redis.results.literalOf
 
 /**

@@ -1,11 +1,11 @@
-package uk.gibby.redis.results
+package uk.gibby.redis.results.primitive
 
 import uk.gibby.redis.core.ParamMap
 import uk.gibby.redis.core.WithAttributes
 import uk.gibby.redis.paths.NameCounter
-import kotlin.reflect.KClass
+import uk.gibby.redis.results.ResultValue
+import uk.gibby.redis.results.literalOf
 import kotlin.reflect.KFunction0
-import kotlin.reflect.full.isSubclassOf
 
 open class MapResult<T, U : ResultValue<T>>(private val toTypeProducer: ResultBuilder<T, U>) : PrimitiveResult<Map<String, T>>() {
     constructor(from: () -> U): this(ResultBuilder { from() } )

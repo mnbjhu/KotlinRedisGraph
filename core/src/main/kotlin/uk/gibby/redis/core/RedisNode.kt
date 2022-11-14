@@ -1,8 +1,7 @@
 package uk.gibby.redis.core
 
-import uk.gibby.redis.results.Attribute
+import uk.gibby.redis.attributes.Attribute
 import uk.gibby.redis.attributes.RelationAttribute
-import uk.gibby.redis.results.ResultValue
 import kotlin.reflect.KClass
 
 /**

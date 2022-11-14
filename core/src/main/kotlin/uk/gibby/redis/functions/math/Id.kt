@@ -1,6 +1,6 @@
 package uk.gibby.redis.functions.math
 
-import uk.gibby.redis.results.LongResult
+import uk.gibby.redis.results.primitive.LongResult
 import uk.gibby.redis.core.RedisNode
 
 /**
