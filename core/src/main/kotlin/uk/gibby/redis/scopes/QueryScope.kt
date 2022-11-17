@@ -4,12 +4,22 @@ import uk.gibby.redis.results.ResultValue
 import uk.gibby.redis.paths.NameCounter
 import uk.gibby.redis.results.ArrayResult
 import uk.gibby.redis.statements.*
+import uk.gibby.redis.statements.OrderBy.Companion.orderBy
 
 class QueryScope {
     val commands = mutableListOf<Statement>()
     fun getQueryString(result: ResultValue<*>): String {
-        val first = commands.filter { it !is OrderBy<*> }
-        val last = commands.filterIsInstance<OrderBy<*>>()
+        val first = commands.dropLastWhile { it is OrderBy<*> || it is Skip || it is Limit }
+        val last = commands
+            .takeLastWhile { it is OrderBy<*> || it is Skip || it is Limit }
+            .sortedBy {
+                when(it){
+                    is OrderBy<*> -> 0
+                    is Skip -> 1
+                    is Limit -> 2
+                    else -> throw Exception("Type error found: $it")
+                }
+            }
         return listOf(
             first.joinToString(" ") { it.getCommand() },
             getResultString(result),
