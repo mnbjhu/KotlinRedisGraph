@@ -29,9 +29,9 @@ class Path3<A : RedisNode<*>, B : RedisRelation<*, A, C>, C : RedisNode<*>, D : 
     operator fun component5() = third
     fun nodes() = Triple(first, second, third)
     override fun getMatchString() =
-        "${first.getMatchString()}-$firstToSecond->${second.getMatchString()}-$secondToThird->${third.getMatchString()}"
+        "${first.getMatchString()}-${firstToSecond.getMatchString()}->${second.getMatchString()}-${secondToThird.getMatchString()}->${third.getMatchString()}"
             .also { first.matched = true; second.matched = true; third.matched = true }
 
     override fun getCreateString(): String =
-        "(${first.instanceName})-$firstToSecond->(${second.instanceName})-$secondToThird->(${third.instanceName})"
+        "(${first.getCreateString()})-${firstToSecond.getCreateString()}->(${second.getCreateString()})-${secondToThird.getCreateString()}->(${third.getCreateString()})"
 }
