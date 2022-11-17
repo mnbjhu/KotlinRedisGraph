@@ -1,6 +1,7 @@
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import uk.gibby.redis.annotation.Relates
+import uk.gibby.redis.annotation.UsingType
 import uk.gibby.redis.attributes.ArrayAttribute
 import uk.gibby.redis.attributes.RelationAttribute
 import uk.gibby.redis.attributes.SerializableAttribute
@@ -59,12 +60,18 @@ private fun buildNodeClass(
     return nodeClassBuilder.build()
 }
 fun buildNodeProperty(member: Element, classElements: List<Element>): PropertySpec {
+    val annotations = member.getAnnotationsByType(UsingType::class.java)
+    if (annotations.isNotEmpty()) return PropertySpec
+        .builder(member.simpleName.toString(), annotations.first().clazz.asTypeName())
+        .delegate(CodeBlock.of("%T()", annotations.first().clazz.asTypeName()))
+        .build()
     return PropertySpec
         .builder(member.simpleName.toString(), getNodeType(member.asType(), classElements))
         .delegate(getArrayAttributeFunction(member.asType(), classElements))
         .build()
 }
 fun getNodeType(type: TypeMirror, classElements: List<Element>): TypeName {
+
     if(classElements.any{ (it.asType().asTypeName().toString() == type.asTypeName().toString()) })
         return ClassName("uk.gibby.redis.generated", "${type.asTypeName().toString().split(".").last()}Attribute")
     if(type.isEnum()) return SerializableAttribute::class.asClassName().parameterizedBy(type.asTypeName())
